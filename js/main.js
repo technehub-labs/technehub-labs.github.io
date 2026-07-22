@@ -51,7 +51,7 @@
     window.addEventListener('scroll', function () {
       if (window.scrollY > 80) {
         navbar.style.background = 'rgba(26, 24, 21, 0.92)'
-        navbar.style.boxShadow = '0 1px 0 rgba(201, 124, 44, 0.10)'
+        navbar.style.boxShadow = '0 1px 0 rgba(127, 200, 192, 0.10)'
       } else {
         navbar.style.background = 'rgba(26, 24, 21, 0.75)'
         navbar.style.boxShadow = 'none'
@@ -73,25 +73,60 @@
     })
   }
 
-  // ── Intersection Observer — fade-in reveals ────────────
+  // ── Intersection Observer — staggered card animations ──
   if ('IntersectionObserver' in window) {
+    const CARD_SELECTOR = [
+      '.about-card',
+      '.layer',
+      '.repo-card',
+      '.tool-card',
+      '.stakeholder-card',
+      '.community-card',
+      '.assessment-main',
+      '.assessment-side',
+      '.cli-window',
+      '.metamodel-diagram',
+      '.diagram-node',
+      '.modas-feature-card',
+      '.mm-table'
+    ].join(', ');
+
+    // Wrap each card grid so its children stagger via :nth-child rules
+    const GRID_SELECTOR = [
+      '.modas-card-grid',
+      '.about-grid',
+      '.layers',
+      '.repo-grid',
+      '.tool-grid',
+      '.stakeholder-grid',
+      '.community-grid',
+      '.assessment-grid',
+      '.metamodel-tables',
+      '.diagram-children'
+    ].join(', ');
+
+    document.querySelectorAll(GRID_SELECTOR).forEach(function (grid) {
+      grid.classList.add('reveal-grid');
+    });
+
     const revealObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible')
-          revealObserver.unobserve(entry.target)
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
         }
-      })
-    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' })
+      });
+    }, {
+      threshold: 0.01,
+      // Expand observer upward so cards reveal just BEFORE they enter
+      // the viewport — eliminates the "blank gap" feel on fast scroll.
+      rootMargin: '0px 0px -10px 0px'
+    });
 
-    document.querySelectorAll(
-      '.about-card, .layer, .repo-card, .tool-card, .stakeholder-card, ' +
-      '.community-card, .assessment-main, .assessment-side, .cli-window, ' +
-      '.metamodel-diagram, .diagram-node, .modas-feature-card, .mm-table'
-    ).forEach(function (el) {
-      el.classList.add('reveal')
-      revealObserver.observe(el)
-    })
+    document.querySelectorAll(CARD_SELECTOR).forEach(function (el) {
+      el.classList.add('reveal', 'reveal-halo');
+      revealObserver.observe(el);
+    });
   }
 
   // ── Hero canvas particle field ─────────────────────────
@@ -120,7 +155,7 @@
     function drawParticle (p) {
       ctx.beginPath()
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(226, 152, 79, ' + p.opacity + ')'
+      ctx.fillStyle = 'rgba(168, 220, 214, ' + p.opacity + ')'
       ctx.fill()
     }
 
@@ -136,7 +171,7 @@
             ctx.beginPath()
             ctx.moveTo(p1.x, p1.y)
             ctx.lineTo(p2.x, p2.y)
-            ctx.strokeStyle = 'rgba(201, 124, 44, ' + (0.09 * (1 - dist / 140)) + ')'
+            ctx.strokeStyle = 'rgba(127, 200, 192, ' + (0.10 * (1 - dist / 140)) + ')'
             ctx.lineWidth = 0.5
             ctx.stroke()
           }
