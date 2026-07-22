@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <!-- Favicon (TechNe-inspired) -->
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230d1117'/><path d='M8 8h4l8 10.5L28 8h4v4l-9 6.5v5L8 24v-4l9-6.5z' fill='none' stroke='%232dd4bf' stroke-width='1.5' stroke-linejoin='round'/></svg>">
 
   <link rel="stylesheet" href="css/styles.css">
@@ -54,6 +54,19 @@
         Digital Enterprise<br>
         <span class="gradient-text">Architecture</span>
       </h1>
+
+      <!-- Rotating Vision Statements -->
+      <div class="hero-vision" id="heroVision">
+        <div class="vision-track" id="visionTrack">
+          <span class="vision-statement">Architect the enterprise — not just IT</span>
+          <span class="vision-statement">From principles to production — automated</span>
+          <span class="vision-statement">Trust by design — not by audit</span>
+          <span class="vision-statement">The Agentic Enterprise — designed at scale</span>
+          <span class="vision-statement">One metamodel. Every layer. Every tool.</span>
+          <span class="vision-statement">Architect the enterprise — not just IT</span>
+        </div>
+      </div>
+
       <p class="hero-subtitle">
         A comprehensive, open-source framework for enterprise architects, solutions architects,
         and technology leaders. Built for practitioners — from CTO to developer.
@@ -75,8 +88,8 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <span class="stat-number">5</span>
-          <span class="stat-label">Core Repos</span>
+          <span class="stat-number">11</span>
+          <span class="stat-label">L1 Catalogs</span>
         </div>
       </div>
       <div class="hero-actions">
@@ -95,6 +108,78 @@
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 12a.75.75 0 01-.75-.75V4.75L4.53 7.47a.75.75 0 11-1.06-1.06l4-4a.75.75 0 011.06 0l4 4a.75.75 0 11-1.06 1.06L8.75 4.75v6.5A.75.75 0 018 12z"/></svg>
     </div>
   </section>
+
+  <!-- ═══════════════ MODAS SIDEBAR ═══════════════ -->
+  <aside class="modas-sidebar" id="modasSidebar">
+    <div class="modas-sidebar-header">
+      <span class="modas-sidebar-label">
+        <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="#2dd4bf" stroke-width="1.5"/><circle cx="5" cy="5" r="2" fill="#2dd4bf"/></svg>
+        Agentic Enterprise
+      </span>
+    </div>
+
+    <div class="modas-orbit-container" id="modasOrbit">
+      <div class="modas-center">
+        <div class="modas-center-inner">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Trust<br>by Design</span>
+        </div>
+        <div class="modas-orbit-ring modas-ring-1"></div>
+        <div class="modas-orbit-ring modas-ring-2"></div>
+      </div>
+
+      <div class="modas-satellite modas-sat-1">
+        <div class="modas-sat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        <div class="modas-sat-content">
+          <strong>Model-Driven</strong>
+          <p>Every agent, tool, and workflow defined declaratively. Generated from the metamodel — not hand-coded.</p>
+          <a href="https://github.com/technehub-labs/dea-metamodel">Explore Metamodel →</a>
+        </div>
+      </div>
+
+      <div class="modas-satellite modas-sat-2">
+        <div class="modas-sat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="modas-sat-content">
+          <strong>Agentic Design</strong>
+          <p>ReAct, Plan-and-Execute, Supervisor-Worker patterns catalogued and governed. Deploy with confidence.</p>
+          <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry">Agent Foundry →</a>
+        </div>
+      </div>
+
+      <div class="modas-satellite modas-sat-3">
+        <div class="modas-sat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="modas-sat-content">
+          <strong>Scale at Confidence</strong>
+          <p>Measured agent performance, governance audit trails, and rollback SLAs — all in the framework.</p>
+          <a href="https://github.com/technehub-labs/dea-catalog-metrics">View Metrics →</a>
+        </div>
+      </div>
+
+      <div class="modas-satellite modas-sat-4">
+        <div class="modas-sat-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        </div>
+        <div class="modas-sat-content">
+          <strong>Solution at Speed</strong>
+          <p>Solution archetypes, delivery templates, and IaC accelerators. Ship faster, govern better.</p>
+          <a href="https://github.com/technehub-labs/dea-catalog-solution-hub">Solution Hub →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="modas-footer-cta">
+      <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry" class="modas-cta-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Enter the Agentic Enterprise
+      </a>
+    </div>
+  </aside>
 
   <!-- ═══════════════ ABOUT ═══════════════ -->
   <section class="section about" id="about">
@@ -189,10 +274,10 @@
             <div class="layer-badge">L1</div>
             <div>
               <h3>Reference Catalogs</h3>
-              <span class="layer-repo">dea-catalog-* (8 planned)</span>
+              <span class="layer-repo">dea-catalog-* (11 repos)</span>
             </div>
           </div>
-          <p>Structured repositories of architectural knowledge. Each catalog is versioned against the metamodel, containing Principles, Patterns, Standards, Reference Models, Metrics, Ontologies, Taxonomies, and Glossary entries.</p>
+          <p>Structured repositories of architectural knowledge. Each catalog is versioned against the metamodel, containing Principles, Patterns, Standards, Reference Models, Metrics, Ontologies, Taxonomies, Glossaries, DERA, DBSF, Agent Foundry, and Solution Hub.</p>
           <div class="layer-entities">
             <span class="entity-tag">Principle</span>
             <span class="entity-tag">ArchitecturePattern</span>
@@ -212,7 +297,7 @@
             <div class="layer-badge">L2</div>
             <div>
               <h3>Tooling</h3>
-              <span class="layer-repo">dea-cli · dea-web-viewer · dea-scripts</span>
+              <span class="layer-repo">dea-cli · dea-web-viewer · dea-scripts · dea-code-gen</span>
             </div>
           </div>
           <p>Scripts and applications that consume the metamodel and catalogs to generate artifacts: architecture viewpoints, ADRs, component specs, API contracts, and glossary documents. Built in TypeScript, Python, and web technologies.</p>
@@ -229,8 +314,8 @@
           <div class="layer-header">
             <div class="layer-badge">L3</div>
             <div>
-              <h3>Integration & Governance</h3>
-              <span class="layer-repo">GitHub Project · Discussions · Pages</span>
+              <h3>Integration &amp; Governance</h3>
+              <span class="layer-repo">GitHub Projects · Discussions · Pages</span>
             </div>
           </div>
           <p>Cross-repo governance, contribution workflows, and the public documentation hub. Includes the DEA Roadmap project, PR templates, CODEOWNERS, contribution guidelines, and this GitHub Pages site.</p>
@@ -243,7 +328,6 @@
         </div>
       </div>
 
-      <!-- Metamodel entity diagram -->
       <div class="metamodel-diagram">
         <h3 class="diagram-title">Metamodel Entity Hierarchy</h3>
         <div class="diagram-content">
@@ -252,43 +336,21 @@
             <small>abstract root</small>
           </div>
           <div class="diagram-children">
-            <div class="diagram-node">
-              <span>Principle</span>
-            </div>
-            <div class="diagram-node">
-              <span>ArchitecturePattern</span>
-            </div>
-            <div class="diagram-node">
-              <span>Standard</span>
-            </div>
-            <div class="diagram-node">
-              <span>ReferenceModel</span>
-            </div>
-            <div class="diagram-node">
-              <span>Capability</span>
-            </div>
-            <div class="diagram-node">
-              <span>Process</span>
-            </div>
-            <div class="diagram-node">
-              <span>BusinessService</span>
-            </div>
+            <div class="diagram-node"><span>Principle</span></div>
+            <div class="diagram-node"><span>ArchitecturePattern</span></div>
+            <div class="diagram-node"><span>Standard</span></div>
+            <div class="diagram-node"><span>ReferenceModel</span></div>
+            <div class="diagram-node"><span>Capability</span></div>
+            <div class="diagram-node"><span>Process</span></div>
+            <div class="diagram-node"><span>BusinessService</span></div>
             <div class="diagram-node">
               <span>SolutionComponent</span>
               <small>Application · Infrastructure · Integration</small>
             </div>
-            <div class="diagram-node">
-              <span>Technology</span>
-            </div>
-            <div class="diagram-node">
-              <span>Metric</span>
-            </div>
-            <div class="diagram-node">
-              <span>GlossaryTerm</span>
-            </div>
-            <div class="diagram-node">
-              <span>Viewpoint</span>
-            </div>
+            <div class="diagram-node"><span>Technology</span></div>
+            <div class="diagram-node"><span>Metric</span></div>
+            <div class="diagram-node"><span>GlossaryTerm</span></div>
+            <div class="diagram-node"><span>Viewpoint</span></div>
           </div>
         </div>
       </div>
@@ -317,15 +379,9 @@
           <h3>dea-metamodel</h3>
           <p>Canonical entity definitions, relationships, and schemas. JSON Schema, OWL/RDF TTL, SQLite runtime, TypeScript interfaces, Pydantic models.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>JSON Schema
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#2dd4bf"></span>RDF/TTL
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#58a6ff"></span>SQLite
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>JSON Schema</span>
+            <span class="repo-format"><span class="format-dot" style="background:#2dd4bf"></span>RDF/TTL</span>
+            <span class="repo-format"><span class="format-dot" style="background:#58a6ff"></span>SQLite</span>
           </div>
         </a>
 
@@ -339,12 +395,8 @@
           <h3>dea-catalog-patterns</h3>
           <p>Reusable architecture patterns: API Gateway, CQRS, Event Sourcing, Saga, Strangler Fig, and more — with forces, consequences, and applicability.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>Markdown
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#2dd4bf"></span>JSON
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>Markdown</span>
+            <span class="repo-format"><span class="format-dot" style="background:#2dd4bf"></span>JSON</span>
           </div>
         </a>
 
@@ -358,15 +410,9 @@
           <h3>dea-catalog-reference-models</h3>
           <p>Reference architectures: Digital Platform, Integration Hub, Data Mesh, and domain-specific models at conceptual, logical, and physical abstraction levels.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>Markdown
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#58a6ff"></span>SQLite
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3fb950"></span>Excel
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>Markdown</span>
+            <span class="repo-format"><span class="format-dot" style="background:#58a6ff"></span>SQLite</span>
+            <span class="repo-format"><span class="format-dot" style="background:#3fb950"></span>Excel</span>
           </div>
         </a>
 
@@ -380,12 +426,8 @@
           <h3>dea-catalog-metrics</h3>
           <p>EA KPIs and measurements: API adoption rates, capability maturity scores, technical debt ratios, and compliance metrics with thresholds and measurement methods.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>CSV
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>Markdown
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>CSV</span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>Markdown</span>
           </div>
         </a>
 
@@ -399,15 +441,9 @@
           <h3>dea-catalog-reference-architecture</h3>
           <p>Canonical delivery blueprint assembling all DEA framework layers into a practical adoption programme. Defines four sequential phases: Foundation, Catalog Seeding, Tooling Enablement, Governance.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>Markdown
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#2dd4bf"></span>YAML
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#8250df"></span>DERA
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>Markdown</span>
+            <span class="repo-format"><span class="format-dot" style="background:#2dd4bf"></span>YAML</span>
+            <span class="repo-format"><span class="format-dot" style="background:#8250df"></span>DERA</span>
           </div>
         </a>
 
@@ -421,15 +457,9 @@
           <h3>dea-catalog-digital-business-service-factory</h3>
           <p>Enterprise business service definitions, capability decompositions, and solution component mappings. Six domains: Customer, Finance, Product, Order, Supply Chain, HR — each with governance contracts and SLA tiers.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>YAML
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3fb950"></span>Capability Maps
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#58a6ff"></span>Governance
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>YAML</span>
+            <span class="repo-format"><span class="format-dot" style="background:#3fb950"></span>Capability Maps</span>
+            <span class="repo-format"><span class="format-dot" style="background:#58a6ff"></span>Governance</span>
           </div>
         </a>
 
@@ -443,15 +473,9 @@
           <h3>dea-catalog-agent-foundry</h3>
           <p>Autonomous agent patterns (ReAct, Plan-and-Execute, Supervisor-Worker, Debate, Reflect), agent platform specifications, multi-agent orchestration frameworks, and operational governance policies for enterprise AI.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>YAML
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#8250df"></span>AI Agents
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#58a6ff"></span>Governance
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>YAML</span>
+            <span class="repo-format"><span class="format-dot" style="background:#8250df"></span>AI Agents</span>
+            <span class="repo-format"><span class="format-dot" style="background:#58a6ff"></span>Governance</span>
           </div>
         </a>
 
@@ -465,15 +489,9 @@
           <h3>dea-catalog-solution-hub</h3>
           <p>Solution archetypes, sprint-by-sprint delivery templates, and implementation accelerators (IaC, docker-compose, Kong configs) for CDP, API Gateway, Event Streaming, Identity, Workflow, and Analytics Platform.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>YAML
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3178c6"></span>Terraform
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3fb950"></span>Delivery
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>YAML</span>
+            <span class="repo-format"><span class="format-dot" style="background:#3178c6"></span>Terraform</span>
+            <span class="repo-format"><span class="format-dot" style="background:#3fb950"></span>Delivery</span>
           </div>
         </a>
 
@@ -487,12 +505,8 @@
           <h3>dea-cli</h3>
           <p>TypeScript CLI for the DEA ecosystem. Query catalogs, validate entries against the metamodel, generate stakeholder viewpoints, and produce ADRs and component specs.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3178c6"></span>TypeScript
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#58a6ff"></span>Node.js
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#3178c6"></span>TypeScript</span>
+            <span class="repo-format"><span class="format-dot" style="background:#58a6ff"></span>Node.js</span>
           </div>
         </a>
 
@@ -506,12 +520,8 @@
           <h3>dea-web-viewer</h3>
           <p>React + Vite web UI for browsing DEA catalogs and visualizing viewpoints. Browse by entity type, filter by tag, and explore the relationship graph.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#61dafb"></span>React
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#646cff"></span>Vite
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#61dafb"></span>React</span>
+            <span class="repo-format"><span class="format-dot" style="background:#646cff"></span>Vite</span>
           </div>
         </a>
 
@@ -525,12 +535,8 @@
           <h3>dea-scripts</h3>
           <p>Python automation library: CSV ↔ SQLite ↔ YAML conversion, RDFLib validation against the metamodel TTL, viewpoint generation in Markdown and PlantUML formats.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#3fb950"></span>Python
-            </span>
-            <span class="repo-format">
-              <span class="format-dot" style="background:#f0883e"></span>Pandas
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#3fb950"></span>Python</span>
+            <span class="repo-format"><span class="format-dot" style="background:#f0883e"></span>Pandas</span>
           </div>
         </a>
 
@@ -544,15 +550,12 @@
           <h3>DEA Projects</h3>
           <p>Five active GitHub Projects tracking the full framework roadmap across Foundation Core, Catalog Ecosystem, Developer Tooling, Web Viewer &amp; Packaging, and Governance &amp; Standards.</p>
           <div class="repo-meta">
-            <span class="repo-format">
-              <span class="format-dot" style="background:#8250df"></span>GitHub Projects
-            </span>
+            <span class="repo-format"><span class="format-dot" style="background:#8250df"></span>GitHub Projects</span>
           </div>
         </a>
 
       </div>
 
-      <!-- Archived repos note -->
       <div class="archived-note">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1.5 1.75V12.25h13V1.75h-13zm1-.25h11v11h-11v-11zM5 5h6v1H5V5zm0 2h6v1H5V7zm0 2h4v1H5V9z"/></svg>
         <span>Archived: <strong>ea-foundation</strong>, <strong>ecosystem-architecture</strong>, <strong>agentic-enterprise-innovation</strong> — superseded by this framework. | <strong>DEA Roadmap (Project #2)</strong> — closed; replaced by the 5-project structure.</span>
@@ -573,9 +576,7 @@
       <div class="cli-demo">
         <div class="cli-window">
           <div class="cli-titlebar">
-            <div class="cli-dots">
-              <span></span><span></span><span></span>
-            </div>
+            <div class="cli-dots"><span></span><span></span><span></span></div>
             <span class="cli-title">dea-cli — Query &amp; Viewpoint</span>
           </div>
           <pre class="cli-body"><span class="cli-prompt">$</span> <span class="cli-cmd">dea</span> <span class="cli-arg">viewpoint</span> <span class="cli-flag">-s</span> SolutionsArchitect
@@ -636,10 +637,7 @@
           <h4>Chief Architect</h4>
           <p>Cross-domain coherence, standards compliance, and architecture governance across all solution layers.</p>
           <div class="stakeholder-focus">
-            <span>ReferenceModel</span>
-            <span>Standard</span>
-            <span>ArchitecturePattern</span>
-            <span>Capability</span>
+            <span>ReferenceModel</span><span>Standard</span><span>ArchitecturePattern</span><span>Capability</span>
           </div>
         </div>
         <div class="stakeholder-card">
@@ -647,9 +645,7 @@
           <h4>CTO / Business Leadership</h4>
           <p>Quarterly architecture health reviews, strategic alignment, technology radar, and investment prioritization.</p>
           <div class="stakeholder-focus">
-            <span>ReferenceModel</span>
-            <span>Principle</span>
-            <span>Metric</span>
+            <span>ReferenceModel</span><span>Principle</span><span>Metric</span>
           </div>
         </div>
         <div class="stakeholder-card">
@@ -657,9 +653,7 @@
           <h4>Solutions Architect</h4>
           <p>Pattern selection, solution design, component decomposition, and integration architecture.</p>
           <div class="stakeholder-focus">
-            <span>ArchitecturePattern</span>
-            <span>SolutionComponent</span>
-            <span>BusinessService</span>
+            <span>ArchitecturePattern</span><span>SolutionComponent</span><span>BusinessService</span>
           </div>
         </div>
         <div class="stakeholder-card">
@@ -667,9 +661,7 @@
           <h4>Business Architect</h4>
           <p>Business capability mapping, process alignment, and service orchestration across business domains.</p>
           <div class="stakeholder-focus">
-            <span>Capability</span>
-            <span>Process</span>
-            <span>BusinessService</span>
+            <span>Capability</span><span>Process</span><span>BusinessService</span>
           </div>
         </div>
         <div class="stakeholder-card">
@@ -677,9 +669,7 @@
           <h4>Developer / Automation Engineer</h4>
           <p>Component specs, API contracts, integration patterns, and implementation hints for direct use.</p>
           <div class="stakeholder-focus">
-            <span>SolutionComponent</span>
-            <span>ArchitecturePattern</span>
-            <span>Technology</span>
+            <span>SolutionComponent</span><span>ArchitecturePattern</span><span>Technology</span>
           </div>
         </div>
       </div>
@@ -764,9 +754,7 @@
           </div>
           <h4>Contribute</h4>
           <p>Propose new patterns, principles, standards, or reference models via pull request. Each catalog has contribution guidelines and a PR template.</p>
-          <a href="https://github.com/technehub-labs/dea-metamodel/blob/main/README.md" class="community-link">
-            Read contribution guide →
-          </a>
+          <a href="https://github.com/technehub-labs/dea-metamodel/blob/main/README.md" class="community-link">Read contribution guide →</a>
         </div>
 
         <div class="community-card">
@@ -775,9 +763,7 @@
           </div>
           <h4>Discussions</h4>
           <p>Ask questions, propose framework changes, and share how you're using the DEA framework in your organization via GitHub Discussions.</p>
-          <a href="https://github.com/orgs/technehub-labs/discussions" class="community-link">
-            Join the conversation →
-          </a>
+          <a href="https://github.com/orgs/technehub-labs/discussions" class="community-link">Join the conversation →</a>
         </div>
 
         <div class="community-card">
@@ -786,9 +772,7 @@
           </div>
           <h4>Track Progress</h4>
           <p>Follow the DEA Roadmap project for sprint planning, backlog prioritization, and release milestones across all framework repositories.</p>
-          <a href="https://github.com/orgs/technehub-labs/projects/2" class="community-link">
-            View the roadmap →
-          </a>
+          <a href="https://github.com/orgs/technehub-labs/projects" class="community-link">View the roadmap →</a>
         </div>
 
         <div class="community-card">
@@ -797,9 +781,7 @@
           </div>
           <h4>Stay Updated</h4>
           <p>Watch repositories for changes. Star the repos you use most to track releases and major updates.</p>
-          <a href="https://github.com/technehub-labs" class="community-link">
-            Browse all repos →
-          </a>
+          <a href="https://github.com/technehub-labs" class="community-link">Browse all repos →</a>
         </div>
       </div>
     </div>
@@ -822,7 +804,7 @@
         <a href="https://github.com/technehub-labs/dea-metamodel">Metamodel</a>
         <a href="https://github.com/technehub-labs/dea-cli">CLI</a>
         <a href="https://github.com/technehub-labs/dea-catalog-patterns">Patterns</a>
-        <a href="https://github.com/orgs/technehub-labs/projects/2">Roadmap</a>
+        <a href="https://github.com/orgs/technehub-labs/projects">Roadmap</a>
         <a href="https://github.com/orgs/technehub-labs/discussions">Discussions</a>
         <a href="https://technehub.com">TechNeHub.com</a>
       </div>
