@@ -8,20 +8,14 @@
   const parallaxTargets = []
   const heroBg = document.querySelector('.hero-bg')
   const heroGrid = document.querySelector('.hero-grid')
-  const heroOrbs = document.querySelectorAll('.hero-orb')
   const parallaxDividers = document.querySelectorAll('.parallax-divider')
 
   if (heroBg)     parallaxTargets.push({ el: heroBg,     speed: 0.30, axis: 'y' })
   if (heroGrid)   parallaxTargets.push({ el: heroGrid,   speed: 0.15, axis: 'y' })
-  heroOrbs.forEach(function (orb, i) {
-    parallaxTargets.push({ el: orb, speed: 0.25 + (i * 0.08), axis: 'y' })
-  })
   parallaxDividers.forEach(function (div) {
-    const bg = div.querySelector('.parallax-bg')
-    const rings = div.querySelectorAll('.parallax-ring')
-    if (bg)     parallaxTargets.push({ el: bg,     speed: 0.18, axis: 'y' })
-    rings.forEach(function (ring, i) {
-      parallaxTargets.push({ el: ring, speed: 0.08 + (i * 0.05), axis: 'y' })
+    const layers = div.querySelectorAll('.parallax-layer')
+    layers.forEach(function (layer, i) {
+      parallaxTargets.push({ el: layer, speed: 0.10 + (i * 0.04), axis: 'y' })
     })
   })
 
@@ -56,10 +50,10 @@
   if (navbar) {
     window.addEventListener('scroll', function () {
       if (window.scrollY > 80) {
-        navbar.style.background = 'rgba(8, 11, 16, 0.92)'
-        navbar.style.boxShadow = '0 1px 0 rgba(45, 212, 191, 0.08)'
+        navbar.style.background = 'rgba(26, 24, 21, 0.92)'
+        navbar.style.boxShadow = '0 1px 0 rgba(201, 124, 44, 0.10)'
       } else {
-        navbar.style.background = 'rgba(8, 11, 16, 0.75)'
+        navbar.style.background = 'rgba(26, 24, 21, 0.75)'
         navbar.style.boxShadow = 'none'
       }
     }, { passive: true })
@@ -93,7 +87,7 @@
     document.querySelectorAll(
       '.about-card, .layer, .repo-card, .tool-card, .stakeholder-card, ' +
       '.community-card, .assessment-main, .assessment-side, .cli-window, ' +
-      '.metamodel-diagram, .diagram-node'
+      '.metamodel-diagram, .diagram-node, .modas-feature-card, .mm-table'
     ).forEach(function (el) {
       el.classList.add('reveal')
       revealObserver.observe(el)
@@ -126,7 +120,7 @@
     function drawParticle (p) {
       ctx.beginPath()
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(45, 212, 191, ' + p.opacity + ')'
+      ctx.fillStyle = 'rgba(226, 152, 79, ' + p.opacity + ')'
       ctx.fill()
     }
 
@@ -142,7 +136,7 @@
             ctx.beginPath()
             ctx.moveTo(p1.x, p1.y)
             ctx.lineTo(p2.x, p2.y)
-            ctx.strokeStyle = 'rgba(45, 212, 191, ' + (0.07 * (1 - dist / 140)) + ')'
+            ctx.strokeStyle = 'rgba(201, 124, 44, ' + (0.09 * (1 - dist / 140)) + ')'
             ctx.lineWidth = 0.5
             ctx.stroke()
           }
