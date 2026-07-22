@@ -56,14 +56,13 @@
       </h1>
 
       <!-- Rotating Vision Statements -->
-      <div class="hero-vision" id="heroVision">
+      <div class="hero-vision" id="heroVision" aria-live="polite">
         <div class="vision-track" id="visionTrack">
           <span class="vision-statement">Architect the enterprise — not just IT</span>
           <span class="vision-statement">From principles to production — automated</span>
           <span class="vision-statement">Trust by design — not by audit</span>
           <span class="vision-statement">The Agentic Enterprise — designed at scale</span>
           <span class="vision-statement">One metamodel. Every layer. Every tool.</span>
-          <span class="vision-statement">Architect the enterprise — not just IT</span>
         </div>
       </div>
 
@@ -109,77 +108,81 @@
     </div>
   </section>
 
-  <!-- ═══════════════ MODAS SIDEBAR ═══════════════ -->
-  <aside class="modas-sidebar" id="modasSidebar">
-    <div class="modas-sidebar-header">
-      <span class="modas-sidebar-label">
-        <svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="none" stroke="#2dd4bf" stroke-width="1.5"/><circle cx="5" cy="5" r="2" fill="#2dd4bf"/></svg>
-        Agentic Enterprise
-      </span>
+  <!-- ═══════════════ PARALLAX DIVIDER 1 ═══════════════ -->
+  <div class="parallax-divider" aria-hidden="true">
+    <div class="parallax-layer parallax-layer-1"></div>
+    <div class="parallax-layer parallax-layer-2"></div>
+  </div>
+
+  <!-- ═══════════════ MODAS CALLOUT CARDS ═══════════════ -->
+  <section class="section modas-intro" id="modas-intro">
+    <div class="section-inner">
+      <div class="modas-card-grid">
+
+        <div class="modas-feature-card parallax-card" data-speed="0.08">
+          <div class="modas-feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+          <div class="modas-feature-body">
+            <h3>Model-Driven Agentic Services</h3>
+            <p>Every agent, tool, and workflow defined declaratively through the metamodel — generated, not hand-coded. Business users work with structured definitions, not prompts.</p>
+            <a href="https://github.com/technehub-labs/dea-metamodel" class="modas-feature-link">
+              Explore the Metamodel
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="modas-feature-card modas-card-accent parallax-card" data-speed="0.12">
+          <div class="modas-feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="modas-feature-body">
+            <h3>Trust by Design</h3>
+            <p>Authentication, authorisation, audit trails, and assured execution — enforced at the model level, not bolted on after deployment. Zero Trust architecture baked into every agent.</p>
+            <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry" class="modas-feature-link">
+              Agent Foundry
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="modas-feature-card parallax-card" data-speed="0.06">
+          <div class="modas-feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="modas-feature-body">
+            <h3>Scale at Confidence</h3>
+            <p>Measured agent performance, governance audit trails, and rollback SLAs — all governed by the framework. Monitor, govern, and improve with metrics baked into every layer.</p>
+            <a href="https://github.com/technehub-labs/dea-catalog-metrics" class="modas-feature-link">
+              View Metrics
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="modas-feature-card parallax-card" data-speed="0.10">
+          <div class="modas-feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+          </div>
+          <div class="modas-feature-body">
+            <h3>Solution at Speed</h3>
+            <p>Solution archetypes, sprint-by-sprint delivery templates, and IaC accelerators. Ship faster with governed patterns and reusable building blocks from the Solution Hub.</p>
+            <a href="https://github.com/technehub-labs/dea-catalog-solution-hub" class="modas-feature-link">
+              Solution Hub
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
     </div>
+  </section>
 
-    <div class="modas-orbit-container" id="modasOrbit">
-      <div class="modas-center">
-        <div class="modas-center-inner">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          <span>Trust<br>by Design</span>
-        </div>
-        <div class="modas-orbit-ring modas-ring-1"></div>
-        <div class="modas-orbit-ring modas-ring-2"></div>
-      </div>
-
-      <div class="modas-satellite modas-sat-1">
-        <div class="modas-sat-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        </div>
-        <div class="modas-sat-content">
-          <strong>Model-Driven</strong>
-          <p>Every agent, tool, and workflow defined declaratively. Generated from the metamodel — not hand-coded.</p>
-          <a href="https://github.com/technehub-labs/dea-metamodel">Explore Metamodel →</a>
-        </div>
-      </div>
-
-      <div class="modas-satellite modas-sat-2">
-        <div class="modas-sat-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div class="modas-sat-content">
-          <strong>Agentic Design</strong>
-          <p>ReAct, Plan-and-Execute, Supervisor-Worker patterns catalogued and governed. Deploy with confidence.</p>
-          <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry">Agent Foundry →</a>
-        </div>
-      </div>
-
-      <div class="modas-satellite modas-sat-3">
-        <div class="modas-sat-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="modas-sat-content">
-          <strong>Scale at Confidence</strong>
-          <p>Measured agent performance, governance audit trails, and rollback SLAs — all in the framework.</p>
-          <a href="https://github.com/technehub-labs/dea-catalog-metrics">View Metrics →</a>
-        </div>
-      </div>
-
-      <div class="modas-satellite modas-sat-4">
-        <div class="modas-sat-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
-        </div>
-        <div class="modas-sat-content">
-          <strong>Solution at Speed</strong>
-          <p>Solution archetypes, delivery templates, and IaC accelerators. Ship faster, govern better.</p>
-          <a href="https://github.com/technehub-labs/dea-catalog-solution-hub">Solution Hub →</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="modas-footer-cta">
-      <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry" class="modas-cta-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Enter the Agentic Enterprise
-      </a>
-    </div>
-  </aside>
+  <!-- ═══════════════ PARALLAX DIVIDER 2 ═══════════════ -->
+  <div class="parallax-divider" aria-hidden="true">
+    <div class="parallax-layer parallax-layer-3"></div>
+  </div>
 
   <!-- ═══════════════ ABOUT ═══════════════ -->
   <section class="section about" id="about">
@@ -239,6 +242,11 @@
     </div>
   </section>
 
+  <!-- ═══════════════ PARALLAX DIVIDER 3 ═══════════════ -->
+  <div class="parallax-divider" aria-hidden="true">
+    <div class="parallax-layer parallax-layer-4"></div>
+  </div>
+
   <!-- ═══════════════ FRAMEWORK ARCHITECTURE ═══════════════ -->
   <section class="section framework" id="architecture">
     <div class="section-inner">
@@ -250,7 +258,7 @@
       </p>
 
       <div class="layers">
-        <div class="layer layer-0">
+        <div class="layer layer-0 parallax-card" data-speed="0.05">
           <div class="layer-header">
             <div class="layer-badge">L0</div>
             <div>
@@ -269,7 +277,7 @@
           </div>
         </div>
 
-        <div class="layer layer-1">
+        <div class="layer layer-1 parallax-card" data-speed="0.07">
           <div class="layer-header">
             <div class="layer-badge">L1</div>
             <div>
@@ -292,7 +300,7 @@
           </div>
         </div>
 
-        <div class="layer layer-2">
+        <div class="layer layer-2 parallax-card" data-speed="0.09">
           <div class="layer-header">
             <div class="layer-badge">L2</div>
             <div>
@@ -310,7 +318,7 @@
           </div>
         </div>
 
-        <div class="layer layer-3">
+        <div class="layer layer-3 parallax-card" data-speed="0.11">
           <div class="layer-header">
             <div class="layer-badge">L3</div>
             <div>
@@ -356,6 +364,11 @@
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════ PARALLAX DIVIDER 4 ═══════════════ -->
+  <div class="parallax-divider" aria-hidden="true">
+    <div class="parallax-layer parallax-layer-5"></div>
+  </div>
 
   <!-- ═══════════════ REPOSITORIES ═══════════════ -->
   <section class="section repos" id="repos">
@@ -562,6 +575,12 @@
       </div>
     </div>
   </section>
+
+  <!-- ═══════════════ PARALLAX DIVIDER 5 ═══════════════ -->
+  <div class="parallax-divider" aria-hidden="true">
+    <div class="parallax-layer parallax-layer-1"></div>
+    <div class="parallax-layer parallax-layer-6"></div>
+  </div>
 
   <!-- ═══════════════ TOOLING ═══════════════ -->
   <section class="section tooling" id="tooling">
@@ -814,6 +833,66 @@
       </div>
     </div>
   </footer>
+
+  <!-- ═══════════════ MODAS FLOATING CARD ═══════════════ -->
+  <div class="modas-float" id="modasFloat">
+    <div class="modas-float-header" id="modasFloatHeader" role="button" tabindex="0" aria-expanded="false">
+      <span class="modas-float-label">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <circle cx="5" cy="5" r="4" stroke="#2dd4bf" stroke-width="1.5"/>
+          <circle cx="5" cy="5" r="2" fill="#2dd4bf"/>
+        </svg>
+        Agentic Enterprise
+      </span>
+      <span class="modas-float-toggle">▼</span>
+    </div>
+    <div class="modas-float-body">
+      <div class="modas-float-items">
+        <a href="https://github.com/technehub-labs/dea-metamodel" class="modas-float-item">
+          <div class="modas-float-item-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="modas-float-item-title">Model-Driven</div>
+            <div class="modas-float-item-desc">Declarative agent definitions via the metamodel</div>
+          </div>
+        </a>
+        <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry" class="modas-float-item">
+          <div class="modas-float-item-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div>
+            <div class="modas-float-item-title">Trust by Design</div>
+            <div class="modas-float-item-desc">Zero Trust guardrails baked into every agent</div>
+          </div>
+        </a>
+        <a href="https://github.com/technehub-labs/dea-catalog-metrics" class="modas-float-item">
+          <div class="modas-float-item-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div>
+            <div class="modas-float-item-title">Scale at Confidence</div>
+            <div class="modas-float-item-desc">Measured performance, audit trails, rollback SLAs</div>
+          </div>
+        </a>
+        <a href="https://github.com/technehub-labs/dea-catalog-solution-hub" class="modas-float-item">
+          <div class="modas-float-item-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <div>
+            <div class="modas-float-item-title">Solution at Speed</div>
+            <div class="modas-float-item-desc">Accelerators and IaC templates for fast delivery</div>
+          </div>
+        </a>
+      </div>
+      <div class="modas-float-footer">
+        <a href="https://github.com/technehub-labs/dea-catalog-agent-foundry" class="modas-float-cta">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Enter the Agentic Enterprise
+        </a>
+      </div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
