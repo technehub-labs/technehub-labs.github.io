@@ -26,7 +26,6 @@
     toggle.addEventListener('click', function () {
       links.classList.toggle('open')
     })
-    // Close on link click
     links.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () {
         links.classList.remove('open')
@@ -50,7 +49,6 @@
     })
   }, observerOptions)
 
-  // Observe all cards and sections
   document.querySelectorAll('.about-card, .layer, .repo-card, .tool-card, .stakeholder-card, .community-card, .mm-table').forEach(function (el) {
     el.style.opacity = '0'
     el.style.transform = 'translateY(20px)'
@@ -58,7 +56,6 @@
     fadeObserver.observe(el)
   })
 
-  // Add visible class style
   var style = document.createElement('style')
   style.textContent = '.visible { opacity: 1 !important; transform: translateY(0) !important; }'
   document.head.appendChild(style)
@@ -176,5 +173,106 @@
   document.querySelectorAll('section[id]').forEach(function (section) {
     sectionObserver.observe(section)
   })
+
+  // ── Parallax scroll effects ───────────────────────────
+  var parallaxBgs = document.querySelectorAll('.parallax-bg')
+  var parallaxCards = document.querySelectorAll('.parallax-card')
+
+  var parallaxWindow = {
+    lastScroll: 0,
+    ticking: false
+  }
+
+  function updateParallax () {
+    var scrollY = window.scrollY
+    var winH = window.innerHeight
+
+    parallaxBgs.forEach(function (bg) {
+      var rect = bg.parentElement.getBoundingClientRect()
+      var visible = rect.top < winH && rect.bottom > 0
+      if (!visible) return
+      var offset = (rect.top / winH) * 40
+      bg.style.transform = 'translateY(' + offset + 'px)'
+    })
+
+    parallaxCards.forEach(function (card) {
+      var rect = card.getBoundingClientRect()
+      var visible = rect.top < winH && rect.bottom > 0
+      if (!visible) return
+      if (card.classList.contains('in-view')) return
+      var midpoint = rect.top + rect.height / 2
+      if (midpoint < winH * 0.7) {
+        card.classList.add('in-view')
+        card.classList.remove('offset-up', 'offset-down')
+      }
+    })
+
+    parallaxWindow.ticking = false
+  }
+
+  window.addEventListener('scroll', function () {
+    if (!parallaxWindow.ticking) {
+      requestAnimationFrame(updateParallax)
+      parallaxWindow.ticking = true
+    }
+  }, { passive: true })
+
+  // Initialise parallax card states
+  parallaxCards.forEach(function (card) {
+    card.classList.add('offset-up')
+  })
+
+  // ── ModAS sidebar expand on click ─────────────────────
+  var modasSidebar = document.getElementById('modasSidebar')
+  var modasLabel = document.querySelector('.modas-sidebar-label')
+
+  if (modasSidebar && modasLabel) {
+    modasLabel.addEventListener('click', function () {
+      modasSidebar.classList.toggle('expanded')
+    })
+    modasSidebar.addEventListener('mouseenter', function () {
+      modasSidebar.classList.add('expanded')
+    })
+    modasSidebar.addEventListener('mouseleave', function () {
+      modasSidebar.classList.remove('expanded')
+    })
+  }
+
+  // ── ModAS orbit auto-play on scroll ─────────────────
+  var modasCenter = document.querySelector('.modas-center')
+  var modasSatellites = document.querySelectorAll('.modas-satellite')
+
+  function playModasAnimation () {
+    if (!modasCenter) return
+    modasSatellites.forEach(function (sat, i) {
+      sat.style.animation = 'none'
+      sat.offsetHeight
+      sat.style.animation = 'satIn 0.5s ease forwards ' + (i * 0.15) + 's'
+    })
+  }
+
+  var modasObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        playModasAnimation()
+        modasObserver.unobserve(entry.target)
+      }
+    })
+  }, { threshold: 0.3 })
+
+  var modasSection = document.getElementById('about')
+  if (modasSection) {
+    modasObserver.observe(modasSection)
+  }
+
+  // Inject satellite animation keyframes
+  var satStyle = document.createElement('style')
+  satStyle.textContent = [
+    '@keyframes satIn {',
+    '  from { opacity: 0; transform: translateX(20px); }',
+    '  to   { opacity: 1; transform: translateX(0); }',
+    '}'
+  ].join('\n')
+  document.head.appendChild(satStyle)
 
 })()
