@@ -4,24 +4,20 @@
   'use strict'
 
   // ── Navbar scroll effect ──────────────────────────────
-  const navbar = document.getElementById('navbar')
-  let lastScroll = 0
-
+  var navbar = document.getElementById('navbar')
   window.addEventListener('scroll', function () {
-    const current = window.scrollY
-    if (current > 80) {
+    if (window.scrollY > 80) {
       navbar.style.background = 'rgba(13, 17, 23, 0.95)'
       navbar.style.boxShadow = '0 1px 0 rgba(45, 212, 191, 0.1)'
     } else {
       navbar.style.background = 'rgba(13, 17, 23, 0.85)'
       navbar.style.boxShadow = 'none'
     }
-    lastScroll = current
   }, { passive: true })
 
   // ── Mobile nav toggle ─────────────────────────────────
-  const toggle = document.getElementById('navToggle')
-  const links = document.getElementById('navLinks')
+  var toggle = document.getElementById('navToggle')
+  var links = document.getElementById('navLinks')
   if (toggle && links) {
     toggle.addEventListener('click', function () {
       links.classList.toggle('open')
@@ -34,20 +30,14 @@
   }
 
   // ── Intersection Observer for fade-in animations ──────
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px 0px -60px 0px',
-    threshold: 0.1
-  }
-
-  const fadeObserver = new IntersectionObserver(function (entries) {
+  var fadeObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible')
         fadeObserver.unobserve(entry.target)
       }
     })
-  }, observerOptions)
+  }, { rootMargin: '0px 0px -60px 0px', threshold: 0.1 })
 
   document.querySelectorAll('.about-card, .layer, .repo-card, .tool-card, .stakeholder-card, .community-card, .mm-table').forEach(function (el) {
     el.style.opacity = '0'
@@ -56,16 +46,32 @@
     fadeObserver.observe(el)
   })
 
-  var style = document.createElement('style')
-  style.textContent = '.visible { opacity: 1 !important; transform: translateY(0) !important; }'
-  document.head.appendChild(style)
+  var fadeStyle = document.createElement('style')
+  fadeStyle.textContent = '.visible { opacity: 1 !important; transform: translateY(0) !important; }'
+  document.head.appendChild(fadeStyle)
+
+  // ── Parallax card reveal ───────────────────────────
+  var parallaxCards = document.querySelectorAll('.parallax-card')
+  var revealObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view')
+        entry.target.classList.remove('reveal-up')
+        revealObserver.unobserve(entry.target)
+      }
+    })
+  }, { rootMargin: '0px 0px -80px 0px', threshold: 0.05 })
+
+  parallaxCards.forEach(function (card) {
+    card.classList.add('reveal-up')
+    revealObserver.observe(card)
+  })
 
   // ── Hero canvas particle animation ─────────────────────
   var canvas = document.getElementById('hero-canvas')
   if (canvas) {
     var ctx = canvas.getContext('2d')
     var particles = []
-    var animFrame = null
 
     function resizeCanvas () {
       canvas.width = window.innerWidth
@@ -124,7 +130,7 @@
         updateParticle(p)
         drawParticle(p)
       })
-      animFrame = requestAnimationFrame(animateCanvas)
+      requestAnimationFrame(animateCanvas)
     }
 
     function initCanvas () {
@@ -136,10 +142,7 @@
       }
     }
 
-    window.addEventListener('resize', function () {
-      initCanvas()
-    })
-
+    window.addEventListener('resize', initCanvas)
     initCanvas()
     animateCanvas()
   }
@@ -174,105 +177,34 @@
     sectionObserver.observe(section)
   })
 
-  // ── Parallax scroll effects ───────────────────────────
-  var parallaxBgs = document.querySelectorAll('.parallax-bg')
-  var parallaxCards = document.querySelectorAll('.parallax-card')
+  // ── ModAS Floating Card toggle ──────────────────────
+  var modasFloat = document.getElementById('modasFloat')
+  var modasFloatHeader = document.getElementById('modasFloatHeader')
 
-  var parallaxWindow = {
-    lastScroll: 0,
-    ticking: false
-  }
-
-  function updateParallax () {
-    var scrollY = window.scrollY
-    var winH = window.innerHeight
-
-    parallaxBgs.forEach(function (bg) {
-      var rect = bg.parentElement.getBoundingClientRect()
-      var visible = rect.top < winH && rect.bottom > 0
-      if (!visible) return
-      var offset = (rect.top / winH) * 40
-      bg.style.transform = 'translateY(' + offset + 'px)'
-    })
-
-    parallaxCards.forEach(function (card) {
-      var rect = card.getBoundingClientRect()
-      var visible = rect.top < winH && rect.bottom > 0
-      if (!visible) return
-      if (card.classList.contains('in-view')) return
-      var midpoint = rect.top + rect.height / 2
-      if (midpoint < winH * 0.7) {
-        card.classList.add('in-view')
-        card.classList.remove('offset-up', 'offset-down')
-      }
-    })
-
-    parallaxWindow.ticking = false
-  }
-
-  window.addEventListener('scroll', function () {
-    if (!parallaxWindow.ticking) {
-      requestAnimationFrame(updateParallax)
-      parallaxWindow.ticking = true
+  if (modasFloat && modasFloatHeader) {
+    function toggleModas (expanded) {
+      var isExpanded = expanded !== undefined ? expanded : !modasFloat.classList.contains('expanded')
+      modasFloat.classList.toggle('expanded', isExpanded)
+      modasFloatHeader.setAttribute('aria-expanded', String(isExpanded))
     }
-  }, { passive: true })
 
-  // Initialise parallax card states
-  parallaxCards.forEach(function (card) {
-    card.classList.add('offset-up')
-  })
-
-  // ── ModAS sidebar expand on click ─────────────────────
-  var modasSidebar = document.getElementById('modasSidebar')
-  var modasLabel = document.querySelector('.modas-sidebar-label')
-
-  if (modasSidebar && modasLabel) {
-    modasLabel.addEventListener('click', function () {
-      modasSidebar.classList.toggle('expanded')
+    modasFloatHeader.addEventListener('click', function () {
+      toggleModas()
     })
-    modasSidebar.addEventListener('mouseenter', function () {
-      modasSidebar.classList.add('expanded')
-    })
-    modasSidebar.addEventListener('mouseleave', function () {
-      modasSidebar.classList.remove('expanded')
-    })
-  }
 
-  // ── ModAS orbit auto-play on scroll ─────────────────
-  var modasCenter = document.querySelector('.modas-center')
-  var modasSatellites = document.querySelectorAll('.modas-satellite')
-
-  function playModasAnimation () {
-    if (!modasCenter) return
-    modasSatellites.forEach(function (sat, i) {
-      sat.style.animation = 'none'
-      sat.offsetHeight
-      sat.style.animation = 'satIn 0.5s ease forwards ' + (i * 0.15) + 's'
-    })
-  }
-
-  var modasObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        playModasAnimation()
-        modasObserver.unobserve(entry.target)
+    modasFloatHeader.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        toggleModas()
       }
     })
-  }, { threshold: 0.3 })
 
-  var modasSection = document.getElementById('about')
-  if (modasSection) {
-    modasObserver.observe(modasSection)
+    // Close on outside click
+    document.addEventListener('click', function (e) {
+      if (!modasFloat.contains(e.target)) {
+        toggleModas(false)
+      }
+    })
   }
-
-  // Inject satellite animation keyframes
-  var satStyle = document.createElement('style')
-  satStyle.textContent = [
-    '@keyframes satIn {',
-    '  from { opacity: 0; transform: translateX(20px); }',
-    '  to   { opacity: 1; transform: translateX(0); }',
-    '}'
-  ].join('\n')
-  document.head.appendChild(satStyle)
 
 })()
