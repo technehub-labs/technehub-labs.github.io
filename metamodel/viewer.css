@@ -69,15 +69,15 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  padding-top: 56px; /* nav height */
+  padding-top: 48px; /* nav height — compact per audit */
 }
 
 /* ── Diagram Section (collapsible precursor) ───────── */
 .diagram-section {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin: 24px 24px 0;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-md);
+  margin: 16px 16px 0; /* tighter per audit */
   overflow: hidden;
   position: relative;
   z-index: 2;
@@ -87,7 +87,7 @@ body {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 14px 18px;
+  padding: 10px 14px; /* tighter per audit */
   color: var(--text);
   font-family: var(--font-display);
   font-size: 0.85rem;
@@ -124,7 +124,7 @@ body {
   padding: 16px;
   overflow-x: auto;
   background: #080b10;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--outline);
 }
 .diagram-canvas svg {
   display: block;
@@ -138,15 +138,15 @@ body {
 .top-nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 56px;
+  height: 48px; /* compact per audit */
   background: rgba(8, 11, 16, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline);
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 0 24px;
+  padding: 0 16px; /* tighter per audit */
   z-index: 100;
 }
 .nav-home {
@@ -184,22 +184,22 @@ body {
   border-radius: var(--radius-sm);
   background: var(--accent-dim);
   color: var(--accent);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--outline-2);
   letter-spacing: 0.02em;
 }
 
 /* ── Layer Filter Bar ─────────────────────────────── */
 .layer-bar {
   position: sticky;
-  top: 56px;
+  top: 48px; /* matches new nav height */
   z-index: 90;
   background: rgba(8, 11, 16, 0.95);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline);
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 24px;
+  gap: 4px;        /* tighter per audit */
+  padding: 8px 16px; /* tighter per audit */
   overflow-x: auto;
   scrollbar-width: none;
 }
@@ -215,7 +215,7 @@ body {
   font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
-  padding: 4px 12px;
+  padding: 4px 10px; /* tighter per audit */
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   color: var(--text-2);
@@ -224,11 +224,11 @@ body {
   transition: all 0.18s;
   white-space: nowrap;
 }
-.layer-btn:hover { color: var(--text); border-color: var(--border-2); }
+.layer-btn:hover { color: var(--text); border-color: var(--outline-2); }
 .layer-btn.active {
   background: var(--accent-dim);
   color: var(--accent);
-  border-color: var(--border-2);
+  border-color: var(--outline-2);
 }
 .layer-btn[data-layer="L1"].active { color: var(--l1); background: rgba(45,212,191,0.10); border-color: rgba(45,212,191,0.30); }
 .layer-btn[data-layer="L2"].active { color: var(--l2); background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.30); }
@@ -243,30 +243,30 @@ body {
   font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
-  padding: 4px 12px;
+  padding: 4px 10px; /* tighter per audit */
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid var(--outline);
   color: var(--text-2);
   background: var(--surface-2);
   cursor: pointer;
   transition: all 0.18s;
   white-space: nowrap;
 }
-.legend-toggle:hover { color: var(--text); border-color: var(--border-2); }
+.legend-toggle:hover { color: var(--text); border-color: var(--outline-2); }
 
 /* ── Canvas ──────────────────────────────────────── */
 .canvas-wrapper {
   position: relative;
-  min-height: calc(100vh - 56px - 49px);
-  padding: 16px 24px 32px;
+  min-height: calc(100vh - 48px - 40px); /* nav(48) + layer-bar(40 ≈ 8+24+8) */
+  padding: 12px 16px 24px; /* tighter per audit */
 }
 
 .rel-overlay {
   position: fixed;
-  top: 105px; /* nav(56) + layer-bar(49) */
+  top: 88px; /* nav(48) + layer-bar(40) — updated for compact layout */
   left: 0; right: 0; bottom: 0;
   width: 100%;
-  height: calc(100vh - 105px);
+  height: calc(100vh - 88px);
   pointer-events: none;
   z-index: 1;
   overflow: visible;
@@ -275,8 +275,8 @@ body {
 /* ── Entity Grid ─────────────────────────────────── */
 .entity-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* tighter per audit */
+  gap: 12px; /* tighter per audit */
   position: relative;
   z-index: 2;
 }
@@ -284,9 +284,9 @@ body {
 /* ── Entity Card ─────────────────────────────────── */
 .entity-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-md); /* MD3 medium */
+  padding: 12px; /* tighter per audit */
   cursor: pointer;
   transition: all 0.2s;
   position: relative;
@@ -296,8 +296,8 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: var(--radius) var(--radius) 0 0;
+  height: 2px; /* slimmer per audit */
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
   opacity: 0.8;
 }
 .entity-card:hover {
@@ -394,12 +394,12 @@ body {
 /* ── Legend Panel ────────────────────────────────── */
 .legend-panel {
   position: fixed;
-  top: 105px;
+  top: 88px; /* nav(48) + layer-bar(40) — updated for compact layout */
   right: 0;
   width: 320px;
-  height: calc(100vh - 105px);
+  height: calc(100vh - 88px);
   background: var(--surface);
-  border-left: 1px solid var(--border);
+  border-left: 1px solid var(--outline);
   z-index: 200;
   display: flex;
   flex-direction: column;
@@ -416,7 +416,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline);
   flex-shrink: 0;
 }
 .legend-header h3 {
@@ -442,7 +442,7 @@ body {
   align-items: flex-start;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline);
 }
 .rel-item:last-child { border-bottom: none; }
 .rel-label {
@@ -460,15 +460,16 @@ body {
 
 /* ── Detail Panel ────────────────────────────────── */
 .detail-panel {
+  /* Mobile-first: bottom-sheet (default) */
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   max-height: 60vh;
   background: var(--surface);
-  border-top: 1px solid var(--border-2);
-  border-top-left-radius: var(--radius);
-  border-top-right-radius: var(--radius);
+  border-top: 1px solid var(--outline-2);
+  border-top-left-radius: var(--radius-lg);
+  border-top-right-radius: var(--radius-lg);
   z-index: 300;
   display: flex;
   flex-direction: column;
@@ -485,12 +486,36 @@ body {
 }
 .detail-panel.hidden { pointer-events: none; }
 
+/* ── Detail panel: desktop ≥1024px = right-sheet ── */
+@media (min-width: 1024px) {
+  .detail-panel {
+    /* Override bottom-sheet defaults */
+    position: fixed;
+    top: 48px; /* nav height */
+    right: 0;
+    left: auto;
+    bottom: auto;
+    width: 400px;
+    height: calc(100vh - 48px);
+    max-height: none;
+    border-top: none;
+    border-left: 1px solid var(--outline);
+    border-radius: 0;
+    /* Right-sheet slide */
+    transform: translateX(100%);
+  }
+  .detail-panel:not(.hidden) {
+    transform: translateX(0);
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.35);
+  }
+}
+
 .detail-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--outline);
   flex-shrink: 0;
 }
 .detail-layer {
@@ -541,7 +566,7 @@ body {
   gap: 8px;
   padding: 10px 16px;
   background: var(--accent-dim);
-  border: 1px solid var(--border-2);
+  border: 1px solid var(--outline-2);
   border-radius: var(--radius-sm);
   color: var(--accent);
   font-family: var(--font-display);
@@ -555,7 +580,7 @@ body {
 }
 .detail-link-card.secondary {
   background: var(--surface-2);
-  border-color: var(--border);
+  border-color: var(--outline);
   color: var(--text-2);
 }
 .detail-link-card.secondary:hover {
@@ -581,7 +606,7 @@ body {
   gap: 6px;
   padding: 4px 10px;
   background: var(--surface-2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--outline);
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -595,7 +620,7 @@ body {
   align-items: center;
   gap: 10px;
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--outline);
 }
 .detail-status-label {
   font-family: var(--font-mono);
@@ -634,9 +659,10 @@ body {
 /* ── Responsive ───────────────────────────────────── */
 @media (max-width: 768px) {
   .entity-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* tighter on mobile */
   }
   .legend-panel {
     width: 280px;
   }
+  /* Below 1024px: detail panel is bottom-sheet (default) — already in effect */
 }
