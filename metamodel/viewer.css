@@ -148,10 +148,13 @@ body {
   border-bottom: 1px solid var(--outline);
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px; /* tighter per audit, allows nav-room on small screens */
   padding: 0 16px; /* tighter per audit */
   z-index: 100;
+  overflow-x: auto; /* mobile: allow horizontal scroll rather than wrapping */
+  scrollbar-width: none;
 }
+.top-nav::-webkit-scrollbar { display: none; }
 .nav-home {
   display: flex;
   align-items: center;
@@ -160,6 +163,7 @@ body {
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 0.875rem;
+  white-space: nowrap; /* mobile: don't wrap "TechNeHub Labs" */
   /* MD3 standard: 100ms color */
   transition: color 100ms linear;
 }
@@ -173,12 +177,14 @@ body {
   font-size: 0.9rem;
   color: var(--text);
   margin-left: 8px;
+  white-space: nowrap; /* mobile: don't wrap "Metamodel Explorer" */
 }
 .nav-meta {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0; /* keep badges from being squeezed on small screens */
 }
 .badge {
   font-family: var(--font-mono);
