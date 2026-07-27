@@ -333,7 +333,15 @@ body {
   color: var(--layer-color, var(--accent));
   text-transform: uppercase;
   margin-bottom: 6px;
-  padding-right: 60px;  /* room for status pill on the right */
+  /* Allow longer layer names like 'L3 · DIGITAL ECOSYSTEM & INTELLIGENCE' to wrap */
+  padding-right: 56px;
+  line-height: 1.3;
+  max-height: 2.6em;       /* cap at 2 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .card-alias {
   font-family: var(--font-mono);
