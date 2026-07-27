@@ -181,7 +181,7 @@ body {
   font-size: 0.7rem;
   font-weight: 500;
   padding: 3px 8px;
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
   background: var(--accent-dim);
   color: var(--accent);
   border: 1px solid var(--border-2);
@@ -216,7 +216,7 @@ body {
   font-size: 0.75rem;
   font-weight: 500;
   padding: 4px 12px;
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   color: var(--text-2);
   background: var(--surface-2);
@@ -244,7 +244,7 @@ body {
   font-size: 0.75rem;
   font-weight: 500;
   padding: 4px 12px;
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
   color: var(--text-2);
   background: var(--surface-2);
@@ -301,13 +301,14 @@ body {
   opacity: 0.8;
 }
 .entity-card:hover {
-  border-color: var(--border-2);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border-color: var(--outline-2);
+  /* MD3 dark-mode elevation: surface tint overlay (no shadows on dark) */
+  background: linear-gradient(var(--accent-tint), var(--accent-tint)), var(--surface-2);
 }
 .entity-card.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 8px 32px var(--accent-glow);
+  /* Active: stronger tint + layer-color dot on the top accent bar */
+  background: linear-gradient(rgba(45, 212, 191, 0.10), rgba(45, 212, 191, 0.10)), var(--surface-2);
 }
 .entity-card.hidden-card { display: none; }
 
@@ -373,20 +374,21 @@ body {
   font-size: 0.6rem;
   font-weight: 500;
   padding: 2px 6px;
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 .card-status.planned {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--l4);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 .card-status.existing,
 .card-status.existing-extended {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--l1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  /* Subtle: dimmed neutral that doesn't compete with selection state */
+  background: rgba(230, 237, 243, 0.06);
+  color: var(--text-2);
+  border: 1px solid var(--outline);
 }
 
 /* ── Legend Panel ────────────────────────────────── */
@@ -472,10 +474,14 @@ body {
   flex-direction: column;
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 -8px 48px rgba(0,0,0,0.5);
+  /* Box-shadow moved to .detail-panel:not(.hidden) — MD3 dark-mode uses
+     surface-tint overlay + reduced shadow only when visible. */
 }
 .detail-panel:not(.hidden) {
   transform: translateY(0);
+  /* MD3 dark-mode elevation: surface-tint overlay instead of heavy shadow */
+  background: linear-gradient(rgba(45, 212, 191, 0.04), rgba(45, 212, 191, 0.04)), var(--surface);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.35);
 }
 .detail-panel.hidden { pointer-events: none; }
 
@@ -576,7 +582,7 @@ body {
   padding: 4px 10px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--text-2);
@@ -601,18 +607,28 @@ body {
   font-size: 0.7rem;
   font-weight: 500;
   padding: 2px 8px;
-  border-radius: 100px;
+  border-radius: var(--radius-sm);
 }
 .detail-status-badge.planned {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--l4);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 .detail-status-badge.existing,
 .detail-status-badge.existing-extended {
-  background: rgba(16, 185, 129, 0.15);
-  color: var(--l1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(230, 237, 243, 0.06);
+  color: var(--text-2);
+  border: 1px solid var(--outline);
+}
+
+/* ── Reduced motion ───────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ── Responsive ───────────────────────────────────── */
