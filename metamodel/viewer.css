@@ -93,11 +93,13 @@ body {
   font-size: 0.85rem;
   font-weight: 500;
   text-align: left;
-  transition: background 0.18s;
+  /* MD3 standard: 150ms background */
+  transition: background 150ms var(--ease-standard);
 }
 .diagram-toggle:hover { background: var(--surface-2); }
 .diagram-toggle .diagram-chevron {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* MD3 standard: 200ms rotate */
+  transition: transform 200ms var(--ease-standard);
   color: var(--text-2);
 }
 .diagram-section.open .diagram-toggle .diagram-chevron {
@@ -114,7 +116,8 @@ body {
 .diagram-body {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* MD3 standard: 300ms expand */
+  transition: max-height 300ms var(--ease-standard);
   background: var(--bg);
 }
 .diagram-section.open .diagram-body {
@@ -157,7 +160,8 @@ body {
   font-family: var(--font-display);
   font-weight: 500;
   font-size: 0.875rem;
-  transition: color 0.2s;
+  /* MD3 standard: 100ms color */
+  transition: color 100ms linear;
 }
 .nav-home:hover { color: var(--accent); }
 .nav-title {
@@ -221,7 +225,10 @@ body {
   color: var(--text-2);
   background: var(--surface-2);
   cursor: pointer;
-  transition: all 0.18s;
+  /* MD3 standard: 150ms hover (color + border + background) */
+  transition: color 150ms var(--ease-standard),
+              background-color 150ms var(--ease-standard),
+              border-color 150ms var(--ease-standard);
   white-space: nowrap;
 }
 .layer-btn:hover { color: var(--text); border-color: var(--outline-2); }
@@ -249,7 +256,10 @@ body {
   color: var(--text-2);
   background: var(--surface-2);
   cursor: pointer;
-  transition: all 0.18s;
+  /* MD3 standard: 150ms hover */
+  transition: color 150ms var(--ease-standard),
+              background-color 150ms var(--ease-standard),
+              border-color 150ms var(--ease-standard);
   white-space: nowrap;
 }
 .legend-toggle:hover { color: var(--text); border-color: var(--outline-2); }
@@ -288,7 +298,9 @@ body {
   border-radius: var(--radius-md); /* MD3 medium */
   padding: 12px; /* tighter per audit */
   cursor: pointer;
-  transition: all 0.2s;
+  /* MD3 standard: 150ms surface-tint on hover/active */
+  transition: background 150ms var(--ease-standard),
+              border-color 150ms var(--ease-standard);
   position: relative;
   overflow: hidden;
 }
@@ -369,7 +381,8 @@ body {
 .card-repo-link {
   color: var(--accent);
   opacity: 0.7;
-  transition: opacity 0.2s;
+  /* MD3 standard: 150ms opacity */
+  transition: opacity 150ms var(--ease-standard);
 }
 .entity-card:hover .card-repo-link { opacity: 1; }
 
@@ -412,7 +425,8 @@ body {
   display: flex;
   flex-direction: column;
   transform: translateX(0);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* MD3 standard: 250ms slide */
+  transition: transform 250ms var(--ease-standard);
   overflow: hidden;
 }
 .legend-panel.hidden {
@@ -437,7 +451,8 @@ body {
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-sm);
   color: var(--text-2);
-  transition: all 0.15s;
+  /* MD3 standard: 100ms hover */
+  transition: color 100ms linear, background-color 100ms linear;
 }
 .legend-close:hover { background: var(--surface-2); color: var(--text); }
 .legend-body {
@@ -482,7 +497,9 @@ body {
   display: flex;
   flex-direction: column;
   transform: translateY(100%);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  /* MD3 standard: 250ms slide (bottom-sheet) */
+  transition: transform 250ms var(--ease-standard),
+              background 250ms var(--ease-standard);
   /* Box-shadow moved to .detail-panel:not(.hidden) — MD3 dark-mode uses
      surface-tint overlay + reduced shadow only when visible. */
 }
@@ -546,7 +563,8 @@ body {
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-sm);
   color: var(--text-2);
-  transition: all 0.15s;
+  /* MD3 standard: 100ms hover */
+  transition: color 100ms linear, background-color 100ms linear;
   flex-shrink: 0;
 }
 .detail-close:hover { background: var(--surface-2); color: var(--text); }
@@ -580,7 +598,9 @@ body {
   font-family: var(--font-display);
   font-size: 0.8rem;
   font-weight: 500;
-  transition: all 0.18s;
+  /* MD3 standard: 150ms hover */
+  transition: background-color 150ms var(--ease-standard),
+              color 150ms var(--ease-standard);
 }
 .detail-link-card:hover {
   background: var(--accent);
