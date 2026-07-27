@@ -20,7 +20,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Sync entity-graph.json from dea-metamodel
+      - name: Sync entity-graph.json + metamodel.svg from dea-metamodel
         run: |
           set -euo pipefail
           mkdir -p metamodel
@@ -31,12 +31,19 @@ jobs:
             "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.json?ref=main" \
             -o metamodel/entity-graph.json
 
-          # Also pull the schema (smaller, less frequent changes).
+          # Pull the schema.
           curl -fsSL \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.raw+json" \
             "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.schema.json?ref=main" \
             -o metamodel/entity-graph.schema.json
+
+          # Pull the SVG diagram (PlantUML-rendered, dark-theme homogenized).
+          curl -fsSL \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.raw+json" \
+            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/metamodel.svg?ref=main" \
+            -o metamodel/metamodel.svg
 
           # Validate JSON.
           python3 -c "import json; json.load(open('metamodel/entity-graph.json'))"

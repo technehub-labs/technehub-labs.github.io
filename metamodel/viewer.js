@@ -6,10 +6,11 @@
 (async () => {
   'use strict';
 
-  // ── Constants ────────────────────────────────────────────
+  // ── Constants ──────────────────────────────────────────────
   // Same-origin fetch: entity-graph.json is bundled into the Pages site.
   // Source of truth remains technehub-labs/dea-metamodel (synced via CI).
   const ENTITY_GRAPH_URL = './entity-graph.json';
+  const DIAGRAM_SVG_URL   = './metamodel.svg';
 
   // Relationships from metamodel-v2.puml (extracted)
   const RELATIONSHIPS = [
@@ -100,6 +101,58 @@
       }
       drawRelationships();
     });
+  });
+
+  // ── Diagram precursor (collapsible SVG) ──────────────────────
+  const diagramSection = document.getElementById('diagramSection');
+  const diagramToggle  = document.getElementById('diagramToggle');
+  const diagramCanvas  = document.getElementById('diagramCanvas');
+
+  fetch(DIAGRAM_SVG_URL)
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.text();
+    })
+    .then(svgText => {
+      diagramCanvas.innerHTML = svgText;
+      // Wire clicks on diagram entities (PlantUML groups have data-alias).
+      diagramCanvas.querySelectorAll('g.entity[data-alias]').forEach(group => {
+        const alias = group.dataset.alias;
+        const entity = graph.entities.find(e => e.class_alias === alias);
+        if (!entity) return;
+        // Make the entity group cursor:pointer.
+        group.style.cursor = 'pointer';
+        group.addEventListener('click', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          openDetail(entity);
+          document.querySelectorAll('.entity-card').forEach(c => c.classList.remove('active'));
+          const gridCard = document.querySelector(`.entity-card[data-alias="${alias}"]`);
+          if (gridCard) gridCard.classList.add('active');
+        });
+        // Hover: brighten the layer-colored rect.
+        group.addEventListener('mouseenter', () => {
+          const rect = group.querySelector('rect');
+          if (rect) rect.setAttribute('style',
+            (rect.getAttribute('style') || '') + ';filter:brightness(1.4);');
+        });
+        group.addEventListener('mouseleave', () => {
+          const rect = group.querySelector('rect');
+          if (rect) {
+            const s = (rect.getAttribute('style') || '').replace(/;?filter:[^;]+/, '');
+            rect.setAttribute('style', s);
+          }
+        });
+      });
+    })
+    .catch(err => {
+      diagramCanvas.innerHTML = `<p style="color:#8b949e;padding:16px;font-family:monospace;font-size:0.75rem">
+        Diagram unavailable: ${err.message}</p>`;
+    });
+
+  diagramToggle.addEventListener('click', () => {
+    const isOpen = diagramSection.classList.toggle('open');
+    diagramToggle.setAttribute('aria-expanded', String(isOpen));
   });
 
   // ── Render entity cards ──────────────────────────────────

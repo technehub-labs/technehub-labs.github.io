@@ -45,6 +45,68 @@ body {
   padding-top: 56px; /* nav height */
 }
 
+/* ── Diagram Section (collapsible precursor) ───────── */
+.diagram-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 24px 24px 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.diagram-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 18px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.18s;
+}
+.diagram-toggle:hover { background: var(--surface-2); }
+.diagram-toggle .diagram-chevron {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-2);
+}
+.diagram-section.open .diagram-toggle .diagram-chevron {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+.diagram-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-3);
+  font-weight: 400;
+}
+.diagram-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg);
+}
+.diagram-section.open .diagram-body {
+  max-height: 2000px;
+}
+.diagram-canvas {
+  padding: 16px;
+  overflow-x: auto;
+  background: #080b10;
+  border-top: 1px solid var(--border);
+}
+.diagram-canvas svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  min-width: 1100px;
+}
+
 /* ── Top Nav ─────────────────────────────────────── */
 .top-nav {
   position: fixed;
@@ -169,7 +231,7 @@ body {
 .canvas-wrapper {
   position: relative;
   min-height: calc(100vh - 56px - 49px);
-  padding: 32px 24px;
+  padding: 16px 24px 32px;
 }
 
 .rel-overlay {
