@@ -31,6 +31,7 @@
       </button>
       <ul class="nav-links" id="navLinks">
         <li><a href="#about">About</a></li>
+        <li><a href="#metamoat">Metamoat</a></li>
         <li><a href="#architecture">Framework</a></li>
         <li><a href="#assessment">Assessment</a></li>
         <li><a href="#repos">Repositories</a></li>
@@ -375,6 +376,98 @@
   <div class="parallax-divider" aria-hidden="true">
     <div class="parallax-layer parallax-layer-5"></div>
   </div>
+
+  <!-- ═══════════════ DIGITAL ECOSYSTEM & ENTERPRISE METAMOAT ═══════════════ -->
+  <section class="section metamoat" id="metamoat">
+    <div class="section-inner">
+      <div class="section-label">Digital Ecosystem &amp; Enterprise Metamoat</div>
+      <h2 class="section-title">The Conceptual Layer Above the Catalogs</h2>
+      <p class="section-intro">
+        Two repositories sit above every catalog, pattern, and tooling in the DEA ecosystem.
+        Together they form the <strong>Digital Ecosystem &amp; Enterprise Metamoat</strong> —
+        the conceptual moat that protects the framework from industry drift and tool churn.
+        The <em>Meta Framework</em> says <em>what</em> any enterprise is; the <em>Metamodel</em>
+        says <em>how</em> an enterprise is described.
+      </p>
+
+      <div class="metamoat-grid">
+        <a href="https://technehub-labs.github.io/dea-metaframework/" class="metamoat-card metamoat-framework">
+          <div class="metamoat-card-header">
+            <div class="metamoat-pill metamoat-pill-framework">Meta Framework</div>
+            <div class="metamoat-repo">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              dea-metaframework
+            </div>
+          </div>
+          <h3>7×7 Axiom-Derived Matrix</h3>
+          <p>
+            The <em>Enterprise Concept Framework</em> — every enterprise described by
+            7 domains (what it does) and 7 lifecycle stages (how its work evolves).
+            Derived from a single grounding axiom, not imported from eTOM, ITIL, or
+            COBIT. Industry-agnostic: a 50-person charity and a 500,000-person
+            telco occupy the same matrix.
+          </p>
+          <div class="metamoat-entities">
+            <span class="entity-tag">7 Domains</span>
+            <span class="entity-tag">7 Stages</span>
+            <span class="entity-tag">8 Constructs</span>
+            <span class="entity-tag">3 Metrics</span>
+          </div>
+          <div class="metamoat-card-cta">
+            <span class="metamoat-explorer-link">Open Matrix Explorer →</span>
+          </div>
+        </a>
+
+        <div class="metamoat-divider" aria-hidden="true">
+          <span class="metamoat-divider-symbol">×</span>
+          <span class="metamoat-divider-label">the bridge</span>
+        </div>
+
+        <a href="https://technehub-labs.github.io/metamodel/" class="metamoat-card metamoat-metamodel">
+          <div class="metamoat-card-header">
+            <div class="metamoat-pill metamoat-pill-metamodel">Metamodel</div>
+            <div class="metamoat-repo">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+              dea-metamodel
+            </div>
+          </div>
+          <h3>19-Entity ER Model</h3>
+          <p>
+            The <em>Enterprise Concepts Metamodel</em> — entity types, attributes,
+            and 25 typed relationships organized into 5 layers (Strategic,
+            Business, Digital, Technology, Governance). The
+            <code>Business Capability</code> entity carries
+            <code>ecfCoordinates: (Domain, Stage)</code> — every capability
+            knows which cell of the 7×7 it belongs to.
+          </p>
+          <div class="metamoat-entities">
+            <span class="entity-tag">19 Entities</span>
+            <span class="entity-tag">25 Relationships</span>
+            <span class="entity-tag">5 Layers</span>
+            <span class="entity-tag">JSON Schema</span>
+          </div>
+          <div class="metamoat-card-cta">
+            <span class="metamoat-explorer-link">Open Metamodel Explorer →</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="metamoat-meta">
+        <div class="metamoat-meta-item">
+          <span class="metamoat-meta-label">Foundation</span>
+          <span class="metamoat-meta-text">Every catalog, pattern, and tool in the DEA ecosystem is an <em>instance</em> of the Metamoat.</span>
+        </div>
+        <div class="metamoat-meta-item">
+          <span class="metamoat-meta-label">Coverage</span>
+          <span class="metamoat-meta-text">All 7 domains × 7 stages = 49 cells. <code>dea-catalog-taxonomy</code> is the first downstream catalog; <code>dea-catalog-digital-business-service-factory</code> populates 6 of 7 domains.</span>
+        </div>
+        <div class="metamoat-meta-item">
+          <span class="metamoat-meta-label">Defensibility</span>
+          <span class="metamoat-meta-text">eTOM is a projection of the matrix onto telecom; ITIL onto IT service management. The Metamoat is the skeleton; the named frameworks hang from it.</span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ═══════════════ ASSESSMENT & MATURITY MODELS ═══════════════ -->
   <section class="section assessment" id="assessment">
