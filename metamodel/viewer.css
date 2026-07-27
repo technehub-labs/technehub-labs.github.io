@@ -378,6 +378,10 @@ body {
   border: 1px solid var(--outline-2);
   letter-spacing: 0.02em;
 }
+.light-dark-badge {
+  background: rgba(45, 212, 191, 0.10);
+  border-color: rgba(45, 212, 191, 0.3);
+}
 
 /* ── Layer Filter Bar ─────────────────────────────── */
 .layer-bar {

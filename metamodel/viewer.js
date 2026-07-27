@@ -41,22 +41,24 @@
     { from: 'SF', to: 'PM',  label: 'evaluated by',    type: 'dashed' },
   ];
 
-  // Layer display names
+  // Layer display names (v3)
   const LAYER_NAMES = {
-    L1: 'Strategic & Investment',
-    L2: 'Business Operating Model',
-    L3: 'Digital Ecosystem & Intelligence',
-    L4: 'Technology & Execution',
-    L5: 'Measurement & Governance',
+    L1: 'Ecosystem & Value Network',
+    L2: 'Strategic & Governance',
+    L3: 'Business Operating Model',
+    L4: 'Digital & Intelligence',
+    L5: 'Technology & Execution',
+    L6: 'Measurement (Cross-Cutting)',
   };
 
-  // Layer colours
+  // Layer colours (v3 — matches SVG layer palette)
   const LAYER_COLORS = {
-    L1: '#10b981',
-    L2: '#f59e0b',
-    L3: '#3b82f6',
-    L4: '#8b5cf6',
-    L5: '#ef4444',
+    L1: '#5dade2',  // Ecosystem — sky blue
+    L2: '#10b981',  // Strategic — emerald
+    L3: '#f59e0b',  // Business — amber
+    L4: '#fb923c',  // Digital — peach
+    L5: '#a78bfa',  // Technology — violet
+    L6: '#f87171',  // Measurement — rose
   };
 
   // ── State ───────────────────────────────────────────────
