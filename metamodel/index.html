@@ -12,6 +12,20 @@
 </head>
 <body>
 
+<!-- ─── Brand Banner ─────────────────────────────────── -->
+<header class="brand-banner">
+  <div class="brand-inner">
+    <div class="brand-mark">
+      <span class="brand-mark-dot"></span>
+      <span class="brand-mark-label">DEA</span>
+    </div>
+    <div class="brand-text">
+      <h1 class="brand-title">Metamodel Explorer</h1>
+      <p class="brand-tagline">A unified ontology across five architectural layers — from strategic intent to measurable outcome.</p>
+    </div>
+  </div>
+</header>
+
 <!-- ─── Top Navigation ─────────────────────────────── -->
 <nav class="top-nav">
   <a href="https://technehub-labs.github.io/" class="nav-home">
@@ -19,14 +33,30 @@
     TechNeHub Labs
   </a>
   <div class="nav-title">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    Metamodel Explorer
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+    <span>Layer Reference</span>
   </div>
   <div class="nav-meta">
     <span class="badge">v2.0.0-alpha</span>
     <span class="badge">19 entities</span>
   </div>
 </nav>
+
+<!-- ─── Page Intro ─────────────────────────────────────── -->
+<section class="page-intro">
+  <div class="page-intro-grid">
+    <div class="intro-block">
+      <span class="intro-eyebrow">Five layers</span>
+      <h2 class="intro-heading">Why this model exists</h2>
+      <p class="intro-text">Every architecture practice fragments across the same five planes — strategy, business model, digital fabric, technology substrate, and measurement. DEA binds them into one navigable graph so concepts in one layer can be traced to their counterparts in the others.</p>
+    </div>
+    <div class="intro-block">
+      <span class="intro-eyebrow">How to navigate</span>
+      <h2 class="intro-heading">Browse the catalog</h2>
+      <p class="intro-text">Filter by layer below, or open the full diagram to see how entities connect. Click any class — on the diagram or in the grid — to jump to its canonical repository and explore the catalogs, assessments, and maturity models that instantiate it.</p>
+    </div>
+  </div>
+</section>
 
 <!-- ─── Layer Filter Bar ──────────────────────────── -->
 <div class="layer-bar">
@@ -44,18 +74,25 @@
   </button>
 </div>
 
-<!-- ─── Diagram Section ─────────────────────────────── -->
-<section class="diagram-section" id="diagramSection">
-  <button class="diagram-toggle" id="diagramToggle" aria-expanded="false">
+<!-- ─── Diagram Section (expanded by default) ─────── -->
+<section class="diagram-section open" id="diagramSection">
+  <button class="diagram-toggle" id="diagramToggle" aria-expanded="true">
     <svg class="diagram-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
     <span>Full Metamodel Diagram</span>
-    <span class="diagram-meta">19 entities · 5 layers · click any class</span>
+    <span class="diagram-meta">19 entities · 5 layers · click any class to inspect</span>
   </button>
   <div class="diagram-body" id="diagramBody">
     <div class="diagram-canvas" id="diagramCanvas"></div>
   </div>
 </section>
+
+<!-- ─── Section divider ──────────────────────────────── -->
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <span class="section-divider-label">Entity Catalog</span>
+  <div class="section-divider-line"></div>
+</div>
 
 <!-- ─── Main Canvas ───────────────────────────────── -->
 <main class="canvas-wrapper" id="canvasWrapper">
