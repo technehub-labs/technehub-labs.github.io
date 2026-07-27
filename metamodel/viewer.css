@@ -4,32 +4,59 @@
    ══════════════════════════════════════════════════════ */
 
 :root {
-  --bg:          #080b10;
-  --surface:     #0d1117;
-  --surface-2:   #161b22;
-  --surface-3:   #21262d;
-  --border:      rgba(45, 212, 191, 0.10);
-  --border-2:    rgba(45, 212, 191, 0.22);
+  /* ── Brand ─────────────────────────────────────── */
   --accent:      #2dd4bf;
-  --accent-dim:  rgba(45, 212, 191, 0.07);
+  --accent-dim:  rgba(45, 212, 191, 0.08);
   --accent-glow: rgba(45, 212, 191, 0.18);
-  --text:        #e6edf3;
-  --text-2:      #8b949e;
-  --text-3:      #484f58;
+  --accent-tint: rgba(45, 212, 191, 0.05);
 
-  --font-display: 'Montserrat', sans-serif;
+  /* ── Material Design 3 surface roles ──────────── */
+  --bg:             #080b10;
+  --surface:        #0d1117;
+  --surface-2:      #161b22;
+  --surface-3:      #21262d;
+  --surface-tint:   var(--accent);
+
+  --text:           #e6edf3;
+  --text-2:         #8b949e;
+  --text-3:         #484f58;
+
+  --outline:        rgba(230, 237, 243, 0.12);
+  --outline-2:      rgba(230, 237, 243, 0.22);
+  --outline-variant: rgba(230, 237, 243, 0.06);
+
+  /* ── Harmonised layer palette (brand-adjacent) ── */
+  --l1: #2dd4bf; /* Strategic   — brand teal */
+  --l2: #fbbf24; /* Business    — warm amber */
+  --l3: #38bdf8; /* Digital     — cyan-blue  */
+  --l4: #a78bfa; /* Technology  — soft violet */
+  --l5: #fb7185; /* Governance  — rose-red   */
+
+  /* ── MD3 shape tokens ──────────────────────────── */
+  --radius-sm: 8px;     /* chips, badges, small buttons */
+  --radius-md: 12px;    /* cards, dialogs, containers   */
+  --radius-lg: 16px;    /* sheets, panels               */
+  --radius-xl: 28px;    /* FAB, extended chips          */
+  --radius:    var(--radius-md); /* legacy alias — points to MD3 medium */
+
+  /* ── Typography ────────────────────────────────── */
+  --font-display: 'Rajdhani', 'Montserrat', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
   --font-body:    'Inter', sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 
-  /* Layer colours — mirror PlantUML package colours */
-  --l1: #10b981;
-  --l2: #f59e0b;
-  --l3: #3b82f6;
-  --l4: #8b5cf6;
-  --l5: #ef4444;
+  /* ── Motion (MD3 standard easing) ─────────────── */
+  --ease-standard:    cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decelerate:  cubic-bezier(0,   0, 0.2, 1);
+  --ease-accelerate:  cubic-bezier(0.4, 0,   1, 1);
 
-  --radius:    16px;
-  --radius-sm: 8px;
+  /* ── Spacing scale ─────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -203,11 +230,11 @@ body {
   color: var(--accent);
   border-color: var(--border-2);
 }
-.layer-btn[data-layer="L1"].active { color: var(--l1); background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); }
-.layer-btn[data-layer="L2"].active { color: var(--l2); background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); }
-.layer-btn[data-layer="L3"].active { color: var(--l3); background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); }
-.layer-btn[data-layer="L4"].active { color: var(--l4); background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
-.layer-btn[data-layer="L5"].active { color: var(--l5); background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); }
+.layer-btn[data-layer="L1"].active { color: var(--l1); background: rgba(45,212,191,0.10); border-color: rgba(45,212,191,0.30); }
+.layer-btn[data-layer="L2"].active { color: var(--l2); background: rgba(251,191,36,0.10); border-color: rgba(251,191,36,0.30); }
+.layer-btn[data-layer="L3"].active { color: var(--l3); background: rgba(56,189,248,0.10); border-color: rgba(56,189,248,0.30); }
+.layer-btn[data-layer="L4"].active { color: var(--l4); background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.30); }
+.layer-btn[data-layer="L5"].active { color: var(--l5); background: rgba(251,113,133,0.10); border-color: rgba(251,113,133,0.30); }
 .layer-bar-spacer { flex: 1; }
 .legend-toggle {
   display: flex;
