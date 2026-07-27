@@ -7,8 +7,9 @@
   'use strict';
 
   // ── Constants ────────────────────────────────────────────
-  const ENTITY_GRAPH_URL =
-    'https://raw.githubusercontent.com/technehub-labs/dea-metamodel/main/viewer/entity-graph.json';
+  // Same-origin fetch: entity-graph.json is bundled into the Pages site.
+  // Source of truth remains technehub-labs/dea-metamodel (synced via CI).
+  const ENTITY_GRAPH_URL = './entity-graph.json';
 
   // Relationships from metamodel-v2.puml (extracted)
   const RELATIONSHIPS = [
@@ -76,9 +77,13 @@
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     graph = await res.json();
   } catch (err) {
-    grid.innerHTML = `<p style="color:#ef4444;padding:24px;font-family:monospace;font-size:0.8rem">
-      Failed to load entity graph: ${err.message}<br>
-      <a href="${ENTITY_GRAPH_URL}" style="color:#58a6ff;text-decoration:underline" target="_blank">Open raw file</a>
+    grid.innerHTML = `<p style="color:#ef4444;padding:24px;font-family:monospace;font-size:0.8rem;line-height:1.6">
+      <strong>Failed to load entity graph.</strong><br><br>
+      Error: ${err.message}<br>
+      URL: <code>${ENTITY_GRAPH_URL}</code><br><br>
+      Expected location: <code>technehub-labs.github.io/metamodel/entity-graph.json</code><br>
+      Source of truth: <a href="https://github.com/technehub-labs/dea-metamodel/blob/main/viewer/entity-graph.json" style="color:#58a6ff;text-decoration:underline" target="_blank">dea-metamodel/viewer/entity-graph.json</a><br><br>
+      If you just pushed to dea-metamodel, the hourly sync may not have run yet — try again in ~1 hour or trigger the workflow manually.
     </p>`;
     return;
   }

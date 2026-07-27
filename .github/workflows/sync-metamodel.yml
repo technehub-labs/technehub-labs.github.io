@@ -1,0 +1,55 @@
+name: Sync Metamodel Data
+
+on:
+  repository_dispatch:
+    types: [metamodel-updated]
+  workflow_dispatch:
+  schedule:
+    # Hourly safety net in case repository_dispatch is missed.
+    - cron: '0 * * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout technehub-labs.github.io
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Sync entity-graph.json from dea-metamodel
+        run: |
+          set -euo pipefail
+          mkdir -p metamodel
+          # Pull the canonical graph JSON from the metamodel repo's main branch.
+          curl -fsSL \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.raw+json" \
+            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.json?ref=main" \
+            -o metamodel/entity-graph.json
+
+          # Also pull the schema (smaller, less frequent changes).
+          curl -fsSL \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.raw+json" \
+            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.schema.json?ref=main" \
+            -o metamodel/entity-graph.schema.json
+
+          # Validate JSON.
+          python3 -c "import json; json.load(open('metamodel/entity-graph.json'))"
+          python3 -c "import json; json.load(open('metamodel/entity-graph.schema.json'))"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "coder-bot"
+          git config user.email "software.engineer@technehub.com"
+          if git diff --quiet metamodel/; then
+            echo "No changes — entity-graph.json is in sync."
+          else
+            git add metamodel/
+            git commit -m "chore: sync entity-graph.json from dea-metamodel"
+            git push origin main
+          fi
