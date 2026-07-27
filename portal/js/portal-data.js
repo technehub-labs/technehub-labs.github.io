@@ -30,7 +30,7 @@ export const PRIMARY_ASSETS = [
     label: 'Metamodel',
     kind: 'overlay',
     icon: 'graph',
-    blurb: '19-entity relationship model across five architectural layers — the semantic relationship graph.',
+    blurb: '23-entity relationship model across six architectural layers — ecosystem, strategy, business, digital, technology, measurement.',
     href: 'https://technehub-labs.github.io/metamodel/',
     overlay: 'metamodel',
     weight: 2,
