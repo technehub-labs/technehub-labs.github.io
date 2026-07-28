@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════
-// Meta Framework Explorer overlay — interactive 7×7 axiom-derived
-// matrix. Zoom, pan, hover, search, semantic highlighting, layer
-// visibility, breadcrumbs, contextual descriptions.
+// Meta Framework Explorer — renders into a provided body element.
+// Interactive 7×7 axiom-derived matrix with zoom, pan, search,
+// layer visibility, and contextual descriptions.
 // ═══════════════════════════════════════════════════════════════
 
 const DOMAINS = [
@@ -24,8 +24,6 @@ const STAGES = [
   { id: 7, name: 'Retire' },
 ];
 
-// Cell content — a curated subset. The matrix is the same shape across
-// industries; only the cell content changes.
 const CELLS = {
   '1-1': { glyph: '●', objects: ['Strategic Objective', 'Customer Need'], actors: ['CXO', 'Product Owner'] },
   '1-2': { glyph: '★', objects: ['Value Proposition', 'Journey Map'], actors: ['UX Lead', 'Business Architect'] },
@@ -79,56 +77,32 @@ const CELLS = {
 };
 
 export class MetaFrameworkExplorer {
-  constructor(root) {
-    this.root = root;
+  constructor(bodyEl) {
+    this.bodyEl = bodyEl;
     this.selected = null;
     this.hovered = null;
     this.zoom = 1;
     this.panX = 0; this.panY = 0;
     this.visibleLayers = new Set([1,2,3,4,5,6,7]);
-    this._build();
   }
 
-  _build() {
-    this.root.innerHTML = `
-      <div class="overlay-backdrop" data-overlay-close></div>
-      <div class="overlay-panel overlay-panel--wide" role="dialog" aria-label="Meta Framework Explorer">
-        <header class="overlay-header">
-          <div class="overlay-title">
-            <span class="overlay-pill overlay-pill--framework">Meta Framework</span>
-            <h2>Enterprise Concept Framework — 7×7 Matrix</h2>
-          </div>
-          <div class="overlay-tools">
-            <div class="overlay-search"><input id="mfSearch" placeholder="Search cells…" /></div>
-            <button class="overlay-btn" id="mfReset" title="Reset view">Reset</button>
-            <button class="overlay-close" data-overlay-close aria-label="Close">×</button>
-          </div>
-        </header>
-        <div class="overlay-body overlay-body--split">
-          <div class="mf-canvas" id="mfCanvas">
-            <div class="mf-matrix-scroll" id="mfMatrixScroll">
-              <table class="mf-matrix" id="mfMatrix"></table>
-            </div>
-          </div>
-          <aside class="mf-context" id="mfContext">
-            <div class="mf-context-empty">Click any cell to inspect its objects, capabilities, and handoffs. The matrix is the same shape across industries; only the cell content changes.</div>
-          </aside>
+  render() {
+    this.bodyEl.classList.add('popup-body--split');
+    this.bodyEl.innerHTML = `
+      <div class="mf-canvas" id="mfCanvas">
+        <div class="mf-matrix-scroll" id="mfMatrixScroll">
+          <table class="mf-matrix" id="mfMatrix"></table>
         </div>
-        <footer class="overlay-footer">
-          <div class="mf-layer-toggles" id="mfLayerToggles">
-            ${DOMAINS.map((d) => `<button class="mf-layer-toggle active" data-domain="${d.id}">D${d.id} ${d.name}</button>`).join('')}
-          </div>
-          <span class="mf-hint">Scroll to zoom · drag to pan · click a cell to inspect</span>
-        </footer>
       </div>
+      <aside class="mf-context" id="mfContext">
+        <div class="mf-context-empty">Click any cell to inspect its objects, capabilities, and handoffs. The matrix is the same shape across industries; only the cell content changes.</div>
+      </aside>
     `;
-    this.elMatrix = this.root.querySelector('#mfMatrix');
-    this.elContext = this.root.querySelector('#mfContext');
-    this.elSearch = this.root.querySelector('#mfSearch');
-    this.elScroll = this.root.querySelector('#mfMatrixScroll');
+    this.elMatrix = this.bodyEl.querySelector('#mfMatrix');
+    this.elContext = this.bodyEl.querySelector('#mfContext');
+    this.elScroll = this.bodyEl.querySelector('#mfMatrixScroll');
     this._renderMatrix();
     this._bind();
-    this.root.querySelectorAll('[data-overlay-close]').forEach((el) => el.addEventListener('click', () => this.close()));
   }
 
   _renderMatrix() {
@@ -160,35 +134,6 @@ export class MetaFrameworkExplorer {
       cell.addEventListener('mouseleave', () => this._clearHover());
     });
 
-    this.root.querySelector('#mfReset')?.addEventListener('click', () => {
-      this.zoom = 1; this.panX = 0; this.panY = 0; this._applyTransform();
-      this.elMatrix.querySelectorAll('.mf-cell.selected').forEach((c) => c.classList.remove('selected'));
-      this.selected = null;
-      this.elContext.innerHTML = `<div class="mf-context-empty">Click any cell to inspect its objects, capabilities, and handoffs.</div>`;
-    });
-
-    // layer toggles
-    this.root.querySelectorAll('.mf-layer-toggle').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.dataset.domain, 10);
-        if (this.visibleLayers.has(id)) { this.visibleLayers.delete(id); btn.classList.remove('active'); }
-        else { this.visibleLayers.add(id); btn.classList.add('active'); }
-        this._applyLayerFilter();
-      });
-    });
-
-    // search
-    this.elSearch?.addEventListener('input', () => {
-      const q = this.elSearch.value.toLowerCase();
-      this.elMatrix.querySelectorAll('.mf-cell').forEach((cell) => {
-        const key = cell.dataset.key;
-        const data = CELLS[key];
-        const hay = ((data?.objects || []) + ' ' + (data?.actors || [])).join(' ').toLowerCase();
-        if (!q || hay.includes(q)) cell.style.opacity = '1';
-        else cell.style.opacity = '0.3';
-      });
-    });
-
     // pan & zoom
     let dragging = false, lx = 0, ly = 0;
     this.elScroll.addEventListener('pointerdown', (e) => {
@@ -209,17 +154,6 @@ export class MetaFrameworkExplorer {
       this.zoom = Math.max(0.5, Math.min(2.5, this.zoom * (1 - e.deltaY * 0.001)));
       this._applyTransform();
     }, { passive: false });
-  }
-
-  _applyLayerFilter() {
-    this.elMatrix.querySelectorAll('.mf-cell').forEach((cell) => {
-      const d = parseInt(cell.dataset.domain, 10);
-      cell.style.display = this.visibleLayers.has(d) ? '' : 'none';
-    });
-    this.elMatrix.querySelectorAll('.mf-domain').forEach((th) => {
-      const d = parseInt(th.dataset.domain, 10);
-      th.style.display = this.visibleLayers.has(d) ? '' : 'none';
-    });
   }
 
   _applyTransform() {
@@ -271,6 +205,7 @@ export class MetaFrameworkExplorer {
     `;
   }
 
-  open() { this.root.classList.add('overlay-open'); }
-  close() { this.root.classList.remove('overlay-open'); }
+  dispose() {
+    this.selected = null;
+  }
 }

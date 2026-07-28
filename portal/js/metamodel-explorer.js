@@ -1,61 +1,28 @@
 // ═══════════════════════════════════════════════════════════════
-// Metamodel Explorer overlay — loads the existing SVG, makes every
-// entity interactive: hover, focus, selection, relationship tracing,
-// semantic highlighting, context panel, dependency visualization,
-// smooth zooming, animated graph traversal.
+// Metamodel Explorer — renders into a provided body element.
+// Loads the SVG, makes every entity interactive.
 // ═══════════════════════════════════════════════════════════════
 
 export class MetamodelExplorer {
-  constructor(root) {
-    this.root = root;
-    this.svgUrl = '../metamodel/metamodel.svg';
-    this.entityMap = null;     // id -> entity data
+  constructor(bodyEl) {
+    this.bodyEl = bodyEl;
+    this.entityMap = null;
     this.selected = null;
     this.hovered = null;
     this.zoom = 1;
     this.panX = 0; this.panY = 0;
-    this._build();
   }
 
-  async _build() {
-    this.root.innerHTML = `
-      <div class="overlay-backdrop" data-overlay-close></div>
-      <div class="overlay-panel overlay-panel--wide" role="dialog" aria-label="Metamodel Explorer">
-        <header class="overlay-header">
-          <div class="overlay-title">
-            <span class="overlay-pill">Metamodel</span>
-            <h2>Enterprise Concepts Metamodel</h2>
-          </div>
-          <div class="overlay-tools">
-            <div class="overlay-search"><input id="mmSearch" placeholder="Search entities…" /></div>
-            <button class="overlay-btn" id="mmReset" title="Reset view">Reset</button>
-            <button class="overlay-close" data-overlay-close aria-label="Close">×</button>
-          </div>
-        </header>
-        <div class="overlay-body overlay-body--split">
-          <div class="mm-canvas" id="mmCanvas"></div>
-          <aside class="mm-context" id="mmContext">
-            <div class="mm-context-empty">Select an entity to inspect its relationships, dependencies, and canonical repository.</div>
-          </aside>
-        </div>
-        <footer class="overlay-footer">
-          <span class="mm-hint">Scroll to zoom · drag to pan · click an entity to trace relationships</span>
-          <div class="mm-layer-legend">
-            <span class="mm-layer-dot" style="--c:#2dd4bf">L1 Strategic</span>
-            <span class="mm-layer-dot" style="--c:#fbbf24">L2 Business</span>
-            <span class="mm-layer-dot" style="--c:#38bdf8">L3 Digital</span>
-            <span class="mm-layer-dot" style="--c:#a78bfa">L4 Technology</span>
-            <span class="mm-layer-dot" style="--c:#fb7185">L5 Governance</span>
-          </div>
-        </footer>
-      </div>
+  async render() {
+    this.bodyEl.classList.add('popup-body--split');
+    this.bodyEl.innerHTML = `
+      <div class="mm-canvas" id="mmCanvas"></div>
+      <aside class="mm-context" id="mmContext">
+        <div class="mm-context-empty">Select an entity to inspect its relationships, dependencies, and canonical repository.</div>
+      </aside>
     `;
-    this.elCanvas = this.root.querySelector('#mmCanvas');
-    this.elContext = this.root.querySelector('#mmContext');
-    this.elSearch = this.root.querySelector('#mmSearch');
-
-    this.root.querySelector('[data-overlay-close]').addEventListener('click', () => this.close());
-    this.root.querySelectorAll('[data-overlay-close]').forEach((el) => el.addEventListener('click', () => this.close()));
+    this.elCanvas = this.bodyEl.querySelector('#mmCanvas');
+    this.elContext = this.bodyEl.querySelector('#mmContext');
 
     await this._loadSvg();
     await this._loadEntityData();
@@ -64,15 +31,19 @@ export class MetamodelExplorer {
   }
 
   async _loadSvg() {
-    const resp = await fetch(this.svgUrl);
-    const txt = await resp.text();
-    this.elCanvas.innerHTML = txt;
-    this.svg = this.elCanvas.querySelector('svg');
-    if (this.svg) {
-      this.svg.removeAttribute('width');
-      this.svg.removeAttribute('height');
-      this.svg.style.width = '100%';
-      this.svg.style.height = '100%';
+    try {
+      const resp = await fetch('../metamodel/metamodel.svg');
+      const txt = await resp.text();
+      this.elCanvas.innerHTML = txt;
+      this.svg = this.elCanvas.querySelector('svg');
+      if (this.svg) {
+        this.svg.removeAttribute('width');
+        this.svg.removeAttribute('height');
+        this.svg.style.width = '100%';
+        this.svg.style.height = '100%';
+      }
+    } catch (e) {
+      this.elCanvas.innerHTML = '<div style="padding:var(--sp-5);color:var(--text-3);">Could not load metamodel SVG.</div>';
     }
   }
 
@@ -97,12 +68,7 @@ export class MetamodelExplorer {
       g.addEventListener('focus', () => this._onHover(g));
       g.addEventListener('blur', () => this._onUnhover(g));
     });
-    // links
     this.links = this.svg.querySelectorAll('g.link');
-  }
-
-  _entityId(g) {
-    return g.id || g.getAttribute('data-alias') || g.querySelector('text')?.textContent || '';
   }
 
   _relatedLinks(id) {
@@ -113,17 +79,6 @@ export class MetamodelExplorer {
       if (e1 === id || e2 === id) related.push(l);
     });
     return related;
-  }
-
-  _relatedEntities(id) {
-    const set = new Set();
-    this.links.forEach((l) => {
-      const e1 = l.getAttribute('data-entity-1');
-      const e2 = l.getAttribute('data-entity-2');
-      if (e1 === id) set.add(e2);
-      if (e2 === id) set.add(e1);
-    });
-    return set;
   }
 
   _onHover(g) {
@@ -190,7 +145,7 @@ export class MetamodelExplorer {
 
     this.elContext.innerHTML = `
       <div class="mm-ctx-header">
-        <span class="mm-ctx-layer" style="--c:${entity?.color || '#7fc8c0'}">${entity?.layer || ''}</span>
+        <span class="mm-ctx-layer" style="--c:${entity?.color_dark || '#7fc8c0'}">${entity?.layer_name || ''}</span>
         <h3>${entity?.display_name || id}</h3>
       </div>
       <p class="mm-ctx-desc">${entity?.description || 'No description available.'}</p>
@@ -240,27 +195,14 @@ export class MetamodelExplorer {
       this.zoom = Math.max(0.3, Math.min(3.5, this.zoom * (1 - e.deltaY * 0.001)));
       this._applyTransform();
     }, { passive: false });
-
-    this.root.querySelector('#mmReset')?.addEventListener('click', () => {
-      this.zoom = 1; this.panX = 0; this.panY = 0; this._applyTransform();
-      this._clearHighlight(); this.selected = null;
-      this.elContext.innerHTML = `<div class="mm-context-empty">Select an entity to inspect its relationships, dependencies, and canonical repository.</div>`;
-    });
-
-    this.elSearch?.addEventListener('input', () => {
-      const q = this.elSearch.value.toLowerCase();
-      this.svg?.querySelectorAll('g.entity').forEach((g) => {
-        const txt = g.querySelector('text')?.textContent?.toLowerCase() || '';
-        if (!q || txt.includes(q)) { g.style.opacity = '1'; }
-        else { g.style.opacity = '0.25'; }
-      });
-    });
   }
 
   _applyTransform() {
     if (this.svg) this.svg.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
   }
 
-  open() { this.root.classList.add('overlay-open'); }
-  close() { this.root.classList.remove('overlay-open'); }
+  dispose() {
+    this._clearHighlight();
+    this.selected = null;
+  }
 }

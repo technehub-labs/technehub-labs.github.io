@@ -15,7 +15,7 @@ const QUALITY_PRESETS = {
 export class BlackHoleRenderer {
   constructor(canvas, opts = {}) {
     this.canvas = canvas;
-    this.quality = opts.quality || 'standard';
+    this.quality = 'high'; // pegged at High
     this.onFps = opts.onFps || (() => {});
 
     // camera orbit state
@@ -214,7 +214,7 @@ export class BlackHoleRenderer {
   setQuality(q) {
     this.quality = q;
     if (!this._ready) return;
-    const p = QUALITY_PRESETS[q];
+    const p = QUALITY_PRESETS[q] || QUALITY_PRESETS['high'];
     this.bhMat.uniforms.uSteps.value = p.steps;
     this.bhMat.uniforms.uStepSize.value = p.stepSize;
     this.bhMat.uniforms.uJitter.value = p.jitter;
@@ -224,8 +224,20 @@ export class BlackHoleRenderer {
     this.compMat.uniforms.uExposure.value = p.exposure;
   }
 
+  pause() {
+    this.running = false;
+  }
+
+  resume() {
+    if (this.running) return;
+    this.running = true;
+    this.clock.getDelta(); // reset delta to avoid jump
+    this.render();
+  }
+
   render() {
     if (!this._ready) { requestAnimationFrame(() => this.render()); return; }
+    if (!this.running) return;
     const dt = this.clock.getDelta();
     const t = this.clock.getElapsedTime();
 

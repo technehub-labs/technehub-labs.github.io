@@ -1,13 +1,12 @@
 // ═══════════════════════════════════════════════════════════════
 // HUD — minimalist heads-up display: clock, date, GitHub status,
-// repository count, render quality, frame rate.
+// repository count, frame rate.
 // ═══════════════════════════════════════════════════════════════
 
 export class HUD {
   constructor(root, opts = {}) {
     this.root = root;
     this.fps = 0;
-    this.quality = opts.quality || 'standard';
     this.repoCount = opts.repoCount || 0;
     this.githubStatus = 'connecting';
     this._build();
@@ -26,26 +25,19 @@ export class HUD {
         <div class="hud-row"><span class="hud-label">REPOS</span><span class="hud-val" id="hudRepos">—</span></div>
       </div>
       <div class="hud-corner hud-bl">
-        <div class="hud-row"><span class="hud-label">QUALITY</span><span class="hud-val" id="hudQuality">—</span></div>
         <div class="hud-row"><span class="hud-label">FPS</span><span class="hud-val" id="hudFps">—</span></div>
         <div class="hud-row"><span class="hud-label">RENDER</span><span class="hud-val">WebGL2 · Schwarzschild</span></div>
-      </div>
-      <div class="hud-corner hud-br">
-        <div class="hud-row"><span class="hud-label">META MOAT</span><span class="hud-val">Framework × Metamodel</span></div>
-        <div class="hud-row"><span class="hud-label">ECOSYSTEM</span><span class="hud-val">Living Knowledge Universe</span></div>
       </div>
     `;
     this.elClock = this.root.querySelector('#hudClock');
     this.elDate = this.root.querySelector('#hudDate');
     this.elStatus = this.root.querySelector('#hudStatus');
     this.elRepos = this.root.querySelector('#hudRepos');
-    this.elQuality = this.root.querySelector('#hudQuality');
     this.elFps = this.root.querySelector('#hudFps');
     this._updateStatic();
   }
 
   _updateStatic() {
-    this.elQuality.textContent = this.quality.toUpperCase();
     this.elRepos.textContent = this.repoCount;
   }
 
@@ -68,11 +60,6 @@ export class HUD {
     this.elFps.textContent = fps;
   }
 
-  setQuality(q) {
-    this.quality = q;
-    this._updateStatic();
-  }
-
   setRepoCount(n) {
     this.repoCount = n;
     this._updateStatic();
@@ -80,7 +67,6 @@ export class HUD {
 
   setGithubStatus(status) {
     this.githubStatus = status;
-    const dot = this.elStatus.querySelector('.hud-dot');
     const labels = { connecting: 'connecting', online: 'online', offline: 'offline (cached)' };
     this.elStatus.innerHTML = `<span class="hud-dot hud-dot--${status}"></span>${labels[status] || status}`;
   }
