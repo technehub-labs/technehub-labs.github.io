@@ -62,11 +62,10 @@ class App {
     this._wirePopupClose();
 
     const canvas = document.getElementById('bh-canvas');
+    // BlackHoleRenderer boots itself async via _boot(); no external init call needed.
     this.bh = new BlackHoleRenderer(canvas, {
-      quality: 'high',
       onFps: (fps) => this.hud?.setFps(fps),
     });
-    this.bh._initShaders().then(() => this.bh.render());
 
     this._loadRepos();
   }

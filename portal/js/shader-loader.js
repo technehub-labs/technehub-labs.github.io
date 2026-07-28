@@ -2,7 +2,7 @@
 // Ensures #version 300 es is the first line, stripping preceding comment lines.
 export const shaderCache = {
   _cache: {},
-  _base: '../shaders/',
+  _base: './shaders/',
   async load(name) {
     if (this._cache[name]) return this._cache[name];
     const resp = await fetch(this._base + name);

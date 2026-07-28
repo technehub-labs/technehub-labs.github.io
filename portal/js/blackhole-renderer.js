@@ -1,229 +1,319 @@
 // ═══════════════════════════════════════════════════════════════
-// Black Hole Renderer — Schwarzschild geodesic integrator + post FX
-// Loads GLSL shaders as text, builds a multi-pass WebGL2 pipeline.
+// Black Hole Renderer — pure WebGL2, no Three.js.
+// Fullscreen triangle via gl_VertexID (drawArrays, 3 verts).
+// 5-pass pipeline: BH scene → bright pass → blur H → blur V →
+// composite (ACES + bloom + grain + CA + vignette) + TAA ping-pong.
 // ═══════════════════════════════════════════════════════════════
-import * as THREE from '../../vendor/three/three.module.js';
-import { shaderCache } from './shader-loader.js';
 
-const QUALITY_PRESETS = {
-  standard:   { steps: 90,  stepSize: 0.12, jitter: 0.6, bloom: 0.7,  ca: 0.0015, grain: 0.04, exposure: 1.0 },
-  high:       { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.85, ca: 0.0020, grain: 0.03, exposure: 1.05 },
-  ultra:      { steps: 200, stepSize: 0.08, jitter: 0.4, bloom: 1.0,  ca: 0.0025, grain: 0.025, exposure: 1.1 },
-  cinematic:  { steps: 256, stepSize: 0.06, jitter: 0.3, bloom: 1.2,  ca: 0.0030, grain: 0.02, exposure: 1.15 },
-};
+const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.85, ca: 0.002, grain: 0.03, exposure: 1.05 };
+
+const BLIT_VERT = `#version 300 es
+void main(){
+  vec2 p=vec2((gl_VertexID==1)?3.:-1.,(gl_VertexID==2)?3.:-1.);
+  gl_Position=vec4(p,0.,1.);
+}`;
+
+const BLIT_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uTex;
+out vec4 o;
+void main(){ o=texelFetch(uTex,ivec2(gl_FragCoord.xy),0); }`;
 
 export class BlackHoleRenderer {
   constructor(canvas, opts = {}) {
-    this.canvas = canvas;
-    this.quality = 'high'; // pegged at High
-    this.onFps = opts.onFps || (() => {});
+    this.canvas  = canvas;
+    this.onFps   = opts.onFps || (() => {});
+    this.running = true;
+    this._ready  = false;
+    this._startTime = null;
+    this._prevNow   = null;
+    this._frameCount = 0;
+    this._fpsAccum   = 0;
 
-    // camera orbit state
-    this.cameraYaw = 0.3;
-    this.cameraPitch = 0.18;
-    this.cameraDist = 8.5;
-    this.targetYaw = this.cameraYaw;
-    this.targetPitch = this.cameraPitch;
-    this.targetDist = this.cameraDist;
-
-    // interaction
-    this.userInteracting = false;
-    this.autoOrbit = true;
+    // camera
+    this.cameraYaw      = 0.3;
+    this.cameraPitch    = 0.18;
+    this.cameraDist     = 8.5;
+    this.targetYaw      = this.cameraYaw;
+    this.targetPitch    = this.cameraPitch;
+    this.targetDist     = this.cameraDist;
+    this.autoOrbit      = true;
     this.autoOrbitSpeed = 0.04;
 
-    this._initRenderer();
-    this._initScenes();
-    this._initTargets();
-    this._initShaders();
-    this._initEvents();
-
-    this.clock = new THREE.Clock();
-    this.frameCount = 0;
-    this.fpsTime = 0;
-    this.running = true;
-  }
-
-  _initRenderer() {
-    this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas,
-      antialias: false,           // TAA handles AA
+    const gl = canvas.getContext('webgl2', {
+      antialias: false,
       powerPreference: 'high-performance',
       preserveDrawingBuffer: false,
+      alpha: false,
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.autoClear = false;
+    if (!gl) {
+      this._fallback('WebGL2 is unavailable in this browser.');
+      return;
+    }
+    this.gl = gl;
+
+    // Prefer RGBA16F; fall back to RGBA8 on constrained GPUs
+    const hdrOk = gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float');
+    this._intFmt = hdrOk ? gl.RGBA16F     : gl.RGBA8;
+    this._type   = hdrOk ? gl.HALF_FLOAT  : gl.UNSIGNED_BYTE;
+
     this._resize();
+    window.addEventListener('resize', () => this._resize());
+    this._initPointer();
+    this._boot();
+  }
+
+  // ── Init ───────────────────────────────────────────────────────
+  async _boot() {
+    const base = './shaders/';
+    let vert, bhFrag, brightFrag, blurFrag, compFrag;
+    try {
+      [vert, bhFrag, brightFrag, blurFrag, compFrag] = await Promise.all([
+        this._fetch(base + 'fullscreen.vert.glsl'),
+        this._fetch(base + 'blackhole.frag.glsl'),
+        this._fetch(base + 'brightpass.frag.glsl'),
+        this._fetch(base + 'blur.frag.glsl'),
+        this._fetch(base + 'composite.frag.glsl'),
+      ]);
+    } catch (e) {
+      console.error('BlackHoleRenderer: shader fetch failed —', e);
+      return;
+    }
+
+    const gl = this.gl;
+    try {
+      this._pBH     = this._mkProg(vert, bhFrag);
+      this._pBright = this._mkProg(vert, brightFrag);
+      this._pBlur   = this._mkProg(vert, blurFrag);
+      this._pComp   = this._mkProg(vert, compFrag);
+      this._pBlit   = this._mkProg(BLIT_VERT, BLIT_FRAG);
+    } catch (e) {
+      console.error('BlackHoleRenderer: shader compile failed —', e);
+      return;
+    }
+
+    // Cache uniform locations
+    this._uBH     = this._cacheUniforms(this._pBH, ['uResolution','uTime','uCameraDist','uCameraYaw','uCameraPitch','uDiskInner','uDiskOuter','uDiskThick','uDiskBright','uDopplerStrength','uGravRedshift','uNoiseScale','uQuality','uSteps','uStepSize','uExposure','uStarBrightness','uGalaxyBrightness','uDiskColorHot','uDiskColorCool','uJitter']);
+    this._uBright = this._cacheUniforms(this._pBright, ['uScene','uThreshold']);
+    this._uBlur   = this._cacheUniforms(this._pBlur,   ['uImage','uTexel','uHorizontal']);
+    this._uComp   = this._cacheUniforms(this._pComp,   ['uScene','uBloom','uHistory','uResolution','uTime','uBloomStrength','uGrainStrength','uCAStrength','uVignette','uExposure','uTAAAlpha']);
+    this._uBlit   = this._cacheUniforms(this._pBlit,   ['uTex']);
+
+    // Empty VAO — fullscreen triangle uses gl_VertexID, no vertex attributes
+    this._vao = gl.createVertexArray();
+
+    this._initFBOs();
+    this._ready = true;
+
+    if (this.running) {
+      this._startTime = performance.now();
+      requestAnimationFrame(t => this._tick(t));
+    }
+  }
+
+  _fetch(url) {
+    return fetch(url).then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
+      return r.text();
+    });
+  }
+
+  _mkProg(vsrc, fsrc) {
+    const gl = this.gl;
+    const mkShader = (type, src) => {
+      const sh = gl.createShader(type);
+      gl.shaderSource(sh, src);
+      gl.compileShader(sh);
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        const log = gl.getShaderInfoLog(sh);
+        gl.deleteShader(sh);
+        throw new Error(`Shader compile:\n${log}\n\n${src.slice(0, 400)}`);
+      }
+      return sh;
+    };
+    const vs = mkShader(gl.VERTEX_SHADER,   vsrc);
+    const fs = mkShader(gl.FRAGMENT_SHADER, fsrc);
+    const p  = gl.createProgram();
+    gl.attachShader(p, vs); gl.attachShader(p, fs);
+    gl.linkProgram(p);
+    gl.deleteShader(vs); gl.deleteShader(fs);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS))
+      throw new Error('Program link: ' + gl.getProgramInfoLog(p));
+    return p;
+  }
+
+  _cacheUniforms(prog, names) {
+    const gl = this.gl;
+    const out = {};
+    for (const n of names) out[n] = gl.getUniformLocation(prog, n);
+    return out;
+  }
+
+  _mkFBO(w, h) {
+    const gl = this.gl;
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, this._intFmt, w, h);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const fbo = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return { tex, fbo };
+  }
+
+  _delFBO(f) {
+    if (!f) return;
+    this.gl.deleteTexture(f.tex);
+    this.gl.deleteFramebuffer(f.fbo);
+  }
+
+  _initFBOs() {
+    ['_fboScene','_fboBloom','_fboBlur1','_fboBlur2','_fboComp','_fboHist'].forEach(k => {
+      this._delFBO(this[k]);
+      this[k] = this._mkFBO(this.width, this.height);
+    });
   }
 
   _resize() {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    this.width = w;
-    this.height = h;
-    this.renderer.setSize(w, h, false);
-    if (this.rtScene) this._initTargets();
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    this.width  = Math.floor(window.innerWidth  * dpr);
+    this.height = Math.floor(window.innerHeight * dpr);
+    this.canvas.width  = this.width;
+    this.canvas.height = this.height;
+    this.canvas.style.width  = window.innerWidth  + 'px';
+    this.canvas.style.height = window.innerHeight + 'px';
+    if (this.gl) this.gl.viewport(0, 0, this.width, this.height);
+    if (this._ready) this._initFBOs();
   }
 
-  _initScenes() {
-    this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    this.quad = new THREE.PlaneGeometry(2, 2);
+  // ── Render loop ────────────────────────────────────────────────
+  _tick(now) {
+    if (!this.running || !this._ready) return;
+
+    const t  = (now - this._startTime) * 0.001;
+    const dt = this._prevNow !== null
+      ? Math.min((now - this._prevNow) * 0.001, 0.05)
+      : 0.016;
+    this._prevNow = now;
+
+    // smooth camera
+    const k = 0.06;
+    this.cameraYaw   += (this.targetYaw   - this.cameraYaw)   * k;
+    this.cameraPitch += (this.targetPitch - this.cameraPitch) * k;
+    this.cameraDist  += (this.targetDist  - this.cameraDist)  * k;
+    if (this.autoOrbit) this.targetYaw += this.autoOrbitSpeed * dt;
+
+    const gl = this.gl;
+    const W = this.width, H = this.height;
+
+    // ── Pass 1: Schwarzschild scene ──
+    this._bind(this._pBH, this._fboScene.fbo);
+    const ub = this._uBH;
+    gl.uniform2f(ub.uResolution,       W, H);
+    gl.uniform1f(ub.uTime,             t);
+    gl.uniform1f(ub.uCameraDist,       this.cameraDist);
+    gl.uniform1f(ub.uCameraYaw,        this.cameraYaw);
+    gl.uniform1f(ub.uCameraPitch,      this.cameraPitch);
+    gl.uniform1f(ub.uDiskInner,        2.6);
+    gl.uniform1f(ub.uDiskOuter,        7.5);
+    gl.uniform1f(ub.uDiskThick,        0.35);
+    gl.uniform1f(ub.uDiskBright,       1.4);
+    gl.uniform1f(ub.uDopplerStrength,  1.0);
+    gl.uniform1f(ub.uGravRedshift,     1.0);
+    gl.uniform1f(ub.uNoiseScale,       0.55);
+    gl.uniform1f(ub.uQuality,          1.0);
+    gl.uniform1i(ub.uSteps,            Q.steps);
+    gl.uniform1f(ub.uStepSize,         Q.stepSize);
+    gl.uniform1f(ub.uExposure,         1.0);
+    gl.uniform1f(ub.uStarBrightness,   1.0);
+    gl.uniform1f(ub.uGalaxyBrightness, 0.7);
+    gl.uniform3f(ub.uDiskColorHot,     0.85, 0.92, 1.0);
+    gl.uniform3f(ub.uDiskColorCool,    1.0,  0.45, 0.18);
+    gl.uniform1f(ub.uJitter,           Q.jitter);
+    this._draw();
+
+    // ── Pass 2: bright pass ──
+    this._bind(this._pBright, this._fboBloom.fbo);
+    this._tex(0, this._fboScene.tex, this._uBright.uScene);
+    gl.uniform1f(this._uBright.uThreshold, 0.7);
+    this._draw();
+
+    // ── Pass 3: blur H ──
+    this._bind(this._pBlur, this._fboBlur1.fbo);
+    this._tex(0, this._fboBloom.tex, this._uBlur.uImage);
+    gl.uniform2f(this._uBlur.uTexel, 1.0 / W, 1.0 / H);
+    gl.uniform1i(this._uBlur.uHorizontal, 1);
+    this._draw();
+
+    // ── Pass 4: blur V ──
+    this._bind(this._pBlur, this._fboBlur2.fbo);
+    this._tex(0, this._fboBlur1.tex, this._uBlur.uImage);
+    gl.uniform2f(this._uBlur.uTexel, 1.0 / W, 1.0 / H);
+    gl.uniform1i(this._uBlur.uHorizontal, 0);
+    this._draw();
+
+    // ── Pass 5: composite → _fboComp ──
+    this._bind(this._pComp, this._fboComp.fbo);
+    const uc = this._uComp;
+    this._tex(0, this._fboScene.tex,  uc.uScene);
+    this._tex(1, this._fboBlur2.tex,  uc.uBloom);
+    this._tex(2, this._fboHist.tex,   uc.uHistory);
+    gl.uniform2f(uc.uResolution,   W, H);
+    gl.uniform1f(uc.uTime,         t);
+    gl.uniform1f(uc.uBloomStrength, Q.bloom);
+    gl.uniform1f(uc.uGrainStrength, Q.grain);
+    gl.uniform1f(uc.uCAStrength,    Q.ca);
+    gl.uniform1f(uc.uVignette,      0.55);
+    gl.uniform1f(uc.uExposure,      Q.exposure);
+    gl.uniform1f(uc.uTAAAlpha,      0.1);
+    this._draw();
+
+    // ── Pass 6: blit composite → screen ──
+    this._bind(this._pBlit, null);
+    this._tex(0, this._fboComp.tex, this._uBlit.uTex);
+    this._draw();
+
+    // TAA ping-pong: swap composite ↔ history for next frame
+    const tmp = this._fboComp; this._fboComp = this._fboHist; this._fboHist = tmp;
+
+    // FPS counter
+    this._frameCount++;
+    this._fpsAccum += dt;
+    if (this._fpsAccum >= 0.5) {
+      this.onFps(Math.round(this._frameCount / this._fpsAccum));
+      this._frameCount = 0; this._fpsAccum = 0;
+    }
+
+    requestAnimationFrame(t => this._tick(t));
   }
 
-  _initTargets() {
-    const w = this.width, h = this.height;
-    const opts = { type: THREE.HalfFloatType, format: THREE.RGBAFormat, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
-    if (this.rtScene) { this.rtScene.dispose(); this.rtBloom.dispose(); this.rtBlur1.dispose(); this.rtBlur2.dispose(); this.rtComposite.dispose(); this.rtHistory.dispose(); }
-    this.rtScene   = new THREE.WebGLRenderTarget(w, h, opts);
-    this.rtBloom   = new THREE.WebGLRenderTarget(w, h, opts);
-    this.rtBlur1  = new THREE.WebGLRenderTarget(w, h, opts);
-    this.rtBlur2  = new THREE.WebGLRenderTarget(w, h, opts);
-    this.rtComposite = new THREE.WebGLRenderTarget(w, h, opts);
-    this.rtHistory = new THREE.WebGLRenderTarget(w, h, opts);
+  _bind(prog, fbo) {
+    const gl = this.gl;
+    gl.useProgram(prog);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    gl.viewport(0, 0, this.width, this.height);
+    gl.clear(gl.COLOR_BUFFER_BIT);
   }
 
-  async _initShaders() {
-    const [vert, frag, bright, blur, comp] = await Promise.all([
-      shaderCache.load('fullscreen.vert.glsl'),
-      shaderCache.load('blackhole.frag.glsl'),
-      shaderCache.load('brightpass.frag.glsl'),
-      shaderCache.load('blur.frag.glsl'),
-      shaderCache.load('composite.frag.glsl'),
-    ]);
-
-    const p = QUALITY_PRESETS[this.quality];
-
-    // main black hole pass
-    this.bhMat = new THREE.RawShaderMaterial({
-      vertexShader: vert,
-      fragmentShader: frag,
-      uniforms: {
-        uResolution: { value: new THREE.Vector2(this.width, this.height) },
-        uTime: { value: 0 },
-        uCameraDist: { value: this.cameraDist },
-        uCameraYaw: { value: this.cameraYaw },
-        uCameraPitch: { value: this.cameraPitch },
-        uDiskInner: { value: 2.6 },
-        uDiskOuter: { value: 7.5 },
-        uDiskThick: { value: 0.35 },
-        uDiskBright: { value: 1.4 },
-        uDopplerStrength: { value: 1.0 },
-        uGravRedshift: { value: 1.0 },
-        uNoiseScale: { value: 0.55 },
-        uQuality: { value: 1.0 },
-        uSteps: { value: p.steps },
-        uStepSize: { value: p.stepSize },
-        uExposure: { value: 1.0 },
-        uStarBrightness: { value: 1.0 },
-        uGalaxyBrightness: { value: 0.7 },
-        uDiskColorHot: { value: new THREE.Color(0.85, 0.92, 1.0) },
-        uDiskColorCool: { value: new THREE.Color(1.0, 0.45, 0.18) },
-        uJitter: { value: p.jitter },
-      },
-    });
-    this.bhQuad = new THREE.Mesh(this.quad, this.bhMat);
-    this.scene.add(this.bhQuad);
-
-    // bright pass
-    this.brightMat = new THREE.RawShaderMaterial({
-      vertexShader: vert, fragmentShader: bright,
-      uniforms: { uScene: { value: this.rtScene.texture }, uThreshold: { value: 0.7 } },
-    });
-
-    // blur pass
-    this.blurMat = new THREE.RawShaderMaterial({
-      vertexShader: vert, fragmentShader: blur,
-      uniforms: { uImage: { value: null }, uTexel: { value: new THREE.Vector2() }, uHorizontal: { value: 1 } },
-    });
-
-    // composite
-    this.compMat = new THREE.RawShaderMaterial({
-      vertexShader: vert, fragmentShader: comp,
-      uniforms: {
-        uScene: { value: this.rtScene.texture },
-        uBloom: { value: this.rtBlur2.texture },
-        uHistory: { value: this.rtHistory.texture },
-        uResolution: { value: new THREE.Vector2(this.width, this.height) },
-        uTime: { value: 0 },
-        uBloomStrength: { value: p.bloom },
-        uGrainStrength: { value: p.grain },
-        uCAStrength: { value: p.ca },
-        uVignette: { value: 0.55 },
-        uExposure: { value: p.exposure },
-        uTAAAlpha: { value: 0.1 },
-      },
-    });
-
-    this._swap = new THREE.Mesh(this.quad, this.compMat);
-    this.scene.add(this._swap);
-
-    // blit material — copies a texture to the framebuffer (GLSL ES 1.00 for simplicity)
-    this.blitMat = new THREE.ShaderMaterial({
-      vertexShader: `varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position,1.0);}`,
-      fragmentShader: `varying vec2 vUv; uniform sampler2D t; void main(){ gl_FragColor=texture2D(t,vUv);}`,
-      uniforms: { t: { value: null } },
-      depthTest: false, depthWrite: false,
-    });
-
-    this._ready = true;
+  _tex(unit, tex, loc) {
+    const gl = this.gl;
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.uniform1i(loc, unit);
   }
 
-  _initEvents() {
-    window.addEventListener('resize', () => this._resize());
-
-    const c = this.canvas;
-    let dragging = false, lx = 0, ly = 0;
-    c.addEventListener('pointerdown', (e) => {
-      dragging = true; this.userInteracting = true; this.autoOrbit = false;
-      lx = e.clientX; ly = e.clientY;
-      c.setPointerCapture(e.pointerId);
-    });
-    c.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      const dx = e.clientX - lx, dy = e.clientY - ly;
-      this.targetYaw -= dx * 0.005;
-      this.targetPitch = Math.max(-1.2, Math.min(1.2, this.targetPitch + dy * 0.005));
-      lx = e.clientX; ly = e.clientY;
-    });
-    const end = (e) => { dragging = false; if (c.hasPointerCapture(e.pointerId)) c.releasePointerCapture(e.pointerId); };
-    c.addEventListener('pointerup', end);
-    c.addEventListener('pointercancel', end);
-
-    c.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + e.deltaY * 0.005));
-    }, { passive: false });
-
-    // touch pinch
-    let pinchDist = 0;
-    c.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 2) {
-        pinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      }
-    });
-    c.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-        this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + (pinchDist - d) * 0.02));
-        pinchDist = d;
-      }
-    }, { passive: false });
+  _draw() {
+    const gl = this.gl;
+    gl.bindVertexArray(this._vao);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.bindVertexArray(null);
   }
 
-  setQuality(q) {
-    this.quality = q;
-    if (!this._ready) return;
-    const p = QUALITY_PRESETS[q] || QUALITY_PRESETS['high'];
-    this.bhMat.uniforms.uSteps.value = p.steps;
-    this.bhMat.uniforms.uStepSize.value = p.stepSize;
-    this.bhMat.uniforms.uJitter.value = p.jitter;
-    this.compMat.uniforms.uBloomStrength.value = p.bloom;
-    this.compMat.uniforms.uGrainStrength.value = p.grain;
-    this.compMat.uniforms.uCAStrength.value = p.ca;
-    this.compMat.uniforms.uExposure.value = p.exposure;
-  }
-
+  // ── Public API ─────────────────────────────────────────────────
   pause() {
     this.running = false;
   }
@@ -231,97 +321,60 @@ export class BlackHoleRenderer {
   resume() {
     if (this.running) return;
     this.running = true;
-    this.clock.getDelta(); // reset delta to avoid jump
-    this.render();
-  }
-
-  render() {
-    if (!this._ready) { requestAnimationFrame(() => this.render()); return; }
-    if (!this.running) return;
-    const dt = this.clock.getDelta();
-    const t = this.clock.getElapsedTime();
-
-    // spring camera
-    this.cameraYaw   += (this.targetYaw - this.cameraYaw) * 0.06;
-    this.cameraPitch += (this.targetPitch - this.cameraPitch) * 0.06;
-    this.cameraDist  += (this.targetDist - this.cameraDist) * 0.06;
-    if (this.autoOrbit) this.targetYaw += this.autoOrbitSpeed * dt;
-
-    this.bhMat.uniforms.uTime.value = t;
-    this.bhMat.uniforms.uCameraYaw.value = this.cameraYaw;
-    this.bhMat.uniforms.uCameraPitch.value = this.cameraPitch;
-    this.bhMat.uniforms.uCameraDist.value = this.cameraDist;
-    this.bhMat.uniforms.uResolution.value.set(this.width, this.height);
-    this.compMat.uniforms.uTime.value = t;
-    this.compMat.uniforms.uResolution.value.set(this.width, this.height);
-
-    // pass 1: render black hole scene
-    this.bhQuad.visible = true; this._swap.visible = false;
-    this.renderer.setRenderTarget(this.rtScene);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // pass 2: bright pass
-    this.bhQuad.visible = false;
-    this.brightMat.uniforms.uScene.value = this.rtScene.texture;
-    this._swap.material = this.brightMat;
-    this._swap.visible = true;
-    this.renderer.setRenderTarget(this.rtBloom);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // pass 3: blur horizontal
-    this.blurMat.uniforms.uImage.value = this.rtBloom.texture;
-    this.blurMat.uniforms.uTexel.value.set(1.0 / this.width, 1.0 / this.height);
-    this.blurMat.uniforms.uHorizontal.value = 1;
-    this._swap.material = this.blurMat;
-    this.renderer.setRenderTarget(this.rtBlur1);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // pass 4: blur vertical
-    this.blurMat.uniforms.uImage.value = this.rtBlur1.texture;
-    this.blurMat.uniforms.uHorizontal.value = 0;
-    this.renderer.setRenderTarget(this.rtBlur2);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // pass 5: composite + TAA — render composite into rtComposite (reads rtHistory, writes rtComposite)
-    this.compMat.uniforms.uScene.value = this.rtScene.texture;
-    this.compMat.uniforms.uBloom.value = this.rtBlur2.texture;
-    this.compMat.uniforms.uHistory.value = this.rtHistory.texture;
-    this._swap.material = this.compMat;
-
-    this.renderer.setRenderTarget(this.rtComposite);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // blit composite to screen
-    this._swap.material = this.blitMat;
-    this.blitMat.uniforms.t.value = this.rtComposite.texture;
-    this.renderer.setRenderTarget(null);
-    this.renderer.clear();
-    this.renderer.render(this.scene, this.camera);
-
-    // ping-pong: composite becomes next frame's history
-    const tmp = this.rtHistory; this.rtHistory = this.rtComposite; this.rtComposite = tmp;
-    this.compMat.uniforms.uHistory.value = this.rtHistory.texture;
-
-    // FPS
-    this.frameCount++;
-    this.fpsTime += dt;
-    if (this.fpsTime >= 0.5) {
-      this.onFps(Math.round(this.frameCount / this.fpsTime));
-      this.frameCount = 0; this.fpsTime = 0;
-    }
-
-    if (this.running) requestAnimationFrame(() => this.render());
+    this._prevNow = null;
+    if (this._ready) requestAnimationFrame(t => this._tick(t));
   }
 
   dispose() {
     this.running = false;
-    this.rtScene.dispose(); this.rtBloom.dispose(); this.rtBlur1.dispose();
-    this.rtBlur2.dispose(); this.rtComposite.dispose(); this.rtHistory.dispose();
-    this.renderer.dispose();
+    const gl = this.gl;
+    if (!gl) return;
+    ['_fboScene','_fboBloom','_fboBlur1','_fboBlur2','_fboComp','_fboHist'].forEach(k => this._delFBO(this[k]));
+    [this._pBH, this._pBright, this._pBlur, this._pComp, this._pBlit].forEach(p => { if (p) gl.deleteProgram(p); });
+    if (this._vao) gl.deleteVertexArray(this._vao);
+  }
+
+  // ── Input ──────────────────────────────────────────────────────
+  _initPointer() {
+    const c = this.canvas;
+    let dragging = false, lx = 0, ly = 0;
+    c.addEventListener('pointerdown', e => {
+      dragging = true; this.autoOrbit = false;
+      lx = e.clientX; ly = e.clientY;
+      c.setPointerCapture(e.pointerId);
+    });
+    c.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      this.targetYaw   -= (e.clientX - lx) * 0.005;
+      this.targetPitch  = Math.max(-1.2, Math.min(1.2, this.targetPitch + (e.clientY - ly) * 0.005));
+      lx = e.clientX; ly = e.clientY;
+    });
+    const end = e => { dragging = false; if (c.hasPointerCapture(e.pointerId)) c.releasePointerCapture(e.pointerId); };
+    c.addEventListener('pointerup', end);
+    c.addEventListener('pointercancel', end);
+    c.addEventListener('wheel', e => {
+      e.preventDefault();
+      this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + e.deltaY * 0.005));
+    }, { passive: false });
+
+    let p0 = 0;
+    c.addEventListener('touchstart', e => {
+      if (e.touches.length === 2)
+        p0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    });
+    c.addEventListener('touchmove', e => {
+      if (e.touches.length !== 2) return;
+      e.preventDefault();
+      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + (p0 - d) * 0.02));
+      p0 = d;
+    }, { passive: false });
+  }
+
+  _fallback(msg) {
+    const el = document.createElement('div');
+    el.className = 'webgl-fallback';
+    el.textContent = msg;
+    (this.canvas.parentElement || document.body).appendChild(el);
   }
 }
