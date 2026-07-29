@@ -189,7 +189,11 @@ vec3 cameraRay(vec2 uv) {
   float aspect = uResolution.x / uResolution.y;
   vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
   float fov = 1.4; // focal length-ish
-  vec3 dir = normalize(vec3(p * fov, -1.0));
+  // z = +1 so the centre-pixel direction equals `forward` (toward the BH),
+  // not `-forward` (away from it). Previous `z = -1` made every ray point
+  // outward, so the camera "looked behind itself" and the raymarcher found
+  // nothing — black canvas with shader ticking.
+  vec3 dir = normalize(vec3(p * fov, 1.0));
 
   // camera position on a sphere
   float cy = cos(uCameraYaw), sy = sin(uCameraYaw);
