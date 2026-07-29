@@ -30,6 +30,9 @@ export class BlackHoleRenderer {
     this._frameCount = 0;
     this._fpsAccum   = 0;
 
+    window.__BHR_trace = window.__BHR_trace || [];
+    window.__BHR_trace.push('constructor entry');
+
     // camera
     this.cameraYaw      = 0.3;
     this.cameraPitch    = 0.18;
@@ -71,6 +74,7 @@ export class BlackHoleRenderer {
 
   // ── Init ───────────────────────────────────────────────────────
   async _boot() {
+    window.__BHR_trace.push('_boot enter');
     const base = './shaders/';
     let vert, bhFrag, brightFrag, blurFrag, compFrag;
     try {
@@ -81,6 +85,7 @@ export class BlackHoleRenderer {
         this._fetch(base + 'blur.frag.glsl'),
         this._fetch(base + 'composite.frag.glsl'),
       ]);
+      window.__BHR_trace.push('all 5 shaders fetched');
       // GLSL ES 3.00 spec requires `#version` to be the first line in the
       // shader (comments/whitespace before are tolerated by some drivers,
       // rejected by SwiftShader, Mesa and most mobile GPUs). Normalize each
@@ -92,18 +97,25 @@ export class BlackHoleRenderer {
       compFrag  = this._stripLeadingJunk(compFrag);
     } catch (e) {
       console.error('BlackHoleRenderer: shader fetch failed —', e);
+      window.__BHR_trace.push('FETCH FAILED: ' + e.message);
       return;
     }
 
     const gl = this.gl;
     try {
       this._pBH     = this._mkProg(vert, bhFrag);
+      window.__BHR_trace.push('BH compiled');
       this._pBright = this._mkProg(vert, brightFrag);
+      window.__BHR_trace.push('bright compiled');
       this._pBlur   = this._mkProg(vert, blurFrag);
+      window.__BHR_trace.push('blur compiled');
       this._pComp   = this._mkProg(vert, compFrag);
+      window.__BHR_trace.push('composite compiled');
       this._pBlit   = this._mkProg(BLIT_VERT, BLIT_FRAG);
+      window.__BHR_trace.push('blit compiled');
     } catch (e) {
       console.error('BlackHoleRenderer: shader compile failed —', e);
+      window.__BHR_trace.push('COMPILE FAILED: ' + e.message.slice(0, 200));
       return;
     }
 
@@ -119,6 +131,7 @@ export class BlackHoleRenderer {
 
     this._initFBOs();
     this._ready = true;
+    window.__BHR_trace.push('READY');
 
     if (this.running) {
       this._startTime = performance.now();
