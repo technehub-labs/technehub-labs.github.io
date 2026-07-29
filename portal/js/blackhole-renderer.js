@@ -320,12 +320,18 @@ Object.defineProperty(window.TNH, 'toggleAudio', {
 // =============================================================================
 // Boot
 // =============================================================================
+window.__BHR_trace = [];
+function trace(msg) { window.__BHR_trace.push(msg); console.log('[TNH]', msg); }
+
 try {
+    trace('init start');
     initThree();
+    trace('init done, ready=' + STATE.ready);
     if (STATE.ready) {
         rafId = requestAnimationFrame(animate);
         console.log('[TNH] GARGANTUA-class black-hole renderer initialised.');
     }
 } catch (e) {
+    trace('init failed: ' + e.message);
     console.error('[TNH] init failed', e);
 }
