@@ -204,4 +204,11 @@ class App {
 }
 
 const app = new App();
-app.init().catch((e) => console.error('Portal init failed', e));
+window.__APP_trace = window.__APP_trace || [];
+window.__APP_trace.push('App created');
+app.init().then(() => {
+  window.__APP_trace.push('App.init resolved');
+}).catch((e) => {
+  window.__APP_trace.push('App.init FAILED: ' + e.message);
+  console.error('Portal init failed', e);
+});
