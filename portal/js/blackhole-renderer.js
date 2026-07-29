@@ -5,7 +5,7 @@
 // composite (ACES + bloom + grain + CA + vignette) + TAA ping-pong.
 // ═══════════════════════════════════════════════════════════════
 
-const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.55, ca: 0.002, grain: 0.03, exposure: 1.0 };
+const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.4, ca: 0.002, grain: 0.03, exposure: 1.0 };
 
 const BLIT_VERT = `#version 300 es
 void main(){
@@ -265,7 +265,7 @@ export class BlackHoleRenderer {
     // ── Pass 2: bright pass — only the very brightest pixels bloom ──
     this._bind(this._pBright, this._fboBloom.fbo);
     this._tex(0, this._fboScene.tex, this._uBright.uScene);
-    gl.uniform1f(this._uBright.uThreshold, 0.9);
+    gl.uniform1f(this._uBright.uThreshold, 1.0);
     this._draw();
 
     // ── Pass 3: blur H ──

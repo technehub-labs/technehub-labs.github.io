@@ -303,16 +303,17 @@ void main() {
         float cr = length(crossPos);
         // gravitational redshift: 1 + z = 1/sqrt(1 - r_s/r)
         float gravFactor = 1.0 / sqrt(max(1.0 - RS / cr, 0.01));
-        float redshift = clamp(1.0 / pow(gravFactor, uGravRedshift), 0.2, 3.0);
+        float redshift = clamp(1.0 / pow(gravFactor, uGravRedshift), 0.4, 2.0);
         // Doppler beaming: orbital velocity direction vs line of sight
         vec3 orbital = normalize(cross(vec3(0,1,0), crossPos));
         float los = dot(normalize(vel), orbital);
         float v = sqrt(RS / max(cr, EH)) * 0.5; // orbital speed ~ sqrt(r_s/r)
-        float doppler = pow(max(1.0 + los * v, 0.01), -uDopplerStrength * 3.0);
-        doppler = clamp(doppler, 0.3, 4.0);
+        // Softened exponent so the approaching side isn't 4× brighter than receding
+        float doppler = pow(max(1.0 + los * v, 0.05), -uDopplerStrength * 1.5);
+        doppler = clamp(doppler, 0.4, 2.5);
 
+        // emit kept inside LDR range — peak ~0.5 * 1 * 2.5 * 2 = ~2.5 per crossing
         vec3 emit = disk.rgb * uDiskBright * doppler;
-        // shift color: redshift dims blue channel, doppler boosts approaching
         emit *= redshift;
         emit.r *= mix(1.0, 1.15, clamp(doppler - 1.0, 0.0, 1.0));
         emit.b *= mix(1.0, 0.7, clamp(redshift - 1.0, 0.0, 1.0));
@@ -320,7 +321,7 @@ void main() {
         float d = disk.a * transmittance;
         accumColor += emit * d;
         accumAlpha += d;
-        transmittance *= (1.0 - d * 0.85);
+        transmittance *= (1.0 - d * 0.6);
       }
     }
 
