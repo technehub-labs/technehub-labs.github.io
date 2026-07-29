@@ -1,406 +1,331 @@
-// ═══════════════════════════════════════════════════════════════
-// Black Hole Renderer — pure WebGL2, no Three.js.
-// Fullscreen triangle via gl_VertexID (drawArrays, 3 verts).
-// 5-pass pipeline: BH scene → bright pass → blur H → blur V →
-// composite (ACES + bloom + grain + CA + vignette) + TAA ping-pong.
-// ═══════════════════════════════════════════════════════════════
+// =============================================================================
+// TechNeHub Labs — Black Hole Underlay (GARGANTUA port)
+// ----------------------------------------------------------------------------
+// Renderer — Three.js r160 + EffectComposer + UnrealBloomPass + manual ACES
+// composite pass. Verbatim shader source from the GARGANTUA reference.
+//
+//   https://c3gyemkuxznvi.ok.kimi.link/
+//
+// Pipeline:
+//   Ray scene (fullscreen quad, ortho cam, PerspectiveCamera-fed uniforms)
+//     → UnrealBloomPass (HDR bloom, HalfFloat render target)
+//     → Composite (chromatic aberration + manual ACES + vignette + film grain)
+//
+// Differences from the original custom-WebGL2 portal renderer:
+//   * Uses Three.js instead of raw WebGL2 (the reference uses Three.js too,
+//     for the OrbitControls + EffectComposer convenience)
+//   * Camera is a real PerspectiveCamera driven by Three's OrbitControls
+//     (the portal keeps user-supplied controls; the underlying shader just
+//     samples the camera's position/target each frame)
+//   * Cinematic auto-orbit replaces the user's manual orbit while the portal
+//     cards are not focused (gate on `cardsOpen`)
+// =============================================================================
+import * as THREE from '../vendor/three/three.module.js';
+import { OrbitControls }    from '../vendor/addons/controls/OrbitControls.js';
+import { EffectComposer }   from '../vendor/addons/postprocessing/EffectComposer.js';
+import { RenderPass }       from '../vendor/addons/postprocessing/RenderPass.js';
+import { ShaderPass }       from '../vendor/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass }  from '../vendor/addons/postprocessing/UnrealBloomPass.js';
 
-const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.4, ca: 0.002, grain: 0.03, exposure: 1.0 };
+import { RAY_VERT, RAY_FRAG, COMPOSITE_VERT, COMPOSITE_FRAG } from './shaders.js';
 
-const BLIT_VERT = `#version 300 es
-void main(){
-  vec2 p=vec2((gl_VertexID==1)?3.:-1.,(gl_VertexID==2)?3.:-1.);
-  gl_Position=vec4(p,0.,1.);
-}`;
+const DEG = Math.PI / 180;
 
-const BLIT_FRAG = `#version 300 es
-precision highp float;
-uniform sampler2D uTex;
-out vec4 o;
-void main(){ o=texelFetch(uTex,ivec2(gl_FragCoord.xy),0); }`;
+const STATE = {
+    ready: false,
+    paused: false,
+    cameraPause: false,
+    contextLost: false,
+    contextRestored: false,
+    renderFaulted: false,
+};
 
-export class BlackHoleRenderer {
-  constructor(canvas, opts = {}) {
-    this.canvas  = canvas;
-    this.onFps   = opts.onFps || (() => {});
-    this.running = true;
-    this._ready  = false;
-    this._startTime = null;
-    this._prevNow   = null;
-    this._frameCount = 0;
-    this._fpsAccum   = 0;
+let renderer, fsScene, fsCam, camera, controls, composer, bloomPass, compPass;
+let rayUni, compUni;
+const canvas = document.getElementById('bh-canvas');
 
-    // camera
-    this.cameraYaw      = 0.3;
-    this.cameraPitch    = 0.32;   // ~18° above the disk plane — clearer cinematic view
-    this.cameraDist     = 8.5;
-    this.targetYaw      = this.cameraYaw;
-    this.targetPitch    = this.cameraPitch;
-    this.targetDist     = this.cameraDist;
-    this.autoOrbit      = true;
-    this.autoOrbitSpeed = 0.04;
+function initThree() {
+    if (!canvas) throw new Error('Canvas #bh-canvas not found.');
 
-    let gl;
     try {
-      gl = canvas.getContext('webgl2', {
-        antialias: false,
-        powerPreference: 'high-performance',
-        preserveDrawingBuffer: false,
-        alpha: false,
-      });
+        renderer = new THREE.WebGLRenderer({
+            canvas,
+            antialias: false,
+            powerPreference: 'high-performance',
+            preserveDrawingBuffer: false,
+        });
     } catch (err) {
-      this._fallback('WebGL2 is unavailable in this browser.');
-      return;
-    }
-    if (!gl) {
-      this._fallback('WebGL2 is unavailable in this browser.');
-      return;
-    }
-    this.gl = gl;
-
-    // Prefer RGBA16F; fall back to RGBA8 on constrained GPUs
-    const hdrOk = gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float');
-    this._intFmt = hdrOk ? gl.RGBA16F     : gl.RGBA8;
-    this._type   = hdrOk ? gl.HALF_FLOAT  : gl.UNSIGNED_BYTE;
-
-    this._resize();
-    window.addEventListener('resize', () => this._resize());
-    this._initPointer();
-    this._boot();
-  }
-
-  // ── Init ───────────────────────────────────────────────────────
-  async _boot() {
-    const base = './shaders/';
-    let vert, bhFrag, brightFrag, blurFrag, compFrag;
-    try {
-      [vert, bhFrag, brightFrag, blurFrag, compFrag] = await Promise.all([
-        this._fetch(base + 'fullscreen.vert.glsl'),
-        this._fetch(base + 'blackhole.frag.glsl'),
-        this._fetch(base + 'brightpass.frag.glsl'),
-        this._fetch(base + 'blur.frag.glsl'),
-        this._fetch(base + 'composite.frag.glsl'),
-      ]);
-      // GLSL ES 3.00 spec requires `#version` to be the first line in the
-      // shader (comments/whitespace before are tolerated by some drivers,
-      // rejected by SwiftShader, Mesa and most mobile GPUs). Normalize each
-      // fetched source so the directive is at position 0.
-      vert      = this._stripLeadingJunk(vert);
-      bhFrag    = this._stripLeadingJunk(bhFrag);
-      brightFrag = this._stripLeadingJunk(brightFrag);
-      blurFrag  = this._stripLeadingJunk(blurFrag);
-      compFrag  = this._stripLeadingJunk(compFrag);
-    } catch (e) {
-      console.error('BlackHoleRenderer: shader fetch failed —', e);
-      return;
+        console.error('[TNH] WebGL init failed:', err);
+        return;
     }
 
-    const gl = this.gl;
-    try {
-      this._pBH     = this._mkProg(vert, bhFrag);
-      this._pBright = this._mkProg(vert, brightFrag);
-      this._pBlur   = this._mkProg(vert, blurFrag);
-      this._pComp   = this._mkProg(vert, compFrag);
-      this._pBlit   = this._mkProg(BLIT_VERT, BLIT_FRAG);
-    } catch (e) {
-      console.error('BlackHoleRenderer: shader compile failed —', e);
-      return;
-    }
+    // Manual ACES in the composite pass — renderer stays NoToneMapping.
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    renderer.toneMapping = THREE.NoToneMapping;
 
-    // Cache uniform locations
-    this._uBH     = this._cacheUniforms(this._pBH, ['uResolution','uTime','uCameraDist','uCameraYaw','uCameraPitch','uDiskInner','uDiskOuter','uDiskThick','uDiskBright','uDopplerStrength','uGravRedshift','uNoiseScale','uQuality','uSteps','uStepSize','uExposure','uStarBrightness','uGalaxyBrightness','uDiskColorHot','uDiskColorCool','uJitter']);
-    this._uBright = this._cacheUniforms(this._pBright, ['uScene','uThreshold']);
-    this._uBlur   = this._cacheUniforms(this._pBlur,   ['uImage','uTexel','uHorizontal']);
-    this._uComp   = this._cacheUniforms(this._pComp,   ['uScene','uBloom','uHistory','uResolution','uTime','uBloomStrength','uGrainStrength','uCAStrength','uVignette','uExposure','uTAAAlpha']);
-    this._uBlit   = this._cacheUniforms(this._pBlit,   ['uTex']);
-
-    // Empty VAO — fullscreen triangle uses gl_VertexID, no vertex attributes
-    this._vao = gl.createVertexArray();
-
-    this._initFBOs();
-    this._ready = true;
-
-    if (this.running) {
-      this._startTime = performance.now();
-      requestAnimationFrame(t => this._tick(t));
-    }
-  }
-
-  _fetch(url) {
-    return fetch(url).then(r => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}: ${url}`);
-      return r.text();
-    });
-  }
-
-  _stripLeadingJunk(src) {
-    // Move any `#version` directive in the source to the very first line.
-    // Required for strict GLSL ES 3.00 drivers (SwiftShader, Mesa, mobile GPUs).
-    const m = src.match(/#version[^\n]*\n/);
-    if (!m) return src;
-    const version = m[0];
-    return version + src.replace(version, '');
-  }
-
-  _mkProg(vsrc, fsrc) {
-    const gl = this.gl;
-    const mkShader = (type, src) => {
-      const sh = gl.createShader(type);
-      gl.shaderSource(sh, src);
-      gl.compileShader(sh);
-      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-        const log = gl.getShaderInfoLog(sh);
-        gl.deleteShader(sh);
-        console.error('[BlackHole] shader compile failed:', log, '\n--- first 200 chars ---\n', src.slice(0, 200));
-        throw new Error(`Shader compile:\n${log}\n\n${src.slice(0, 400)}`);
-      }
-      return sh;
+    // Surface shader-compile failures instead of black.
+    renderer.debug.onShaderError = (gl, program, vs, fs) => {
+        const log = (gl.getShaderInfoLog(fs) || '') + '\n' + (gl.getShaderInfoLog(vs) || '');
+        console.error('[TNH] shader compile failed:\n' + log);
     };
-    const vs = mkShader(gl.VERTEX_SHADER,   vsrc);
-    const fs = mkShader(gl.FRAGMENT_SHADER, fsrc);
-    const p  = gl.createProgram();
-    gl.attachShader(p, vs); gl.attachShader(p, fs);
-    gl.linkProgram(p);
-    gl.deleteShader(vs); gl.deleteShader(fs);
-    if (!gl.getProgramParameter(p, gl.LINK_STATUS))
-      throw new Error('Program link: ' + gl.getProgramInfoLog(p));
-    return p;
-  }
 
-  _cacheUniforms(prog, names) {
-    const gl = this.gl;
-    const out = {};
-    for (const n of names) out[n] = gl.getUniformLocation(prog, n);
-    return out;
-  }
-
-  _mkFBO(w, h) {
-    const gl = this.gl;
-    const tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texStorage2D(gl.TEXTURE_2D, 1, this._intFmt, w, h);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    const fbo = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    return { tex, fbo };
-  }
-
-  _delFBO(f) {
-    if (!f) return;
-    this.gl.deleteTexture(f.tex);
-    this.gl.deleteFramebuffer(f.fbo);
-  }
-
-  _initFBOs() {
-    ['_fboScene','_fboBloom','_fboBlur1','_fboBlur2','_fboComp','_fboHist'].forEach(k => {
-      this._delFBO(this[k]);
-      this[k] = this._mkFBO(this.width, this.height);
+    canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        STATE.contextLost = true;
+        showOverlay('Reinitialising WebGL…');
     });
-  }
+    canvas.addEventListener('webglcontextrestored', () => {
+        if (STATE.contextRestored) return;
+        STATE.contextRestored = true;
+        location.reload();
+    });
 
-  _resize() {
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    this.width  = Math.floor(window.innerWidth  * dpr);
-    this.height = Math.floor(window.innerHeight * dpr);
-    this.canvas.width  = this.width;
-    this.canvas.height = this.height;
-    this.canvas.style.width  = window.innerWidth  + 'px';
-    this.canvas.style.height = window.innerHeight + 'px';
-    if (this.gl) this.gl.viewport(0, 0, this.width, this.height);
-    if (this._ready) this._initFBOs();
-  }
+    // HDR probe — bloom fidelity requires HalfFloatType render target.
+    const gl = renderer.getContext();
+    const halfOK = renderer.capabilities.isWebGL2 &&
+        !!(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'));
 
-  // ── Render loop ────────────────────────────────────────────────
-  _tick(now) {
-    if (!this.running || !this._ready) return;
+    // Fullscreen ray scene
+    fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    fsScene = new THREE.Scene();
+    rayUni = {
+        uRes:        { value: new THREE.Vector2(1, 1) },
+        uTime:       { value: 0 },
+        uCamPos:     { value: new THREE.Vector3(4.49, 2.72, 25.46) },
+        uCamTarget:  { value: new THREE.Vector3(0, 0, 0) },
+        uFov:        { value: 1 / Math.tan(44 * DEG / 2) },
+        uSteps:      { value: 460 },
+        uRotSign:    { value: 1 },
+        uDebug:      { value: 0 },
+        uDin:        { value: 2.75 },
+        uDout:       { value: 40 },
+        uDopMax:     { value: 1.85 },
+        uOpNear:     { value: 0.90 },
+        uOpFar:      { value: 0.80 },
+        uDiskBright: { value: 1.0 },
+        uStarBright: { value: 1.0 },
+        uSkyFloor:   { value: 0.04 },
+        uRotSpeed:   { value: 1.0 },
+    };
+    const rayMat = new THREE.ShaderMaterial({
+        vertexShader: RAY_VERT,
+        fragmentShader: RAY_FRAG,
+        uniforms: rayUni,
+        depthTest: false,
+        depthWrite: false,
+    });
+    fsScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), rayMat));
 
-    const t  = (now - this._startTime) * 0.001;
-    const dt = this._prevNow !== null
-      ? Math.min((now - this._prevNow) * 0.001, 0.05)
-      : 0.016;
-    this._prevNow = now;
+    // Perspective camera — provides position + target to the shader
+    camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.01, 200);
+    camera.position.set(4.49, 2.72, 25.46);
+    camera.lookAt(0, 0, 0);
 
-    // smooth camera
-    const k = 0.06;
-    this.cameraYaw   += (this.targetYaw   - this.cameraYaw)   * k;
-    this.cameraPitch += (this.targetPitch - this.cameraPitch) * k;
-    this.cameraDist  += (this.targetDist  - this.cameraDist)  * k;
-    if (this.autoOrbit) this.targetYaw += this.autoOrbitSpeed * dt;
+    // OrbitControls is included for parity with the reference; user input
+    // is forwarded via `window.TNH.setUnderlayDimmed()` to coordinate with
+    // the cards overlay.
+    controls = new OrbitControls(camera, canvas);
+    controls.target.set(0, 0, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 1.62;
+    controls.maxDistance = 150;
+    controls.rotateSpeed = 0.55;
+    controls.zoomSpeed = 0.7;
+    controls.enablePan = false;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.12;
 
-    const gl = this.gl;
-    const W = this.width, H = this.height;
+    // HDR composer
+    renderer.getDrawingBufferSize(rayUni.uRes.value);
+    const rt = new THREE.WebGLRenderTarget(
+        rayUni.uRes.value.x || 2,
+        rayUni.uRes.value.y || 2,
+        { type: halfOK ? THREE.HalfFloatType : THREE.UnsignedByteType }
+    );
+    composer = new EffectComposer(renderer, rt);
+    composer.addPass(new RenderPass(fsScene, fsCam));
 
-    // ── Pass 1: Schwarzschild scene ──
-    this._bind(this._pBH, this._fboScene.fbo);
-    const ub = this._uBH;
-    gl.uniform2f(ub.uResolution,       W, H);
-    gl.uniform1f(ub.uTime,             t);
-    gl.uniform1f(ub.uCameraDist,       this.cameraDist);
-    gl.uniform1f(ub.uCameraYaw,        this.cameraYaw);
-    gl.uniform1f(ub.uCameraPitch,      this.cameraPitch);
-    gl.uniform1f(ub.uDiskInner,        2.6);
-    gl.uniform1f(ub.uDiskOuter,        7.5);
-    gl.uniform1f(ub.uDiskThick,        0.35);
-    gl.uniform1f(ub.uDiskBright,       1.0);
-    gl.uniform1f(ub.uDopplerStrength,  1.0);
-    gl.uniform1f(ub.uGravRedshift,     1.0);
-    gl.uniform1f(ub.uNoiseScale,       0.55);
-    gl.uniform1f(ub.uQuality,          1.0);
-    gl.uniform1i(ub.uSteps,            Q.steps);
-    gl.uniform1f(ub.uStepSize,         Q.stepSize);
-    gl.uniform1f(ub.uExposure,         1.0);
-    gl.uniform1f(ub.uStarBrightness,   1.0);
-    gl.uniform1f(ub.uGalaxyBrightness, 0.7);
-    // Hot inner (blue-white) → cool outer (orange-red). Matches GARGANTUA palette.
-    gl.uniform3f(ub.uDiskColorHot,     0.85, 0.92, 1.0);
-    gl.uniform3f(ub.uDiskColorCool,    1.0,  0.45, 0.18);
-    gl.uniform1f(ub.uJitter,           Q.jitter);
-    this._draw();
+    bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(rayUni.uRes.value.x || 2, rayUni.uRes.value.y || 2),
+        0.55, 0.35, 0.55
+    );
+    composer.addPass(bloomPass);
 
-    // ── Pass 2: bright pass — only the very brightest pixels bloom ──
-    this._bind(this._pBright, this._fboBloom.fbo);
-    this._tex(0, this._fboScene.tex, this._uBright.uScene);
-    gl.uniform1f(this._uBright.uThreshold, 1.0);
-    this._draw();
+    compUni = {
+        tDiffuse:  { value: null },
+        uRes:      { value: new THREE.Vector2(1, 1) },
+        uTime:     { value: 0 },
+        uVignette: { value: 1.0 },
+        uGrain:    { value: 0.045 },
+        uCA:       { value: 0.0028 },
+    };
+    compPass = new ShaderPass({
+        uniforms: compUni,
+        vertexShader: COMPOSITE_VERT,
+        fragmentShader: COMPOSITE_FRAG,
+    });
+    composer.addPass(compPass);
 
-    // ── Pass 3: blur H ──
-    this._bind(this._pBlur, this._fboBlur1.fbo);
-    this._tex(0, this._fboBloom.tex, this._uBlur.uImage);
-    gl.uniform2f(this._uBlur.uTexel, 1.0 / W, 1.0 / H);
-    gl.uniform1i(this._uBlur.uHorizontal, 1);
-    this._draw();
+    STATE.ready = true;
+    onResize();
+    window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('orientationchange', onResize, { passive: true });
+}
 
-    // ── Pass 4: blur V ──
-    this._bind(this._pBlur, this._fboBlur2.fbo);
-    this._tex(0, this._fboBlur1.tex, this._uBlur.uImage);
-    gl.uniform2f(this._uBlur.uTexel, 1.0 / W, 1.0 / H);
-    gl.uniform1i(this._uBlur.uHorizontal, 0);
-    this._draw();
+function onResize() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    if (w === 0 || h === 0) return;
+    renderer.setSize(w, h, false);
+    composer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.getDrawingBufferSize(rayUni.uRes.value);
+    compUni.uRes.value.copy(rayUni.uRes.value);
+}
 
-    // ── Pass 5: composite → _fboComp ──
-    this._bind(this._pComp, this._fboComp.fbo);
-    const uc = this._uComp;
-    this._tex(0, this._fboScene.tex,  uc.uScene);
-    this._tex(1, this._fboBlur2.tex,  uc.uBloom);
-    this._tex(2, this._fboHist.tex,   uc.uHistory);
-    gl.uniform2f(uc.uResolution,   W, H);
-    gl.uniform1f(uc.uTime,         t);
-    gl.uniform1f(uc.uBloomStrength, Q.bloom);
-    gl.uniform1f(uc.uGrainStrength, Q.grain);
-    gl.uniform1f(uc.uCAStrength,    Q.ca);
-    gl.uniform1f(uc.uVignette,      0.55);
-    gl.uniform1f(uc.uExposure,      Q.exposure);
-    gl.uniform1f(uc.uTAAAlpha,      0.1);
-    this._draw();
+// =============================================================================
+// Cinematic camera loop
+// =============================================================================
+const clock = new THREE.Clock();
+let rafId = 0;
 
-    // ── Pass 6: blit composite → screen ──
-    this._bind(this._pBlit, null);
-    this._tex(0, this._fboComp.tex, this._uBlit.uTex);
-    this._draw();
+function animate() {
+    rafId = requestAnimationFrame(animate);
+    if (!STATE.ready || STATE.paused || STATE.contextLost || STATE.renderFaulted) return;
 
-    // TAA ping-pong: swap composite ↔ history for next frame
-    const tmp = this._fboComp; this._fboComp = this._fboHist; this._fboHist = tmp;
+    const dt = Math.min(clock.getDelta(), 0.1);
+    rayUni.uTime.value += dt;
+    compUni.uTime.value = rayUni.uTime.value;
 
-    // FPS counter
-    this._frameCount++;
-    this._fpsAccum += dt;
-    if (this._fpsAccum >= 0.5) {
-      this.onFps(Math.round(this._frameCount / this._fpsAccum));
-      this._frameCount = 0; this._fpsAccum = 0;
+    // Push the camera state into the raymarcher each frame.
+    rayUni.uCamPos.value.copy(camera.position);
+    rayUni.uCamTarget.value.set(0, 0, 0);
+
+    // While a card is open, the cards overlay tells us to dim the underlay
+    // and pause cinematic camera motion. We let the shader keep rendering
+    // (so the dimmed scene shows through) but freeze the camera position.
+    if (STATE.cameraPause) {
+        // No controls.update(), no auto-orbit.
+    } else {
+        controls.update();
     }
 
-    requestAnimationFrame(t => this._tick(t));
-  }
+    try {
+        composer.render();
+    } catch (err) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+        STATE.renderFaulted = true;
+        console.error('[TNH] render fault:', err);
+    }
+}
 
-  _bind(prog, fbo) {
-    const gl = this.gl;
-    gl.useProgram(prog);
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    gl.viewport(0, 0, this.width, this.height);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-  }
+// =============================================================================
+// Pause / resume on tab visibility
+// =============================================================================
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        STATE.paused = true;
+    } else if (STATE.paused && !STATE.contextLost) {
+        STATE.paused = false;
+        clock.getDelta();
+        if (!rafId) rafId = requestAnimationFrame(animate);
+    }
+});
 
-  _tex(unit, tex, loc) {
-    const gl = this.gl;
-    gl.activeTexture(gl.TEXTURE0 + unit);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.uniform1i(loc, unit);
-  }
+// =============================================================================
+// Fatal overlay
+// =============================================================================
+function showOverlay(msg) {
+    let el = document.getElementById('tnh-fatal');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'tnh-fatal';
+        el.style.cssText = 'position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:rgba(6,7,11,0.92);color:#e6edf6;font-family:ui-monospace,monospace;padding:24px;text-align:center;backdrop-filter:blur(8px);';
+        el.innerHTML = '<div style="max-width:520px;border:1px solid rgba(255,255,255,0.18);border-radius:12px;padding:22px;background:rgba(20,28,44,0.7);"><div id="tnh-fatal-title" style="font-weight:700;letter-spacing:.08em;color:#ffb46b;"></div><div id="tnh-fatal-msg" style="margin-top:12px;font-size:13px;line-height:1.5;color:#93a1b8;white-space:pre-wrap;"></div></div>';
+        document.body.appendChild(el);
+    }
+    el.querySelector('#tnh-fatal-title').textContent = 'BLACK HOLE UNINITIALISED';
+    el.querySelector('#tnh-fatal-msg').textContent = msg;
+}
 
-  _draw() {
-    const gl = this.gl;
-    gl.bindVertexArray(this._vao);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    gl.bindVertexArray(null);
-  }
+// =============================================================================
+// Card overlay integration
+// =============================================================================
+window.TNH = window.TNH || {};
 
-  // ── Public API ─────────────────────────────────────────────────
-  pause() {
-    this.running = false;
-  }
+Object.defineProperty(window.TNH, 'setUnderlayDimmed', {
+    value: (dimmed) => {
+        STATE.cameraPause = !!dimmed;
+        if (canvas) {
+            canvas.style.transition = 'opacity .25s ease';
+            canvas.style.opacity = dimmed ? '0.18' : '1.0';
+        }
+    }
+});
 
-  resume() {
-    if (this.running) return;
-    this.running = true;
-    this._prevNow = null;
-    if (this._ready) requestAnimationFrame(t => this._tick(t));
-  }
+// =============================================================================
+// Ambient drone (WebAudio synth — no asset to vendor)
+// =============================================================================
+let audioCtx, audio;
+function setupAudio() {
+    try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const master = audioCtx.createGain();
+        master.gain.value = 0;
+        master.connect(audioCtx.destination);
 
-  dispose() {
-    this.running = false;
-    const gl = this.gl;
-    if (!gl) return;
-    ['_fboScene','_fboBloom','_fboBlur1','_fboBlur2','_fboComp','_fboHist'].forEach(k => this._delFBO(this[k]));
-    [this._pBH, this._pBright, this._pBlur, this._pComp, this._pBlit].forEach(p => { if (p) gl.deleteProgram(p); });
-    if (this._vao) gl.deleteVertexArray(this._vao);
-  }
+        const lp = audioCtx.createBiquadFilter();
+        lp.type = 'lowpass'; lp.frequency.value = 320; lp.Q.value = 0.5;
+        lp.connect(master);
 
-  // ── Input ──────────────────────────────────────────────────────
-  _initPointer() {
-    const c = this.canvas;
-    let dragging = false, lx = 0, ly = 0;
-    c.addEventListener('pointerdown', e => {
-      dragging = true; this.autoOrbit = false;
-      lx = e.clientX; ly = e.clientY;
-      c.setPointerCapture(e.pointerId);
-    });
-    c.addEventListener('pointermove', e => {
-      if (!dragging) return;
-      this.targetYaw   -= (e.clientX - lx) * 0.005;
-      this.targetPitch  = Math.max(-1.2, Math.min(1.2, this.targetPitch + (e.clientY - ly) * 0.005));
-      lx = e.clientX; ly = e.clientY;
-    });
-    const end = e => { dragging = false; if (c.hasPointerCapture(e.pointerId)) c.releasePointerCapture(e.pointerId); };
-    c.addEventListener('pointerup', end);
-    c.addEventListener('pointercancel', end);
-    c.addEventListener('wheel', e => {
-      e.preventDefault();
-      this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + e.deltaY * 0.005));
-    }, { passive: false });
+        const trem = audioCtx.createGain(); trem.gain.value = 0.7;
+        const lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.08;
+        const lfoG = audioCtx.createGain(); lfoG.gain.value = 0.3;
+        lfo.connect(lfoG).connect(trem.gain); lfo.start();
+        lp.connect(trem);
 
-    let p0 = 0;
-    c.addEventListener('touchstart', e => {
-      if (e.touches.length === 2)
-        p0 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    });
-    c.addEventListener('touchmove', e => {
-      if (e.touches.length !== 2) return;
-      e.preventDefault();
-      const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      this.targetDist = Math.max(4.0, Math.min(20.0, this.targetDist + (p0 - d) * 0.02));
-      p0 = d;
-    }, { passive: false });
-  }
+        const o1 = audioCtx.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 55.0;
+        o1.connect(lp);
+        const o2 = audioCtx.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 55.4;
+        o2.connect(lp);
+        o1.start(); o2.start();
 
-  _fallback(msg) {
-    const el = document.createElement('div');
-    el.className = 'webgl-fallback';
-    el.textContent = msg;
-    (this.canvas.parentElement || document.body).appendChild(el);
-  }
+        audio = master;
+    } catch (e) { audio = null; }
+}
+
+function unlockAudio() {
+    if (!audioCtx) setupAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    audio && (audio.gain.value = localStorage.getItem('tnh:audio') !== '0' ? 0.10 : 0.0);
+    window.removeEventListener('pointerdown', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
+}
+window.addEventListener('pointerdown', unlockAudio, { once: false });
+window.addEventListener('keydown', unlockAudio, { once: false });
+
+Object.defineProperty(window.TNH, 'toggleAudio', {
+    value: () => {
+        const v = parseFloat(localStorage.getItem('tnh:audio') ?? '1');
+        const next = v === 0 ? 1 : 0;
+        localStorage.setItem('tnh:audio', String(next));
+        if (audio) audio.gain.value = next ? 0.10 : 0.0;
+        return next === 1;
+    }
+});
+
+// =============================================================================
+// Boot
+// =============================================================================
+try {
+    initThree();
+    if (STATE.ready) {
+        rafId = requestAnimationFrame(animate);
+        console.log('[TNH] GARGANTUA-class black-hole renderer initialised.');
+    }
+} catch (e) {
+    console.error('[TNH] init failed', e);
 }
