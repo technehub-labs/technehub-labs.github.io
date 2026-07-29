@@ -5,7 +5,7 @@
 // composite (ACES + bloom + grain + CA + vignette) + TAA ping-pong.
 // ═══════════════════════════════════════════════════════════════
 
-const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.85, ca: 0.002, grain: 0.03, exposure: 1.05 };
+const Q = { steps: 140, stepSize: 0.10, jitter: 0.5, bloom: 0.55, ca: 0.002, grain: 0.03, exposure: 1.0 };
 
 const BLIT_VERT = `#version 300 es
 void main(){
@@ -246,7 +246,7 @@ export class BlackHoleRenderer {
     gl.uniform1f(ub.uDiskInner,        2.6);
     gl.uniform1f(ub.uDiskOuter,        7.5);
     gl.uniform1f(ub.uDiskThick,        0.35);
-    gl.uniform1f(ub.uDiskBright,       1.4);
+    gl.uniform1f(ub.uDiskBright,       1.0);
     gl.uniform1f(ub.uDopplerStrength,  1.0);
     gl.uniform1f(ub.uGravRedshift,     1.0);
     gl.uniform1f(ub.uNoiseScale,       0.55);
@@ -256,15 +256,16 @@ export class BlackHoleRenderer {
     gl.uniform1f(ub.uExposure,         1.0);
     gl.uniform1f(ub.uStarBrightness,   1.0);
     gl.uniform1f(ub.uGalaxyBrightness, 0.7);
+    // Hot inner (blue-white) → cool outer (orange-red). Matches GARGANTUA palette.
     gl.uniform3f(ub.uDiskColorHot,     0.85, 0.92, 1.0);
     gl.uniform3f(ub.uDiskColorCool,    1.0,  0.45, 0.18);
     gl.uniform1f(ub.uJitter,           Q.jitter);
     this._draw();
 
-    // ── Pass 2: bright pass ──
+    // ── Pass 2: bright pass — only the very brightest pixels bloom ──
     this._bind(this._pBright, this._fboBloom.fbo);
     this._tex(0, this._fboScene.tex, this._uBright.uScene);
-    gl.uniform1f(this._uBright.uThreshold, 0.7);
+    gl.uniform1f(this._uBright.uThreshold, 0.9);
     this._draw();
 
     // ── Pass 3: blur H ──
