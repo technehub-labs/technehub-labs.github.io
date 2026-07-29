@@ -172,7 +172,9 @@ vec4 sampleDisk(vec3 pos) {
                  sin(ang + t) * r * uNoiseScale);
   float n = fbm(np);
   float n2 = fbm(np * 2.3 + 11.0);
-  float density = radial * vert * (0.5 + 0.8 * n) * (0.6 + 0.5 * n2);
+  // Density capped below 0.7 so emission stays in LDR range and bloom doesn't
+  // saturate the disk to white.
+  float density = radial * vert * (0.4 + 0.5 * n) * (0.55 + 0.35 * n2);
 
   // temperature gradient: hot inner (blue-white) -> cool outer (orange-red)
   float tempT = smoothstep(uDiskInner, uDiskOuter, r);

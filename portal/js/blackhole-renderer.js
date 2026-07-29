@@ -32,7 +32,7 @@ export class BlackHoleRenderer {
 
     // camera
     this.cameraYaw      = 0.3;
-    this.cameraPitch    = 0.18;
+    this.cameraPitch    = 0.32;   // ~18° above the disk plane — clearer cinematic view
     this.cameraDist     = 8.5;
     this.targetYaw      = this.cameraYaw;
     this.targetPitch    = this.cameraPitch;
