@@ -86,15 +86,21 @@ export class BlackHoleRenderer {
         this._fetch(base + 'composite.frag.glsl'),
       ]);
       window.__BHR_trace.push('all 5 shaders fetched');
+      window.__BHR_trace.push('vert length=' + vert.length);
       // GLSL ES 3.00 spec requires `#version` to be the first line in the
       // shader (comments/whitespace before are tolerated by some drivers,
       // rejected by SwiftShader, Mesa and most mobile GPUs). Normalize each
       // fetched source so the directive is at position 0.
       vert      = this._stripLeadingJunk(vert);
+      window.__BHR_trace.push('vert stripped, first80=' + JSON.stringify(vert.slice(0, 80)));
       bhFrag    = this._stripLeadingJunk(bhFrag);
+      window.__BHR_trace.push('bhFrag stripped');
       brightFrag = this._stripLeadingJunk(brightFrag);
+      window.__BHR_trace.push('brightFrag stripped');
       blurFrag  = this._stripLeadingJunk(blurFrag);
+      window.__BHR_trace.push('blurFrag stripped');
       compFrag  = this._stripLeadingJunk(compFrag);
+      window.__BHR_trace.push('compFrag stripped');
     } catch (e) {
       console.error('BlackHoleRenderer: shader fetch failed —', e);
       window.__BHR_trace.push('FETCH FAILED: ' + e.message);
