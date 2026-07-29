@@ -20,12 +20,12 @@
 //   * Cinematic auto-orbit replaces the user's manual orbit while the portal
 //     cards are not focused (gate on `cardsOpen`)
 // =============================================================================
-import * as THREE from '../../vendor/three/three.module.js';
-import { OrbitControls }    from '../../vendor/addons/controls/OrbitControls.js';
-import { EffectComposer }   from '../../vendor/addons/postprocessing/EffectComposer.js';
-import { RenderPass }       from '../../vendor/addons/postprocessing/RenderPass.js';
-import { ShaderPass }       from '../../vendor/addons/postprocessing/ShaderPass.js';
-import { UnrealBloomPass }  from '../../vendor/addons/postprocessing/UnrealBloomPass.js';
+import * as THREE from '../vendor/three/three.module.js';
+import { OrbitControls }    from '../vendor/addons/controls/OrbitControls.js';
+import { EffectComposer }   from '../vendor/addons/postprocessing/EffectComposer.js';
+import { RenderPass }       from '../vendor/addons/postprocessing/RenderPass.js';
+import { ShaderPass }       from '../vendor/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass }  from '../vendor/addons/postprocessing/UnrealBloomPass.js';
 
 import { RAY_VERT, RAY_FRAG, COMPOSITE_VERT, COMPOSITE_FRAG } from './shaders.js';
 
@@ -318,20 +318,93 @@ Object.defineProperty(window.TNH, 'toggleAudio', {
 });
 
 // =============================================================================
-// Boot
+// Boot — exposed as a class for main.js
 // =============================================================================
 window.__BHR_trace = [];
 function trace(msg) { window.__BHR_trace.push(msg); console.log('[TNH]', msg); }
 
-try {
-    trace('init start');
-    initThree();
-    trace('init done, ready=' + STATE.ready);
-    if (STATE.ready) {
-        rafId = requestAnimationFrame(animate);
-        console.log('[TNH] GARGANTUA-class black-hole renderer initialised.');
+export class BlackHoleRenderer {
+    constructor(canvas, opts = {}) {
+        this.canvas = canvas;
+        this.onFps = opts.onFps || (() => {});
+        this._ready = false;
+        this._rafId = 0;
+        this._clock = new THREE.Clock();
+        this._state = {
+            paused: false,
+            cameraPause: false,
+            contextLost: false,
+            contextRestored: false,
+            renderFaulted: false,
+        };
+        // Hook fps callback to render loop
+        window.__BHR_onFps = this.onFps;
+        try {
+            trace('init start');
+            initThree.call(this);
+            trace('init done, ready=' + STATE.ready);
+            this._ready = STATE.ready;
+            if (this._ready) {
+                this._rafId = requestAnimationFrame(this._animate.bind(this));
+                console.log('[TNH] GARGANTUA-class black-hole renderer initialised.');
+            }
+        } catch (e) {
+            trace('init failed: ' + e.message);
+            console.error('[TNH] init failed', e);
+        }
     }
-} catch (e) {
-    trace('init failed: ' + e.message);
-    console.error('[TNH] init failed', e);
+
+    _animate(now) {
+        this._rafId = requestAnimationFrame(this._animate.bind(this));
+        if (!this._ready || this._state.paused || this._state.contextLost || this._state.renderFaulted) return;
+
+        const dt = Math.min(this._clock.getDelta(), 0.1);
+        rayUni.uTime.value += dt;
+        compUni.uTime.value = rayUni.uTime.value;
+        rayUni.uCamPos.value.copy(camera.position);
+        rayUni.uCamTarget.value.set(0, 0, 0);
+
+        if (this._state.cameraPause) {
+            // paused
+        } else {
+            controls.update();
+        }
+
+        try {
+            composer.render();
+            // FPS callback every ~30 frames
+            if (!this._frameCount) this._frameCount = 0;
+            this._frameCount++;
+            if (this._frameCount % 30 === 0) {
+                this.onFps(Math.round(1 / Math.max(dt, 1e-3)));
+            }
+        } catch (err) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = 0;
+            this._state.renderFaulted = true;
+            console.error('[TNH] render fault:', err);
+        }
+    }
+
+    pause() {
+        this._state.cameraPause = true;
+        if (this.canvas) {
+            this.canvas.style.transition = 'opacity .25s ease';
+            this.canvas.style.opacity = '0.18';
+        }
+    }
+
+    resume() {
+        this._state.cameraPause = false;
+        if (this.canvas) {
+            this.canvas.style.transition = 'opacity .25s ease';
+            this.canvas.style.opacity = '1.0';
+        }
+    }
 }
+
+
+// Backwards compat — also expose the pause/resume via the global window.TNH
+// (the class's pause/resume methods are the canonical path; this
+//  window.TNH hook is kept for any older callers.)
+window.TNH = window.TNH || {};
