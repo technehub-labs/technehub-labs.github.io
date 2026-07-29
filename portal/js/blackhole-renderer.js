@@ -20,12 +20,12 @@
 //   * Cinematic auto-orbit replaces the user's manual orbit while the portal
 //     cards are not focused (gate on `cardsOpen`)
 // =============================================================================
-import * as THREE from '../vendor/three/three.module.js';
-import { OrbitControls }    from '../vendor/addons/controls/OrbitControls.js';
-import { EffectComposer }   from '../vendor/addons/postprocessing/EffectComposer.js';
-import { RenderPass }       from '../vendor/addons/postprocessing/RenderPass.js';
-import { ShaderPass }       from '../vendor/addons/postprocessing/ShaderPass.js';
-import { UnrealBloomPass }  from '../vendor/addons/postprocessing/UnrealBloomPass.js';
+import * as THREE from '../../vendor/three/three.module.js';
+import { OrbitControls }    from '../../vendor/addons/controls/OrbitControls.js';
+import { EffectComposer }   from '../../vendor/addons/postprocessing/EffectComposer.js';
+import { RenderPass }       from '../../vendor/addons/postprocessing/RenderPass.js';
+import { ShaderPass }       from '../../vendor/addons/postprocessing/ShaderPass.js';
+import { UnrealBloomPass }  from '../../vendor/addons/postprocessing/UnrealBloomPass.js';
 
 import { RAY_VERT, RAY_FRAG, COMPOSITE_VERT, COMPOSITE_FRAG } from './shaders.js';
 
