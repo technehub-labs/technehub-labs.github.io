@@ -40,12 +40,18 @@ export class BlackHoleRenderer {
     this.autoOrbit      = true;
     this.autoOrbitSpeed = 0.04;
 
-    const gl = canvas.getContext('webgl2', {
-      antialias: false,
-      powerPreference: 'high-performance',
-      preserveDrawingBuffer: false,
-      alpha: false,
-    });
+    let gl;
+    try {
+      gl = canvas.getContext('webgl2', {
+        antialias: false,
+        powerPreference: 'high-performance',
+        preserveDrawingBuffer: false,
+        alpha: false,
+      });
+    } catch (err) {
+      this._fallback('WebGL2 is unavailable in this browser.');
+      return;
+    }
     if (!gl) {
       this._fallback('WebGL2 is unavailable in this browser.');
       return;
@@ -75,6 +81,15 @@ export class BlackHoleRenderer {
         this._fetch(base + 'blur.frag.glsl'),
         this._fetch(base + 'composite.frag.glsl'),
       ]);
+      // GLSL ES 3.00 spec requires `#version` to be the first line in the
+      // shader (comments/whitespace before are tolerated by some drivers,
+      // rejected by SwiftShader, Mesa and most mobile GPUs). Normalize each
+      // fetched source so the directive is at position 0.
+      vert      = this._stripLeadingJunk(vert);
+      bhFrag    = this._stripLeadingJunk(bhFrag);
+      brightFrag = this._stripLeadingJunk(brightFrag);
+      blurFrag  = this._stripLeadingJunk(blurFrag);
+      compFrag  = this._stripLeadingJunk(compFrag);
     } catch (e) {
       console.error('BlackHoleRenderer: shader fetch failed —', e);
       return;
@@ -118,6 +133,15 @@ export class BlackHoleRenderer {
     });
   }
 
+  _stripLeadingJunk(src) {
+    // Move any `#version` directive in the source to the very first line.
+    // Required for strict GLSL ES 3.00 drivers (SwiftShader, Mesa, mobile GPUs).
+    const m = src.match(/#version[^\n]*\n/);
+    if (!m) return src;
+    const version = m[0];
+    return version + src.replace(version, '');
+  }
+
   _mkProg(vsrc, fsrc) {
     const gl = this.gl;
     const mkShader = (type, src) => {
@@ -127,6 +151,7 @@ export class BlackHoleRenderer {
       if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
         const log = gl.getShaderInfoLog(sh);
         gl.deleteShader(sh);
+        console.error('[BlackHole] shader compile failed:', log, '\n--- first 200 chars ---\n', src.slice(0, 200));
         throw new Error(`Shader compile:\n${log}\n\n${src.slice(0, 400)}`);
       }
       return sh;

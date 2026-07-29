@@ -136,7 +136,7 @@ vec3 galaxies(vec3 dir) {
     float arm = smoothstep(0.18, 0.02, off) * 0.18;
     // spiral arms via angular noise
     float ang = atan(perp.y, perp.x);
-    float spiral = 0.5 + 0.5 * sin(ang * 2.0 + off * 30.0 + fbm(dir * 8.0 + i) * 6.0);
+    float spiral = 0.5 + 0.5 * sin(ang * 2.0 + off * 30.0 + fbm(dir * 8.0 + float(i)) * 6.0);
     float g2 = (core + arm * spiral) * smoothstep(0.0, 0.2, d);
     vec3 gc = mix(vec3(0.8, 0.85, 1.0), vec3(1.0, 0.8, 0.6), float(i) * 0.25);
     col += gc * g2 * uGalaxyBrightness;
