@@ -297,15 +297,15 @@ function setupAudio() {
     } catch (e) { audio = null; }
 }
 
+// Audio defaults to OFF. Users opt in via window.TNH.toggleAudio().
+// Intentionally no auto-unlock on pointerdown/keydown — silent by default.
+localStorage.setItem('tnh:audio', '0');
+
 function unlockAudio() {
     if (!audioCtx) setupAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     audio && (audio.gain.value = localStorage.getItem('tnh:audio') !== '0' ? 0.10 : 0.0);
-    window.removeEventListener('pointerdown', unlockAudio);
-    window.removeEventListener('keydown', unlockAudio);
 }
-window.addEventListener('pointerdown', unlockAudio, { once: false });
-window.addEventListener('keydown', unlockAudio, { once: false });
 
 Object.defineProperty(window.TNH, 'toggleAudio', {
     value: () => {
