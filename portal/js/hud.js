@@ -1,6 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
 // HUD — minimalist heads-up display: clock, date, GitHub status,
 // repository count, frame rate.
+// Layout: top-right = clock/date, bottom-left = FPS/RENDER,
+//         bottom-right = org/status/repos.
 // ═══════════════════════════════════════════════════════════════
 
 export class HUD {
@@ -15,18 +17,18 @@ export class HUD {
 
   _build() {
     this.root.innerHTML = `
-      <div class="hud-corner hud-tl">
+      <div class="hud-corner hud-tr">
         <div class="hud-clock" id="hudClock">--:--:--</div>
         <div class="hud-date" id="hudDate">—</div>
-      </div>
-      <div class="hud-corner hud-tr">
-        <div class="hud-row"><span class="hud-label">ORG</span><span class="hud-val">technehub-labs</span></div>
-        <div class="hud-row"><span class="hud-label">STATUS</span><span class="hud-val" id="hudStatus"><span class="hud-dot"></span>connecting</span></div>
-        <div class="hud-row"><span class="hud-label">REPOS</span><span class="hud-val" id="hudRepos">—</span></div>
       </div>
       <div class="hud-corner hud-bl">
         <div class="hud-row"><span class="hud-label">FPS</span><span class="hud-val" id="hudFps">—</span></div>
         <div class="hud-row"><span class="hud-label">RENDER</span><span class="hud-val">WebGL2 · Schwarzschild</span></div>
+      </div>
+      <div class="hud-corner hud-br">
+        <div class="hud-row"><span class="hud-label">ORG</span><span class="hud-val">technehub-labs</span></div>
+        <div class="hud-row"><span class="hud-label">STATUS</span><span class="hud-val" id="hudStatus"><span class="hud-dot"></span>connecting</span></div>
+        <div class="hud-row"><span class="hud-label">REPOS</span><span class="hud-val" id="hudRepos">—</span></div>
       </div>
     `;
     this.elClock = this.root.querySelector('#hudClock');
