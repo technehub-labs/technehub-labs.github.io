@@ -11,14 +11,12 @@
 //     → UnrealBloomPass (HDR bloom, HalfFloat render target)
 //     → Composite (chromatic aberration + manual ACES + vignette + film grain)
 //
-// Differences from the original custom-WebGL2 portal renderer:
-//   * Uses Three.js instead of raw WebGL2 (the reference uses Three.js too,
-//     for the OrbitControls + EffectComposer convenience)
-//   * Camera is a real PerspectiveCamera driven by Three's OrbitControls
-//     (the portal keeps user-supplied controls; the underlying shader just
-//     samples the camera's position/target each frame)
-//   * Cinematic auto-orbit replaces the user's manual orbit while the portal
-//     cards are not focused (gate on `cardsOpen`)
+// Cinematic camera profile:
+//   Observer distance oscillates 18 → 150 R_s → 18 over a 60s cycle (triangle wave)
+//   Disk inclination (camera pitch) oscillates 90° → -90° → 90° in sync
+//   Yaw rotates continuously for orbital motion
+//   uSteps = 460 (geodetic integration steps per ray)
+//   Audio is permanently disabled
 // =============================================================================
 import * as THREE from '../vendor/three/three.module.js';
 import { OrbitControls }    from '../vendor/addons/controls/OrbitControls.js';
@@ -31,6 +29,14 @@ import { RAY_VERT, RAY_FRAG, COMPOSITE_VERT, COMPOSITE_FRAG } from './shaders.js
 
 const DEG = Math.PI / 180;
 
+// Cinematic profile constants.
+const OBSERVER_DIST_MIN = 18;       // 18 R_s
+const OBSERVER_DIST_MAX = 150;      // 150 R_s
+const PITCH_MAX = Math.PI / 2;      // 90°
+const PITCH_MIN = -Math.PI / 2;     // -90°
+const CYCLE_PERIOD_MS = 60_000;     // 60s full cycle
+const YAW_RATE = 0.05;              // continuous orbital rotation per second
+
 const STATE = {
     ready: false,
     paused: false,
@@ -42,7 +48,27 @@ const STATE = {
 
 let renderer, fsScene, fsCam, camera, controls, composer, bloomPass, compPass;
 let rayUni, compUni;
+let onFpsCallback = () => {};
+let fpsFrameCount = 0;
 const canvas = document.getElementById('bh-canvas');
+
+// Triangle wave over [0, 1] with smooth easing — ramps 0→1 in the first half,
+// 1→0 in the second half. Easing makes the camera linger at extremes.
+function triangleWave(t) {
+    const phase = (t % 1 + 1) % 1;            // 0..1
+    return phase < 0.5
+        ? smoothstep(0, 0.5, phase)           // 0..1 (first half)
+        : smoothstep(1, 0.5, phase);          // 1..0 (second half)
+}
+
+function smoothstep(a, b, x) {
+    const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
+    return t * t * (3 - 2 * t);
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+const CIN = { startedAt: 0 };
 
 function initThree() {
     if (!canvas) throw new Error('Canvas #bh-canvas not found.');
@@ -59,11 +85,9 @@ function initThree() {
         return;
     }
 
-    // Manual ACES in the composite pass — renderer stays NoToneMapping.
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     renderer.toneMapping = THREE.NoToneMapping;
 
-    // Surface shader-compile failures instead of black.
     renderer.debug.onShaderError = (gl, program, vs, fs) => {
         const log = (gl.getShaderInfoLog(fs) || '') + '\n' + (gl.getShaderInfoLog(vs) || '');
         console.error('[TNH] shader compile failed:\n' + log);
@@ -80,21 +104,19 @@ function initThree() {
         location.reload();
     });
 
-    // HDR probe — bloom fidelity requires HalfFloatType render target.
     const gl = renderer.getContext();
     const halfOK = renderer.capabilities.isWebGL2 &&
         !!(gl.getExtension('EXT_color_buffer_float') || gl.getExtension('EXT_color_buffer_half_float'));
 
-    // Fullscreen ray scene
     fsCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     fsScene = new THREE.Scene();
     rayUni = {
         uRes:        { value: new THREE.Vector2(1, 1) },
         uTime:       { value: 0 },
-        uCamPos:     { value: new THREE.Vector3(4.49, 2.72, 25.46) },
+        uCamPos:     { value: new THREE.Vector3(0, 0, OBSERVER_DIST_MIN) },
         uCamTarget:  { value: new THREE.Vector3(0, 0, 0) },
         uFov:        { value: 1 / Math.tan(44 * DEG / 2) },
-        uSteps:      { value: 460 },
+        uSteps:      { value: 460 },          // 460 geodetic integration steps per ray
         uRotSign:    { value: 1 },
         uDebug:      { value: 0 },
         uDin:        { value: 2.75 },
@@ -116,14 +138,12 @@ function initThree() {
     });
     fsScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), rayMat));
 
-    // Perspective camera — provides position + target to the shader
     camera = new THREE.PerspectiveCamera(44, window.innerWidth / window.innerHeight, 0.01, 200);
-    camera.position.set(4.49, 2.72, 25.46);
+    camera.position.set(0, 0, OBSERVER_DIST_MIN);
     camera.lookAt(0, 0, 0);
 
-    // OrbitControls is included for parity with the reference; user input
-    // is forwarded via `window.TNH.setUnderlayDimmed()` to coordinate with
-    // the cards overlay.
+    // OrbitControls is kept for parity (camera-pause + interaction),
+    // but auto-rotate is off — the cinematic loop drives the camera position.
     controls = new OrbitControls(camera, canvas);
     controls.target.set(0, 0, 0);
     controls.enableDamping = true;
@@ -133,10 +153,10 @@ function initThree() {
     controls.rotateSpeed = 0.55;
     controls.zoomSpeed = 0.7;
     controls.enablePan = false;
-    controls.autoRotate = true;
-    controls.autoRotateSpeed = 0.12;
+    controls.autoRotate = false;
 
-    // HDR composer
+    CIN.startedAt = performance.now();
+
     renderer.getDrawingBufferSize(rayUni.uRes.value);
     const rt = new THREE.WebGLRenderTarget(
         rayUni.uRes.value.x || 2,
@@ -185,41 +205,56 @@ function onResize() {
     compUni.uRes.value.copy(rayUni.uRes.value);
 }
 
+function updateCinematicCamera(now) {
+    const elapsedSec = (now - CIN.startedAt) / 1000;
+    const cycle = (elapsedSec / (CYCLE_PERIOD_MS / 1000)) % 1;
+
+    const yaw = elapsedSec * YAW_RATE;
+    const distT = triangleWave(cycle);
+    const dist = lerp(OBSERVER_DIST_MIN, OBSERVER_DIST_MAX, distT);
+    const pitch = lerp(PITCH_MAX, PITCH_MIN, distT);
+
+    camera.position.set(
+        Math.cos(yaw) * Math.cos(pitch) * dist,
+        Math.sin(pitch) * dist,
+        Math.sin(yaw) * Math.cos(pitch) * dist
+    );
+    camera.lookAt(0, 0, 0);
+    controls.update();
+}
+
 // =============================================================================
 // Cinematic camera loop
 // =============================================================================
-const clock = new THREE.Clock();
-let rafId = 0;
-
 function animate() {
-    rafId = requestAnimationFrame(animate);
-    if (!STATE.ready || STATE.paused || STATE.contextLost || STATE.renderFaulted) return;
+    let lastT = performance.now();
+    const loop = (now) => {
+        requestAnimationFrame(loop);
+        if (!STATE.ready || STATE.paused || STATE.contextLost || STATE.renderFaulted) return;
 
-    const dt = Math.min(clock.getDelta(), 0.1);
-    rayUni.uTime.value += dt;
-    compUni.uTime.value = rayUni.uTime.value;
+        const dt = Math.min(0.1, (now - lastT) / 1000);
+        lastT = now;
+        rayUni.uTime.value += dt;
+        compUni.uTime.value = rayUni.uTime.value;
 
-    // Push the camera state into the raymarcher each frame.
-    rayUni.uCamPos.value.copy(camera.position);
-    rayUni.uCamTarget.value.set(0, 0, 0);
+        if (!STATE.cameraPause) {
+            updateCinematicCamera(now);
+        }
+        rayUni.uCamPos.value.copy(camera.position);
+        rayUni.uCamTarget.value.set(0, 0, 0);
 
-    // While a card is open, the cards overlay tells us to dim the underlay
-    // and pause cinematic camera motion. We let the shader keep rendering
-    // (so the dimmed scene shows through) but freeze the camera position.
-    if (STATE.cameraPause) {
-        // No controls.update(), no auto-orbit.
-    } else {
-        controls.update();
-    }
-
-    try {
-        composer.render();
-    } catch (err) {
-        cancelAnimationFrame(rafId);
-        rafId = 0;
-        STATE.renderFaulted = true;
-        console.error('[TNH] render fault:', err);
-    }
+        try {
+            composer.render();
+            fpsFrameCount++;
+            if (fpsFrameCount % 30 === 0) {
+                onFpsCallback(Math.round(1 / Math.max(dt, 1e-3)));
+            }
+        } catch (err) {
+            STATE.renderFaulted = true;
+            console.error('[TNH] render fault:', err);
+        }
+    };
+    requestAnimationFrame(loop);
 }
 
 // =============================================================================
@@ -230,8 +265,6 @@ document.addEventListener('visibilitychange', () => {
         STATE.paused = true;
     } else if (STATE.paused && !STATE.contextLost) {
         STATE.paused = false;
-        clock.getDelta();
-        if (!rafId) rafId = requestAnimationFrame(animate);
     }
 });
 
@@ -267,52 +300,15 @@ Object.defineProperty(window.TNH, 'setUnderlayDimmed', {
 });
 
 // =============================================================================
-// Ambient drone (WebAudio synth — no asset to vendor)
+// Audio — permanently disabled. toggleAudio() kept for future opt-in.
 // =============================================================================
-let audioCtx, audio;
-function setupAudio() {
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const master = audioCtx.createGain();
-        master.gain.value = 0;
-        master.connect(audioCtx.destination);
-
-        const lp = audioCtx.createBiquadFilter();
-        lp.type = 'lowpass'; lp.frequency.value = 320; lp.Q.value = 0.5;
-        lp.connect(master);
-
-        const trem = audioCtx.createGain(); trem.gain.value = 0.7;
-        const lfo = audioCtx.createOscillator(); lfo.frequency.value = 0.08;
-        const lfoG = audioCtx.createGain(); lfoG.gain.value = 0.3;
-        lfo.connect(lfoG).connect(trem.gain); lfo.start();
-        lp.connect(trem);
-
-        const o1 = audioCtx.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = 55.0;
-        o1.connect(lp);
-        const o2 = audioCtx.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 55.4;
-        o2.connect(lp);
-        o1.start(); o2.start();
-
-        audio = master;
-    } catch (e) { audio = null; }
-}
-
-// Audio defaults to OFF. Users opt in via window.TNH.toggleAudio().
-// Intentionally no auto-unlock on pointerdown/keydown — silent by default.
 localStorage.setItem('tnh:audio', '0');
-
-function unlockAudio() {
-    if (!audioCtx) setupAudio();
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    audio && (audio.gain.value = localStorage.getItem('tnh:audio') !== '0' ? 0.10 : 0.0);
-}
 
 Object.defineProperty(window.TNH, 'toggleAudio', {
     value: () => {
         const v = parseFloat(localStorage.getItem('tnh:audio') ?? '1');
         const next = v === 0 ? 1 : 0;
         localStorage.setItem('tnh:audio', String(next));
-        if (audio) audio.gain.value = next ? 0.10 : 0.0;
         return next === 1;
     }
 });
@@ -320,74 +316,24 @@ Object.defineProperty(window.TNH, 'toggleAudio', {
 // =============================================================================
 // Boot — exposed as a class for main.js
 // =============================================================================
-window.__BHR_trace = [];
-function trace(msg) { window.__BHR_trace.push(msg); console.log('[TNH]', msg); }
-
 export class BlackHoleRenderer {
     constructor(canvas, opts = {}) {
         this.canvas = canvas;
-        this.onFps = opts.onFps || (() => {});
-        this._ready = false;
-        this._rafId = 0;
-        this._clock = new THREE.Clock();
-        this._state = {
-            paused: false,
-            cameraPause: false,
-            contextLost: false,
-            contextRestored: false,
-            renderFaulted: false,
-        };
-        // Hook fps callback to render loop
-        window.__BHR_onFps = this.onFps;
+        onFpsCallback = opts.onFps || (() => {});
+        fpsFrameCount = 0;
         try {
-            trace('init start');
-            initThree.call(this);
-            trace('init done, ready=' + STATE.ready);
-            this._ready = STATE.ready;
-            if (this._ready) {
-                this._rafId = requestAnimationFrame(this._animate.bind(this));
+            initThree();
+            if (STATE.ready) {
+                animate();
                 console.log('[TNH] GARGANTUA-class black-hole renderer initialised.');
             }
         } catch (e) {
-            trace('init failed: ' + e.message);
             console.error('[TNH] init failed', e);
         }
     }
 
-    _animate(now) {
-        this._rafId = requestAnimationFrame(this._animate.bind(this));
-        if (!this._ready || this._state.paused || this._state.contextLost || this._state.renderFaulted) return;
-
-        const dt = Math.min(this._clock.getDelta(), 0.1);
-        rayUni.uTime.value += dt;
-        compUni.uTime.value = rayUni.uTime.value;
-        rayUni.uCamPos.value.copy(camera.position);
-        rayUni.uCamTarget.value.set(0, 0, 0);
-
-        if (this._state.cameraPause) {
-            // paused
-        } else {
-            controls.update();
-        }
-
-        try {
-            composer.render();
-            // FPS callback every ~30 frames
-            if (!this._frameCount) this._frameCount = 0;
-            this._frameCount++;
-            if (this._frameCount % 30 === 0) {
-                this.onFps(Math.round(1 / Math.max(dt, 1e-3)));
-            }
-        } catch (err) {
-            cancelAnimationFrame(this._rafId);
-            this._rafId = 0;
-            this._state.renderFaulted = true;
-            console.error('[TNH] render fault:', err);
-        }
-    }
-
     pause() {
-        this._state.cameraPause = true;
+        STATE.cameraPause = true;
         if (this.canvas) {
             this.canvas.style.transition = 'opacity .25s ease';
             this.canvas.style.opacity = '0.18';
@@ -395,16 +341,10 @@ export class BlackHoleRenderer {
     }
 
     resume() {
-        this._state.cameraPause = false;
+        STATE.cameraPause = false;
         if (this.canvas) {
             this.canvas.style.transition = 'opacity .25s ease';
             this.canvas.style.opacity = '1.0';
         }
     }
 }
-
-
-// Backwards compat — also expose the pause/resume via the global window.TNH
-// (the class's pause/resume methods are the canonical path; this
-//  window.TNH hook is kept for any older callers.)
-window.TNH = window.TNH || {};

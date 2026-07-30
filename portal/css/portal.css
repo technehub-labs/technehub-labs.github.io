@@ -76,16 +76,25 @@ img, svg { display: block; max-width: 100%; }
   touch-action: none;
 }
 
-/* ── Portal cards container ────────────────────────────────────── */
+/* ── Portal cards container (CSS Grid layout) ──────────────────── */
 #cards-layer {
   position: absolute; inset: 0;
   z-index: 2;
   pointer-events: none;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "spacer right"
+    "bottom bottom";
+  gap: var(--sp-4);
+  padding: var(--sp-5);
+  align-items: end;
+  justify-items: end;
 }
 
 /* ── Individual portal cards ───────────────────────────────────── */
 .portal-card {
-  position: absolute;
   pointer-events: auto;
   cursor: pointer;
   width: 260px;
@@ -97,7 +106,14 @@ img, svg { display: block; max-width: 100%; }
   overflow: hidden;
   transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
   will-change: transform;
+  justify-self: end;
 }
+.portal-card--right { grid-area: right; }
+.portal-card--bottom { grid-area: bottom; }
+/* When multiple right cards exist, lay them out in a stack */
+.portal-card--right[data-card-index="0"] { align-self: end; }
+.portal-card--right[data-card-index="1"] { align-self: center; }
+.portal-card--right[data-card-index="2"] { align-self: start; }
 .portal-card:hover {
   border-color: var(--glass-border-2);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 24px var(--cyan-glow);
@@ -135,17 +151,6 @@ img, svg { display: block; max-width: 100%; }
   font-weight: 400;
 }
 
-/* Right-side card positions */
-.portal-card--right { right: var(--sp-5); }
-[data-card-id="metaframework"] { top: calc(50% - 170px); }
-[data-card-id="metamodel"]    { top: calc(50% - 10px); }
-[data-card-id="layer-architecture"] { top: calc(50% + 150px); }
-
-/* Bottom card positions */
-.portal-card--bottom { bottom: var(--sp-5); }
-[data-card-id="assessment-maturity"]  { left: var(--sp-5); }
-[data-card-id="repositories"] { left: calc(var(--sp-5) + 290px); }
-
 /* ── Org mark (top-left) ────────────────────────────────────────── */
 .org-mark {
   position: absolute;
@@ -166,21 +171,21 @@ img, svg { display: block; max-width: 100%; }
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 
-/* ── Brand mark (top-center, secondary) ────────────────────────── */
+/* ── Brand mark (bottom-left, secondary footer chip) ───────────── */
 .brand-mark {
   position: absolute;
-  top: var(--sp-5); left: 50%;
-  transform: translateX(-50%);
+  bottom: var(--sp-5); left: var(--sp-5);
   z-index: 11;
-  display: flex; flex-direction: column; align-items: center; gap: var(--sp-2);
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2);
   pointer-events: none;
+  opacity: 0.85;
 }
 .brand-mark-title {
   display: inline-flex; align-items: center; gap: var(--sp-3);
   font-family: var(--font-display);
-  font-size: 0.75rem; font-weight: 600;
+  font-size: 0.7rem; font-weight: 400;
   letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--soft-white);
+  color: var(--text-2);
 }
 .brand-mark-icon {
   width: 1.6em; height: 1.6em;
@@ -191,7 +196,7 @@ img, svg { display: block; max-width: 100%; }
 .brand-mark-text { display: inline-block; }
 .brand-mark-sub {
   font-family: var(--font-mono);
-  font-size: 0.6rem; color: var(--text-3);
+  font-size: 0.55rem; color: var(--text-3);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 
@@ -209,7 +214,7 @@ img, svg { display: block; max-width: 100%; }
   color: var(--text-2); letter-spacing: 0.04em;
 }
 .hud-tr { top: 0; right: 0; text-align: right; }
-.hud-bl { bottom: 0; left: 0; }
+.hud-bl { bottom: 0; left: 0; display: none; } /* hidden per request */
 .hud-br { bottom: 0; right: 0; text-align: right; }
 /* Clock/date now in top-right — smaller than the old top-left pillar */
 .hud-tr .hud-clock {
@@ -268,12 +273,13 @@ img, svg { display: block; max-width: 100%; }
   border-radius: 4px; font-size: 0.62rem; margin: 0 2px;
 }
 
-/* ── Pop-up panel ──────────────────────────────────────────────── */
+/* ── Pop-up panel (strict 16:9 landscape / 9:16 portrait) ──────── */
 #popup {
   position: fixed; inset: 0;
   z-index: 100;
   display: none;
   align-items: center; justify-content: center;
+  padding: var(--sp-5);
 }
 #popup.popup-open { display: flex; }
 
@@ -288,7 +294,10 @@ img, svg { display: block; max-width: 100%; }
 .popup-panel {
   position: relative;
   width: min(1200px, 96vw);
+  /* 16:9 in landscape, 9:16 in portrait. Aspect-ratio is supported in all modern browsers. */
+  aspect-ratio: 16 / 9;
   max-height: 92vh;
+  max-width: calc(92vh * (16 / 9));
   background: var(--glass-bg-2);
   backdrop-filter: blur(32px) saturate(1.4);
   -webkit-backdrop-filter: blur(32px) saturate(1.4);
@@ -302,6 +311,14 @@ img, svg { display: block; max-width: 100%; }
 @keyframes popupEnter {
   from { opacity: 0; transform: scale(0.92) translateY(20px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (orientation: portrait) {
+  .popup-panel {
+    aspect-ratio: 9 / 16;
+    width: min(96vw, calc(92vh * (9 / 16)));
+    max-width: 96vw;
+  }
 }
 
 .popup-header {
@@ -348,7 +365,21 @@ img, svg { display: block; max-width: 100%; }
 .popup-body {
   flex: 1; overflow: auto;
   padding: var(--sp-5);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-2);
 }
+.popup-body h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem; font-weight: 600;
+  color: var(--soft-white); margin-bottom: var(--sp-3);
+}
+.popup-body h4 {
+  font-family: var(--font-display);
+  font-size: 0.95rem; font-weight: 600;
+  color: var(--soft-white); margin-bottom: var(--sp-2);
+}
+.popup-body p { margin-bottom: var(--sp-3); }
 .popup-body--split { display: flex; gap: 0; padding: 0; }
 .popup-body--split > :first-child { flex: 1; overflow: auto; padding: var(--sp-5); }
 .popup-body--split > :last-child {
@@ -688,27 +719,37 @@ img, svg { display: block; max-width: 100%; }
 }
 
 /* ── Responsive ────────────────────────────────────────────────── */
+
+/* Tablet and smaller laptops */
 @media (max-width: 1024px) {
   .portal-card { width: 220px; }
-  [data-card-id="repositories"] { left: calc(var(--sp-5) + 250px); }
 }
+
+/* Mobile — cards form a bottom row, aligned to viewport bottom */
 @media (max-width: 768px) {
-  .portal-card {
-    width: 160px; position: relative !important;
-    top: auto !important; left: auto !important; right: auto !important; bottom: auto !important;
-  }
   #cards-layer {
-    display: flex; flex-direction: row;
-    gap: var(--sp-2); padding: var(--sp-2);
-    bottom: 0; top: auto;
-    overflow-x: auto; overflow-y: hidden;
-    align-items: flex-end;
-    pointer-events: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      "spacer"
+      "bottom";
+    padding: var(--sp-3);
+    gap: var(--sp-3);
+    align-items: end;
+    justify-items: center;
+  }
+  .portal-card {
+    width: 160px;
+  }
+  .portal-card--right {
+    /* Hide right-side cards on mobile; bottom row has all 5 */
+    display: none;
   }
   .portal-card-inner { padding: var(--sp-3); }
   .portal-card-icon { width: 24px; height: 24px; }
   .portal-card-label { font-size: 0.8rem; }
   .portal-card-blurb { display: none; }
+
   .hud-corner { padding: var(--sp-2); font-size: 0.58rem; }
   .hud-clock { font-size: 1.05rem; }
   .hud-date { font-size: 0.62rem; }
@@ -722,6 +763,8 @@ img, svg { display: block; max-width: 100%; }
   .org-mark-title { font-size: 0.72rem; }
   .org-mark-sub { font-size: 0.5rem; }
 }
+
+/* Small mobile */
 @media (max-width: 480px) {
   .portal-card { width: 130px; }
   .portal-card-inner { padding: var(--sp-2); gap: 2px; }

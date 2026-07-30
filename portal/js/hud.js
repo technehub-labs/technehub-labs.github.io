@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════════
 // HUD — minimalist heads-up display: clock, date, GitHub status,
-// repository count, frame rate.
-// Layout: top-right = clock/date, bottom-left = FPS/RENDER,
-//         bottom-right = org/status/repos.
+// repository count. The bottom-left HUD (FPS/RENDER) is hidden
+// per the page layout — those values are diagnostic-only.
+// Layout: top-right = clock/date, bottom-right = org/status/repos.
 // ═══════════════════════════════════════════════════════════════
 
 export class HUD {
@@ -21,10 +21,6 @@ export class HUD {
         <div class="hud-clock" id="hudClock">--:--:--</div>
         <div class="hud-date" id="hudDate">—</div>
       </div>
-      <div class="hud-corner hud-bl">
-        <div class="hud-row"><span class="hud-label">FPS</span><span class="hud-val" id="hudFps">—</span></div>
-        <div class="hud-row"><span class="hud-label">RENDER</span><span class="hud-val">WebGL2 · Schwarzschild</span></div>
-      </div>
       <div class="hud-corner hud-br">
         <div class="hud-row"><span class="hud-label">ORG</span><span class="hud-val">technehub-labs</span></div>
         <div class="hud-row"><span class="hud-label">STATUS</span><span class="hud-val" id="hudStatus"><span class="hud-dot"></span>connecting</span></div>
@@ -35,7 +31,6 @@ export class HUD {
     this.elDate = this.root.querySelector('#hudDate');
     this.elStatus = this.root.querySelector('#hudStatus');
     this.elRepos = this.root.querySelector('#hudRepos');
-    this.elFps = this.root.querySelector('#hudFps');
     this._updateStatic();
   }
 
@@ -58,8 +53,9 @@ export class HUD {
   }
 
   setFps(fps) {
+    // FPS is no longer displayed in the UI but the callback is kept
+    // so the renderer can still emit it (consumers may capture it).
     this.fps = fps;
-    this.elFps.textContent = fps;
   }
 
   setRepoCount(n) {
