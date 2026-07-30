@@ -146,7 +146,27 @@ img, svg { display: block; max-width: 100%; }
 [data-card-id="assessment-maturity"]  { left: var(--sp-5); }
 [data-card-id="repositories"] { left: calc(var(--sp-5) + 290px); }
 
-/* ── Brand mark ─────────────────────────────────────────────────── */
+/* ── Org mark (top-left) ────────────────────────────────────────── */
+.org-mark {
+  position: absolute;
+  top: var(--sp-5); left: var(--sp-5);
+  z-index: 11;
+  display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-1);
+  pointer-events: none;
+}
+.org-mark-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--soft-white);
+}
+.org-mark-sub {
+  font-family: var(--font-mono);
+  font-size: 0.6rem; color: var(--text-3);
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+
+/* ── Brand mark (top-center, secondary) ────────────────────────── */
 .brand-mark {
   position: absolute;
   top: var(--sp-5); left: 50%;
@@ -158,7 +178,7 @@ img, svg { display: block; max-width: 100%; }
 .brand-mark-title {
   display: inline-flex; align-items: center; gap: var(--sp-3);
   font-family: var(--font-display);
-  font-size: 1.25rem; font-weight: 600;
+  font-size: 0.75rem; font-weight: 600;
   letter-spacing: 0.22em; text-transform: uppercase;
   color: var(--soft-white);
 }
@@ -697,8 +717,10 @@ img, svg { display: block; max-width: 100%; }
   .popup-body--split > :last-child { width: 100%; border-left: none; border-top: 1px solid var(--glass-border); }
   .popup-panel { width: 96vw; }
   .search-hint { display: none; }
-  .brand-mark-title { font-size: 0.95rem; gap: var(--sp-2); }
+  .brand-mark-title { font-size: 0.6rem; gap: var(--sp-2); }
   .brand-mark-sub { font-size: 0.5rem; }
+  .org-mark-title { font-size: 0.72rem; }
+  .org-mark-sub { font-size: 0.5rem; }
 }
 @media (max-width: 480px) {
   .portal-card { width: 130px; }
