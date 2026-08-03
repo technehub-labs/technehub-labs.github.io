@@ -23,27 +23,72 @@
 
   <div id="portal">
     <canvas id="bh-canvas"></canvas>
-    <div id="cards-layer"></div>
-    <div class="org-mark">
-      <div class="org-mark-title">TechNeHub Labs</div>
-      <div class="org-mark-sub">Enterprise Knowledge Universe</div>
-    </div>
-    <div class="brand-mark">
-      <div class="brand-mark-title">
-        <svg class="brand-mark-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-          <circle cx="22" cy="6" r="2.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M16 13 L13 18 M16 13 L21 16 L23 21 M13 18 L10 23 L13 27 M13 18 L17 18 L19 22 L24 22"
-                fill="none" stroke="currentColor" stroke-width="1.5"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <span class="brand-mark-text">Marathon 2030</span>
+
+    <!-- Top Header Bar -->
+    <header class="portal-header">
+      <div class="org-mark">
+        <div class="org-mark-title">TechNeHub Labs</div>
+        <div class="org-mark-sub">Enterprise Knowledge Universe</div>
       </div>
-      <div class="brand-mark-sub">Enterprise Knowledge Universe</div>
+      <div class="header-right">
+        <div class="search-hint">
+          <kbd>⌘K</kbd> or <kbd>/</kbd> to search
+        </div>
+        <div class="header-clock-wrap" id="hud-top"></div>
+      </div>
+    </header>
+
+    <!-- Background Canvas HUD Layer (Blended telemetry overlay) -->
+    <div class="bg-hud-layer" id="hud"></div>
+
+    <!-- Cards Layer (Positioned safely between header & footer) -->
+    <main id="cards-layer">
+      <div class="cards-cluster" id="cards-cluster"></div>
+    </main>
+
+    <!-- Marathon 2030 Timeline Widget (Positioned above footer) -->
+    <div class="marathon-timeline-container">
+      <div class="marathon-timeline-widget" id="marathon-timeline">
+        <div class="milestone-popup" id="timeline-milestone-popup"></div>
+        <div class="timeline-header">
+          <div class="timeline-title">
+            <svg class="marathon-icon-sm" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7.1 1.4z"/>
+            </svg>
+            <span>MARATHON TO 2030</span>
+          </div>
+          <div class="timeline-badge" id="timeline-progress-badge">2026 • 26.8% COMPLETE</div>
+        </div>
+        <div class="timeline-track-wrap">
+          <div class="timeline-track">
+            <div class="timeline-progress-bar" id="timeline-progress-bar"></div>
+            <div class="timeline-rocket-marker" id="timeline-rocket" title="Current Timeline Progress">
+              <svg class="rocket-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2.5c2.5 3 4.5 7 4.5 10.5 0 2.2-.8 4.2-2.1 5.7l1.1 2.3c.2.4-.1.9-.6.9h-5.8c-.5 0-.8-.5-.6-.9l1.1-2.3c-1.3-1.5-2.1-3.5-2.1-5.7 0-3.5 2-7.5 4.5-10.5z"/>
+                <circle cx="12" cy="11" r="1.8" fill="#05070d"/>
+                <path d="M7 14.5l-2.5 3c-.4.5 0 1.2.6 1.2h2.4L7 14.5zM17 14.5l2.5 3c.4.5 0 1.2-.6 1.2h-2.4l.5-4.2z"/>
+              </svg>
+              <span class="rocket-trail"></span>
+            </div>
+          </div>
+          <div class="timeline-ticks">
+            <span class="timeline-tick" data-year="2025"><span class="tick-dot"></span>2025</span>
+            <span class="timeline-tick" data-year="2026"><span class="tick-dot"></span>2026</span>
+            <span class="timeline-tick" data-year="2027"><span class="tick-dot"></span>2027</span>
+            <span class="timeline-tick" data-year="2028"><span class="tick-dot"></span>2028</span>
+            <span class="timeline-tick" data-year="2029"><span class="tick-dot"></span>2029</span>
+            <span class="timeline-tick" data-year="2030"><span class="tick-dot"></span>2030</span>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="search-hint">
-      <kbd>⌘K</kbd> or <kbd>/</kbd> to search
-    </div>
-    <div id="hud"></div>
+
+    <!-- Bottom Footer Bar -->
+    <footer class="portal-footer">
+      <div class="brand-mark">
+        <div class="footer-copyright">©TechNe Hub <span class="current-year">2026</span>. All rights reserved.</div>
+      </div>
+    </footer>
   </div>
 
   <div id="popup">
