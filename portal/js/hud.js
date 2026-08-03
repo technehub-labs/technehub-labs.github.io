@@ -8,6 +8,7 @@
 export class HUD {
   constructor(root, opts = {}) {
     this.root = root;
+    this.topRoot = opts.topRoot || document.getElementById('hud-top');
     this.fps = 0;
     this.repoCount = opts.repoCount || 0;
     this.githubStatus = 'connecting';
@@ -16,19 +17,23 @@ export class HUD {
   }
 
   _build() {
+    if (this.topRoot) {
+      this.topRoot.innerHTML = `
+        <div class="hud-corner-top">
+          <div class="hud-clock" id="hudClock">--:--:--</div>
+          <div class="hud-date" id="hudDate">—</div>
+        </div>
+      `;
+    }
     this.root.innerHTML = `
-      <div class="hud-corner hud-tr">
-        <div class="hud-clock" id="hudClock">--:--:--</div>
-        <div class="hud-date" id="hudDate">—</div>
-      </div>
-      <div class="hud-corner hud-br">
+      <div class="hud-corner-bottom">
         <div class="hud-row"><span class="hud-label">ORG</span><span class="hud-val">technehub-labs</span></div>
         <div class="hud-row"><span class="hud-label">STATUS</span><span class="hud-val" id="hudStatus"><span class="hud-dot"></span>connecting</span></div>
         <div class="hud-row"><span class="hud-label">REPOS</span><span class="hud-val" id="hudRepos">—</span></div>
       </div>
     `;
-    this.elClock = this.root.querySelector('#hudClock');
-    this.elDate = this.root.querySelector('#hudDate');
+    this.elClock = (this.topRoot || this.root).querySelector('#hudClock');
+    this.elDate = (this.topRoot || this.root).querySelector('#hudDate');
     this.elStatus = this.root.querySelector('#hudStatus');
     this.elRepos = this.root.querySelector('#hudRepos');
     this._updateStatic();
