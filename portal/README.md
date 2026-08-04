@@ -209,4 +209,4 @@ The renderer targets 60 FPS on desktop and 30 FPS on mobile. Key optimizations:
 
 ## License
 
-Part of the TechNeHub Labs Enterprise Architecture ecosystem.
+Licensed under the Apache License, Version 2.0. See [`LICENSE`](https://github.com/technehub-labs/technehub-labs.github.io/blob/main/LICENSE) and [`NOTICE`](https://github.com/technehub-labs/technehub-labs.github.io/blob/main/NOTICE) at the repo root.
