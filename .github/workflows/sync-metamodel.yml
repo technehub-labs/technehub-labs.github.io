@@ -20,30 +20,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Sync entity-graph.json + metamodel.svg from dea-metamodel
+      - name: Checkout dea-metamodel viewer artifacts
+        uses: actions/checkout@v4
+        with:
+          repository: technehub-labs/dea-metamodel
+          ref: main
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
+          path: dea-metamodel-source
+          sparse-checkout: viewer
+
+      - name: Copy viewer artifacts into site
         run: |
           set -euo pipefail
           mkdir -p metamodel
-          # Pull the canonical graph JSON from the metamodel repo's main branch.
-          curl -fsSL \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.raw+json" \
-            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.json?ref=main" \
-            -o metamodel/entity-graph.json
-
-          # Pull the schema.
-          curl -fsSL \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.raw+json" \
-            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/entity-graph.schema.json?ref=main" \
-            -o metamodel/entity-graph.schema.json
-
-          # Pull the SVG diagram (PlantUML-rendered, dark-theme homogenized).
-          curl -fsSL \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.raw+json" \
-            "https://api.github.com/repos/technehub-labs/dea-metamodel/contents/viewer/metamodel.svg?ref=main" \
-            -o metamodel/metamodel.svg
+          cp dea-metamodel-source/viewer/entity-graph.json        metamodel/entity-graph.json
+          cp dea-metamodel-source/viewer/entity-graph.schema.json metamodel/entity-graph.schema.json
+          cp dea-metamodel-source/viewer/metamodel.svg            metamodel/metamodel.svg
 
           # Validate JSON.
           python3 -c "import json; json.load(open('metamodel/entity-graph.json'))"
