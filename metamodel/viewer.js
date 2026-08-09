@@ -12,43 +12,56 @@
   const ENTITY_GRAPH_URL = './entity-graph.json';
   const DIAGRAM_SVG_URL   = './metamodel.svg';
 
-  // Relationships from metamodel-v2.puml (extracted)
+// Relationships from metamodel-v2.puml (extracted)
+  // MUST stay in sync with technehub-labs/dea-metamodel/.github/scripts/generate_puml.py
+  // v2.0.0-alpha (Aug 9 2026) — updated for canonical 33-entity graph (PR-A).
+  // Alias renames: BC -> CAP, AI -> AIM, PM -> MTR, AC -> APC.
   const RELATIONSHIPS = [
-    { from: 'SO', to: 'II',  label: 'drives',         type: 'solid' },
-    { from: 'II', to: 'BC',  label: 'funds',           type: 'solid' },
-    { from: 'VS', to: 'BC',  label: 'traverses',      type: 'solid' },
-    { from: 'VS', to: 'JT',  label: 'experienced via', type: 'solid' },
-    { from: 'BC', to: 'BP',  label: 'implemented by',  type: 'solid' },
-    { from: 'BC', to: 'OU',  label: 'owned by',        type: 'solid' },
-    { from: 'BC', to: 'BO',  label: 'produces/consumes', type: 'solid' },
-    { from: 'JT', to: 'DI',  label: 'authenticates',   type: 'solid' },
-    { from: 'DI', to: 'DE',  label: 'represented by',  type: 'solid' },
-    { from: 'BP', to: 'SF',  label: 'automated by',    type: 'solid' },
-    { from: 'BO', to: 'DE',  label: 'digitized as',    type: 'solid' },
-    { from: 'DE', to: 'IC',  label: 'classified by',   type: 'dashed' },
-    { from: 'DE', to: 'DP',  label: 'curated into',    type: 'dashed' },
-    { from: 'SF', to: 'EVT', label: 'publishes/subscribes to', type: 'solid' },
-    { from: 'EVT',to: 'DE',  label: 'carries payload of',  type: 'dashed' },
-    { from: 'DP', to: 'API', label: 'exposed via',     type: 'solid' },
-    { from: 'AI', to: 'DP',  label: 'trained on',      type: 'solid' },
-    { from: 'AI', to: 'SF',  label: 'enhances/automates', type: 'solid' },
-    { from: 'SF', to: 'AC',  label: 'hosted by',       type: 'solid' },
-    { from: 'AC', to: 'PS',  label: 'deployed on',    type: 'dashed' },
-    { from: 'SF', to: 'API', label: 'exposed via',     type: 'solid' },
-    { from: 'API',to: 'DE',  label: 'serves/exchanges', type: 'dashed' },
-    { from: 'SO', to: 'PM',  label: 'measured by',     type: 'dashed' },
-    { from: 'BC', to: 'PM',  label: 'evaluated by',    type: 'dashed' },
-    { from: 'SF', to: 'PM',  label: 'evaluated by',    type: 'dashed' },
-  ];
+  // Layer 1 & 2
+  { from: 'SO',  to: 'II',  label: 'drives',                  type: 'solid' },
+  { from: 'II',  to: 'CAP', label: 'funds',                   type: 'solid' },
+  { from: 'VS',  to: 'CAP', label: 'traverses',               type: 'solid' },
+  { from: 'VS',  to: 'JT',  label: 'experienced via',         type: 'solid' },
+  { from: 'CAP', to: 'BP',  label: 'implemented by',          type: 'solid' },
+  { from: 'CAP', to: 'OU',  label: 'owned by',                type: 'solid' },
+  { from: 'CAP', to: 'BO',  label: 'produces / consumes',     type: 'solid' },
+  { from: 'SH',  to: 'BP',  label: 'served by',               type: 'dashed' },
+  { from: 'AC',  to: 'BP',  label: 'performs',                type: 'solid' },
+  // Layer 2 & 3 (Digital Integration)
+  { from: 'JT',  to: 'DI',  label: 'authenticates',           type: 'solid' },
+  { from: 'DI',  to: 'DE',  label: 'represented by',          type: 'solid' },
+  { from: 'BP',  to: 'SF',  label: 'automated by',            type: 'solid' },
+  { from: 'BO',  to: 'DE',  label: 'digitized as',            type: 'solid' },
+  { from: 'OU',  to: 'BO',  label: 'custodian of',            type: 'dashed' },
+  { from: 'BS',  to: 'BO',  label: 'exposes',                 type: 'solid' },
+  // Layer 3 Internal (Intelligence & Data)
+  { from: 'DE',  to: 'IC',  label: 'classified by',           type: 'dashed' },
+  { from: 'DE',  to: 'DP',  label: 'curated into',            type: 'dashed' },
+  { from: 'SF',  to: 'EVT', label: 'publishes / subscribes',  type: 'solid' },
+  { from: 'EVT', to: 'DE',  label: 'carries payload of',      type: 'dashed' },
+  { from: 'DP',  to: 'API', label: 'exposed via',             type: 'solid' },
+  { from: 'AIM', to: 'DP',  label: 'trained on',              type: 'solid' },
+  { from: 'AIM', to: 'SF',  label: 'enhances / automates',    type: 'solid' },
+  // Layer 4 (Technology Execution)
+  { from: 'SF',  to: 'APC', label: 'hosted by',               type: 'solid' },
+  { from: 'APC', to: 'PS',  label: 'deployed on',             type: 'dashed' },
+  { from: 'SF',  to: 'API', label: 'exposed via',             type: 'solid' },
+  { from: 'API', to: 'DE',  label: 'serves / exchanges',      type: 'dashed' },
+  { from: 'TEC', to: 'APC', label: 'implements',              type: 'solid' },
+  // Measurement (Cross-cutting)
+  { from: 'SO',  to: 'MTR', label: 'measured by',             type: 'dashed' },
+  { from: 'CAP', to: 'MTR', label: 'evaluated by',            type: 'dashed' },
+  { from: 'SF',  to: 'MTR', label: 'evaluated by',            type: 'dashed' },
+];
 
-  // Layer display names (v3)
+  // Layer display names — sourced from entity-graph.json's layer_name field
+  // v2.0.0-alpha (Aug 9 2026) — updated for canonical 33-entity graph (PR-A).
   const LAYER_NAMES = {
-    L1: 'Ecosystem & Value Network',
-    L2: 'Strategic & Governance',
-    L3: 'Business Operating Model',
-    L4: 'Digital & Intelligence',
-    L5: 'Technology & Execution',
-    L6: 'Measurement (Cross-Cutting)',
+    L1: 'Strategic & Investment',
+    L2: 'Business Operating Model',
+    L3: 'Digital & Data',
+    L4: 'Technical & Integration',
+    L5: 'Measurement & Governance',
   };
 
   // Layer colours (v3 — matches SVG layer palette)
