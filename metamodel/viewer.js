@@ -64,14 +64,15 @@
     L5: 'Measurement & Governance',
   };
 
-  // Layer colours (v3 — matches SVG layer palette)
+  // Layer colours (v4 — matches CSS --l1..--l5 tokens + per-layer palette)
+  // Sync with technehub-labs/dea-metamodel/.github/scripts/generate_puml.py
+  // and metamodel/viewer.css. 5 layers (L1-L5), each layer one accent hex.
   const LAYER_COLORS = {
-    L1: '#5dade2',  // Ecosystem — sky blue
-    L2: '#10b981',  // Strategic — emerald
-    L3: '#f59e0b',  // Business — amber
-    L4: '#fb923c',  // Digital — peach
-    L5: '#a78bfa',  // Technology — violet
-    L6: '#f87171',  // Measurement — rose
+    L1: '#2dd4bf',  // Strategic & Investment  — teal
+    L2: '#fbbf24',  // Business Operating Model — amber
+    L3: '#38bdf8',  // Digital & Data           — sky
+    L4: '#a78bfa',  // Technical & Integration  — violet
+    L5: '#fb7185',  // Measurement & Governance — rose
   };
 
   // ── State ───────────────────────────────────────────────
@@ -178,6 +179,14 @@
     card.dataset.layer    = entity.layer;
     card.dataset.repo     = entity.catalog_repo;
     card.dataset.status   = entity.status;
+
+    // Per-entity color override: if entity-graph.json provides an explicit
+    // `color` field (e.g. a future non-layer colour), set --card-accent so the
+    // CSS top-bar picks it up. The CSS already handles the default per-layer
+    // case via .entity-card[data-layer="LN"]::before { background: var(--lN); }.
+    if (entity.color) {
+      card.style.setProperty('--card-accent', entity.color);
+    }
 
     const statusLabel = entity.status === 'existing' || entity.status === 'existing-extended'
       ? 'live' : 'planned';

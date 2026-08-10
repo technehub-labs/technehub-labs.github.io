@@ -26,11 +26,11 @@
   --outline-variant: rgba(230, 237, 243, 0.06);
 
   /* ── Harmonised layer palette (brand-adjacent) ── */
-  --l1: #2dd4bf; /* Strategic   — brand teal */
-  --l2: #fbbf24; /* Business    — warm amber */
-  --l3: #38bdf8; /* Digital     — cyan-blue  */
-  --l4: #a78bfa; /* Technology  — soft violet */
-  --l5: #fb7185; /* Governance  — rose-red   */
+  --l1: #2dd4bf; /* Strategic & Investment  — brand teal */
+  --l2: #fbbf24; /* Business Operating Model — warm amber */
+  --l3: #38bdf8; /* Digital & Data           — cyan-blue  */
+  --l4: #a78bfa; /* Technical & Integration  — soft violet */
+  --l5: #fb7185; /* Measurement & Governance — rose-red   */
 
   /* ── MD3 shape tokens ──────────────────────────── */
   --radius-sm: 8px;     /* chips, badges, small buttons */
@@ -520,6 +520,9 @@ body {
 .entity-card[data-layer="L3"]::before { background: var(--l3); }
 .entity-card[data-layer="L4"]::before { background: var(--l4); }
 .entity-card[data-layer="L5"]::before { background: var(--l5); }
+/* Per-entity color override (set inline by viewer.js when entity-graph.json
+   provides an explicit `color` field that differs from the layer default). */
+.entity-card[style*="--card-accent"]::before { background: var(--card-accent); }
 
 /* Layer colour accent on border */
 .entity-card[data-layer="L1"] { --layer-color: var(--l1); }
