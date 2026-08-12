@@ -53,10 +53,13 @@ jobs:
         run: |
           git config user.name "coder-bot"
           git config user.email "software.engineer@technehub.com"
-          if git diff --quiet metamodel/; then
+          # Stage first so NEW (untracked) artefacts are detected —
+          # plain `git diff --quiet` ignores untracked files and would
+          # silently skip a first-time artefact like metamodel.puml.
+          git add metamodel/
+          if git diff --cached --quiet; then
             echo "No changes — metamodel artefacts are in sync."
           else
-            git add metamodel/
             git commit -m "chore: sync metamodel artefacts (entity-graph, svg, puml) from dea-metamodel"
             git push origin main
           fi
