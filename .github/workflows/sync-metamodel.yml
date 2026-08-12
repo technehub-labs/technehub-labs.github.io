@@ -27,7 +27,9 @@ jobs:
           ref: main
           token: ${{ secrets.CROSS_REPO_TOKEN }}
           path: dea-metamodel-source
-          sparse-checkout: viewer
+          sparse-checkout: |
+            viewer
+            metamodel-puml
 
       - name: Copy viewer artifacts into site
         run: |
@@ -36,19 +38,25 @@ jobs:
           cp dea-metamodel-source/viewer/entity-graph.json        metamodel/entity-graph.json
           cp dea-metamodel-source/viewer/entity-graph.schema.json metamodel/entity-graph.schema.json
           cp dea-metamodel-source/viewer/metamodel.svg            metamodel/metamodel.svg
+          # Canonical PlantUML source — the dea-web-viewer SPA parses
+          # this at runtime (/data/metamodel.puml), so it MUST be
+          # published here for the downstream sync to pick it up.
+          cp dea-metamodel-source/metamodel-puml/metamodel-v2.puml metamodel/metamodel.puml
 
           # Validate JSON.
           python3 -c "import json; json.load(open('metamodel/entity-graph.json'))"
           python3 -c "import json; json.load(open('metamodel/entity-graph.schema.json'))"
+          # Validate PUML is a plausible PlantUML source.
+          head -1 metamodel/metamodel.puml | grep -q '^@startuml'
 
       - name: Commit if changed
         run: |
           git config user.name "coder-bot"
           git config user.email "software.engineer@technehub.com"
           if git diff --quiet metamodel/; then
-            echo "No changes — entity-graph.json is in sync."
+            echo "No changes — metamodel artefacts are in sync."
           else
             git add metamodel/
-            git commit -m "chore: sync entity-graph.json from dea-metamodel"
+            git commit -m "chore: sync metamodel artefacts (entity-graph, svg, puml) from dea-metamodel"
             git push origin main
           fi
