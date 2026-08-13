@@ -12,67 +12,29 @@
   const ENTITY_GRAPH_URL = './entity-graph.json';
   const DIAGRAM_SVG_URL   = './metamodel.svg';
 
-// Relationships from metamodel-v2.puml (extracted)
-  // MUST stay in sync with technehub-labs/dea-metamodel/.github/scripts/generate_puml.py
-  // v2.0.0-alpha (Aug 9 2026) — updated for canonical 33-entity graph (PR-A).
-  // Alias renames: BC -> CAP, AI -> AIM, PM -> MTR, AC -> APC.
-  const RELATIONSHIPS = [
-  // Layer 1 & 2
-  { from: 'SO',  to: 'II',  label: 'drives',                  type: 'solid' },
-  { from: 'II',  to: 'CAP', label: 'funds',                   type: 'solid' },
-  { from: 'VS',  to: 'CAP', label: 'traverses',               type: 'solid' },
-  { from: 'VS',  to: 'JT',  label: 'experienced via',         type: 'solid' },
-  { from: 'CAP', to: 'BP',  label: 'implemented by',          type: 'solid' },
-  { from: 'CAP', to: 'OU',  label: 'owned by',                type: 'solid' },
-  { from: 'CAP', to: 'BO',  label: 'produces / consumes',     type: 'solid' },
-  { from: 'SH',  to: 'BP',  label: 'served by',               type: 'dashed' },
-  { from: 'AC',  to: 'BP',  label: 'performs',                type: 'solid' },
-  // Layer 2 & 3 (Digital Integration)
-  { from: 'JT',  to: 'DI',  label: 'authenticates',           type: 'solid' },
-  { from: 'DI',  to: 'DE',  label: 'represented by',          type: 'solid' },
-  { from: 'BP',  to: 'SF',  label: 'automated by',            type: 'solid' },
-  { from: 'BO',  to: 'DE',  label: 'digitized as',            type: 'solid' },
-  { from: 'OU',  to: 'BO',  label: 'custodian of',            type: 'dashed' },
-  { from: 'BS',  to: 'BO',  label: 'exposes',                 type: 'solid' },
-  // Layer 3 Internal (Intelligence & Data)
-  { from: 'DE',  to: 'IC',  label: 'classified by',           type: 'dashed' },
-  { from: 'DE',  to: 'DP',  label: 'curated into',            type: 'dashed' },
-  { from: 'SF',  to: 'EVT', label: 'publishes / subscribes',  type: 'solid' },
-  { from: 'EVT', to: 'DE',  label: 'carries payload of',      type: 'dashed' },
-  { from: 'DP',  to: 'API', label: 'exposed via',             type: 'solid' },
-  { from: 'AIM', to: 'DP',  label: 'trained on',              type: 'solid' },
-  { from: 'AIM', to: 'SF',  label: 'enhances / automates',    type: 'solid' },
-  // Layer 4 (Technology Execution)
-  { from: 'SF',  to: 'APC', label: 'hosted by',               type: 'solid' },
-  { from: 'APC', to: 'PS',  label: 'deployed on',             type: 'dashed' },
-  { from: 'SF',  to: 'API', label: 'exposed via',             type: 'solid' },
-  { from: 'API', to: 'DE',  label: 'serves / exchanges',      type: 'dashed' },
-  { from: 'TEC', to: 'APC', label: 'implements',              type: 'solid' },
-  // Measurement (Cross-cutting)
-  { from: 'SO',  to: 'MTR', label: 'measured by',             type: 'dashed' },
-  { from: 'CAP', to: 'MTR', label: 'evaluated by',            type: 'dashed' },
-  { from: 'SF',  to: 'MTR', label: 'evaluated by',            type: 'dashed' },
-];
+// Relationships, layer names and layer colours are DERIVED from
+  // entity-graph.json at load time (OpenDEAM v0.2.0 — the graph is generated
+  // from the root model by dea-metamodel/.github/scripts/generate_entity_graph.py).
+  // The constants below are fallbacks used only if the graph predates v0.2.0
+  // (no layers[] / relationships[] arrays).
+  let RELATIONSHIPS = [];
 
-  // Layer display names — sourced from entity-graph.json's layer_name field
-  // v2.0.0-alpha (Aug 9 2026) — updated for canonical 33-entity graph (PR-A).
-  const LAYER_NAMES = {
-    L1: 'Strategic & Investment',
-    L2: 'Business Operating Model',
-    L3: 'Digital & Data',
-    L4: 'Technical & Integration',
-    L5: 'Measurement & Governance',
+  let LAYER_NAMES = {
+    L1: 'Ecosystem & Value Network',
+    L2: 'Strategic & Governance',
+    L3: 'Business Operating Model',
+    L4: 'Digital & Intelligence',
+    L5: 'Technology & Execution',
+    DIM: 'Measurement Dimension',
   };
 
-  // Layer colours (v4 — matches CSS --l1..--l5 tokens + per-layer palette)
-  // Sync with technehub-labs/dea-metamodel/.github/scripts/generate_puml.py
-  // and metamodel/viewer.css. 5 layers (L1-L5), each layer one accent hex.
-  const LAYER_COLORS = {
-    L1: '#2dd4bf',  // Strategic & Investment  — teal
-    L2: '#fbbf24',  // Business Operating Model — amber
-    L3: '#38bdf8',  // Digital & Data           — sky
-    L4: '#a78bfa',  // Technical & Integration  — violet
-    L5: '#fb7185',  // Measurement & Governance — rose
+  let LAYER_COLORS = {
+    L1: '#2dd4bf',  // Ecosystem & Value Network — teal
+    L2: '#fbbf24',  // Strategic & Governance    — amber
+    L3: '#38bdf8',  // Business Operating Model  — sky
+    L4: '#a78bfa',  // Digital & Intelligence    — violet
+    L5: '#fb7185',  // Technology & Execution    — rose
+    DIM: '#9ca3af', // Measurement Dimension     — neutral gray
   };
 
   // ── State ───────────────────────────────────────────────
@@ -93,6 +55,24 @@
     const res  = await fetch(ENTITY_GRAPH_URL);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     graph = await res.json();
+
+    // Derive relationships + layer metadata from the graph (v0.2.0 shape).
+    if (Array.isArray(graph.relationships)) {
+      RELATIONSHIPS = graph.relationships.map(r => ({
+        from: r.from, to: r.to,
+        label: r.cardinality ? `${r.label} [${r.cardinality}]` : r.label,
+        type: r.style || 'solid',
+        relType: r.rel_type,
+      }));
+    }
+    if (Array.isArray(graph.layers) && graph.layers.length) {
+      LAYER_NAMES = { DIM: 'Measurement Dimension' };
+      LAYER_COLORS = { DIM: '#9ca3af' };
+      graph.layers.forEach(l => {
+        LAYER_NAMES[l.id] = l.name;
+        LAYER_COLORS[l.id] = l.color;
+      });
+    }
   } catch (err) {
     grid.innerHTML = `<p style="color:#ef4444;padding:24px;font-family:monospace;font-size:0.8rem;line-height:1.6">
       <strong>Failed to load entity graph.</strong><br><br>
@@ -175,9 +155,11 @@
   function buildCard(entity) {
     const card = document.createElement('div');
     card.className = 'entity-card';
+    // v0.2.0: dimension entities (e.g. MTR) have no home layer — bucket as DIM.
+    const loc = entity.layer || 'DIM';
     card.dataset.alias   = entity.class_alias;
-    card.dataset.layer    = entity.layer;
-    card.dataset.repo     = entity.catalog_repo;
+    card.dataset.layer    = loc;
+    card.dataset.repo     = entity.catalog_repo || '';
     card.dataset.status   = entity.status;
 
     // Per-entity color override: if entity-graph.json provides an explicit
@@ -192,12 +174,12 @@
       ? 'live' : 'planned';
 
     card.innerHTML = `
-      <div class="card-layer-tag">${entity.layer} · ${LAYER_NAMES[entity.layer]}</div>
+      <div class="card-layer-tag">${loc} · ${LAYER_NAMES[loc]}</div>
       <div class="card-alias">${entity.class_alias}</div>
       <div class="card-name">${entity.display_name}</div>
       <div class="card-repo">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        <span class="card-repo-link">${entity.catalog_repo}</span>
+        <span class="card-repo-link">${entity.catalog_repo || 'catalog TBD'}</span>
       </div>
       <span class="card-status ${entity.status}">${statusLabel}</span>
     `;
@@ -249,7 +231,7 @@
 
       // Find layer colour for label colour
       const entity = graph.entities.find(e => e.class_alias === rel.from);
-      const color  = entity ? LAYER_COLORS[entity.layer] : '#2dd4bf';
+      const color  = entity ? LAYER_COLORS[entity.layer || 'DIM'] : '#2dd4bf';
 
       // Optional: add arrow marker
       const markerId = `arrow-${rel.type}`;
@@ -292,9 +274,9 @@
     item.innerHTML = `
       <span class="rel-label">${rel.from} → ${rel.to}</span>
       <span class="rel-text">
-        <strong style="color:${LAYER_COLORS[fromEntity.layer]}">${fromEntity.display_name}</strong>
+        <strong style="color:${LAYER_COLORS[fromEntity.layer || 'DIM']}">${fromEntity.display_name}</strong>
         ${rel.label}
-        <strong style="color:${LAYER_COLORS[toEntity.layer]}">${toEntity.display_name}</strong>
+        <strong style="color:${LAYER_COLORS[toEntity.layer || 'DIM']}">${toEntity.display_name}</strong>
       </span>
     `;
     legendBody.appendChild(item);
@@ -309,14 +291,21 @@
     activeEntity = entity;
 
     // Populate detail
+    const loc = entity.layer || 'DIM';
     document.getElementById('detailLayer').textContent =
-      `${entity.layer} · ${LAYER_NAMES[entity.layer]}`;
-    document.getElementById('detailLayer').style.color = LAYER_COLORS[entity.layer];
+      `${loc} · ${LAYER_NAMES[loc]}`;
+    document.getElementById('detailLayer').style.color = LAYER_COLORS[loc];
     document.getElementById('detailName').textContent  = entity.display_name;
     document.getElementById('detailDesc').textContent = entity.description;
 
     const repoLink = document.getElementById('detailRepoLink');
-    repoLink.href = entity.repo_url;
+    if (entity.repo_url) {
+      repoLink.href = entity.repo_url;
+      repoLink.classList.remove('disabled');
+    } else {
+      repoLink.removeAttribute('href');
+      repoLink.classList.add('disabled');
+    }
     const viewerLink = document.getElementById('detailViewerLink');
     viewerLink.href = entity.viewer_url;
 
