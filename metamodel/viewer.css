@@ -25,12 +25,13 @@
   --outline-2:      rgba(230, 237, 243, 0.22);
   --outline-variant: rgba(230, 237, 243, 0.06);
 
-  /* ── Harmonised layer palette (brand-adjacent) ── */
-  --l1: #2dd4bf; /* Strategic & Investment  — brand teal */
-  --l2: #fbbf24; /* Business Operating Model — warm amber */
-  --l3: #38bdf8; /* Digital & Data           — cyan-blue  */
-  --l4: #a78bfa; /* Technical & Integration  — soft violet */
-  --l5: #fb7185; /* Measurement & Governance — rose-red   */
+  /* ── Harmonised layer palette (OpenDEAM v0.2.0 authoritative colors) ── */
+  --l1: #2dd4bf; /* Ecosystem & Value Network — brand teal */
+  --l2: #fbbf24; /* Strategic & Governance    — warm amber */
+  --l3: #38bdf8; /* Business Operating Model  — cyan-blue  */
+  --l4: #a78bfa; /* Digital & Intelligence    — soft violet */
+  --l5: #fb7185; /* Technology & Execution    — rose-red   */
+  --dim: #9ca3af; /* Measurement Dimension    — neutral gray (cross-cutting, not a layer) */
 
   /* ── MD3 shape tokens ──────────────────────────── */
   --radius-sm: 8px;     /* chips, badges, small buttons */
@@ -433,6 +434,7 @@ body {
 .layer-btn[data-layer="L3"].active { color: var(--l3); background: rgba(56,189,248,0.10); border-color: rgba(56,189,248,0.30); }
 .layer-btn[data-layer="L4"].active { color: var(--l4); background: rgba(167,139,250,0.10); border-color: rgba(167,139,250,0.30); }
 .layer-btn[data-layer="L5"].active { color: var(--l5); background: rgba(251,113,133,0.10); border-color: rgba(251,113,133,0.30); }
+.layer-btn[data-layer="DIM"].active { color: var(--dim); background: rgba(156,163,175,0.10); border-color: rgba(156,163,175,0.30); }
 .layer-bar-spacer { flex: 1; }
 .legend-toggle {
   display: flex;
@@ -520,6 +522,7 @@ body {
 .entity-card[data-layer="L3"]::before { background: var(--l3); }
 .entity-card[data-layer="L4"]::before { background: var(--l4); }
 .entity-card[data-layer="L5"]::before { background: var(--l5); }
+.entity-card[data-layer="DIM"]::before { background: var(--dim); }
 /* Per-entity color override (set inline by viewer.js when entity-graph.json
    provides an explicit `color` field that differs from the layer default). */
 .entity-card[style*="--card-accent"]::before { background: var(--card-accent); }
@@ -530,6 +533,7 @@ body {
 .entity-card[data-layer="L3"] { --layer-color: var(--l3); }
 .entity-card[data-layer="L4"] { --layer-color: var(--l4); }
 .entity-card[data-layer="L5"] { --layer-color: var(--l5); }
+.entity-card[data-layer="DIM"] { --layer-color: var(--dim); }
 
 .card-layer-tag {
   font-family: var(--font-mono);
