@@ -1,0 +1,112 @@
+name: Sync Metaframework
+
+# Mirrors the canonical ECF artefacts from technehub-labs/dea-metaframework
+# (L0 source of truth) into this Pages repo's dea-metaframework/ subdirectory
+# so the live landing page at https://technehub-labs.github.io/dea-metaframework/
+# always reflects the latest release of the framework.
+#
+# Sync scope:
+#   pages/        → dea-metaframework/        (live site JS/CSS/HTML)
+#   metamodel/    → dea-metaframework/        (PlantUML source + rendered SVG)
+#
+# Triggers:
+#   - repository_dispatch: [metaframework-updated]  — fired by dea-metaframework's
+#                                                     notify-portal.yml on push to main
+#   - workflow_dispatch                              — manual run for testing
+#   - schedule (hourly cron)                         — safety net for missed dispatches
+#
+# Same-origin rule: we copy artefacts into this Pages repo and serve them from
+# the dea-metaframework/ subdirectory. The portal page fetches ./assets/site.js
+# (same-origin), which avoids the raw.githubusercontent.com CDN 404 pitfall
+# described in github-pages-workflow skill section 12.
+
+on:
+  repository_dispatch:
+    types: [metaframework-updated]
+  workflow_dispatch:
+  schedule:
+    # Hourly safety net in case repository_dispatch is missed.
+    - cron: '0 * * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout technehub-labs.github.io
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Checkout dea-metaframework source
+        uses: actions/checkout@v4
+        with:
+          repository: technehub-labs/dea-metaframework
+          ref: main
+          token: ${{ secrets.CROSS_REPO_TOKEN }}
+          path: dea-metaframework-source
+          sparse-checkout: |
+            pages
+            metamodel
+
+      - name: Sync pages + metamodel artefacts into site
+        run: |
+          set -euo pipefail
+          mkdir -p dea-metaframework
+
+          # Page JS / CSS / HTML — live ECF matrix viewer
+          cp dea-metaframework-source/pages/index.html    dea-metaframework/index.html
+          cp dea-metaframework-source/pages/assets/site.js    dea-metaframework/assets/site.js
+          cp dea-metaframework-source/pages/assets/site.css   dea-metaframework/assets/site.css
+
+          # Metamodel artefacts — PlantUML source + rendered SVG
+          cp dea-metaframework-source/metamodel/enterprise-concepts.puml      dea-metaframework/enterprise-concepts.puml
+          cp dea-metaframework-source/metamodel/enterprise-concepts-v3.svg   dea-metaframework/enterprise-concepts-v3.svg
+
+          # Validate artefacts landed correctly.
+          test -s dea-metaframework/index.html
+          test -s dea-metaframework/assets/site.js
+          test -s dea-metaframework/assets/site.css
+          test -s dea-metaframework/enterprise-concepts.puml
+          test -s dea-metaframework/enterprise-concepts-v3.svg
+
+          # Light SVG validation: must be valid XML, must contain at least one <svg> root.
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          for f in [
+              'dea-metaframework/enterprise-concepts-v3.svg',
+          ]:
+              root = ET.parse(f).getroot()
+              tag = root.tag.split('}')[-1] if '}' in root.tag else root.tag
+              if tag != 'svg':
+                  raise SystemExit(f'FAIL: {f}: root tag is {tag!r}, expected "svg"')
+              print(f'OK: {f} — valid SVG, root <svg>')
+          PY
+
+          # Light .puml validation: file must contain @startuml / @enduml markers.
+          python3 - <<'PY'
+          with open('dea-metaframework/enterprise-concepts.puml') as h:
+              src = h.read()
+          for marker in ('@startuml', '@enduml'):
+              if marker not in src:
+                  raise SystemExit(f'FAIL: enterprise-concepts.puml missing {marker!r}')
+          print(f'OK: enterprise-concepts.puml — {src.count(chr(10))} lines, has @startuml/@enduml')
+          PY
+
+      - name: Commit if changed
+        run: |
+          git config user.name "metaframework-sync-bot"
+          git config user.email "sync@dea-metaframework.local"
+          if git diff --quiet dea-metaframework/; then
+            echo "In sync — no changes."
+          else
+            echo "Diff summary:"
+            git diff --stat dea-metaframework/ | tail -10
+            git add dea-metaframework/
+            COMMIT_MSG="chore: sync from dea-metaframework @ ${{ github.event.client_payload.commit }}"
+            if [ -z "$COMMIT_MSG" ]; then COMMIT_MSG="chore: sync from dea-metaframework"; fi
+            git commit -m "$COMMIT_MSG"
+            git push origin main
+          fi

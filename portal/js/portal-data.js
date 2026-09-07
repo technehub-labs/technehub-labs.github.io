@@ -47,6 +47,68 @@ export const PORTAL_CARDS = [
 
 export const GITHUB_ORG = 'technehub-labs';
 
+/**
+ * Repo name → latest release cache. Hydrated by `loadReleases()` from
+ * the GitHub Releases API at portal boot. Each entry has shape:
+ *   { tag_name, name, published_at, html_url }
+ * or `null` when the repo exists but has no published release yet.
+ */
+let _RELEASE_CACHE = null;
+const RELEASE_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
+const RELEASE_STORAGE_KEY = 'th_portal_releases';
+
+/**
+ * Fetch the latest release for each named repo in parallel, with localStorage
+ * cache. Falls back to empty/null on any API failure (e.g. CORS, rate limit).
+ *
+ * @param {string[]} names — repo names (without org prefix)
+ * @returns {Promise<Record<string, object|null>>}
+ */
+export async function loadReleases(names) {
+  if (_RELEASE_CACHE) return _RELEASE_CACHE;
+  const cached = readReleaseCache();
+  if (cached) { _RELEASE_CACHE = cached; return cached; }
+
+  const entries = await Promise.all(names.map(async (name) => {
+    const url = `https://api.github.com/repos/${GITHUB_ORG}/${name}/releases/latest`;
+    try {
+      const resp = await fetch(url, { headers: { Accept: 'application/vnd.github+json' } });
+      if (resp.status === 404) return [name, null];      // no releases yet
+      if (!resp.ok)             return [name, null];      // transient failure
+      const release = await resp.json();
+      return [name, {
+        tag_name: release.tag_name,
+        name: release.name || release.tag_name,
+        published_at: release.published_at,
+        html_url: release.html_url || `https://github.com/${GITHUB_ORG}/${name}/releases`,
+      }];
+    } catch (_e) {
+      return [name, null];
+    }
+  }));
+
+  const map = Object.fromEntries(entries);
+  _RELEASE_CACHE = map;
+  writeReleaseCache(map);
+  return map;
+}
+
+function readReleaseCache() {
+  try {
+    const raw = localStorage.getItem(RELEASE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.at || !parsed?.value) return null;
+    if (Date.now() - parsed.at > RELEASE_CACHE_TTL_MS) return null;
+    return parsed.value;
+  } catch (_e) { return null; }
+}
+
+function writeReleaseCache(value) {
+  try { localStorage.setItem(RELEASE_STORAGE_KEY, JSON.stringify({ at: Date.now(), value })); }
+  catch (_e) { /* localStorage may be disabled — skip */ }
+}
+
 export const FALLBACK_REPOS = [
   { name: 'dea-metamodel', description: 'Canonical entity definitions, relationships, and schemas. JSON Schema, OWL/RDF, SQLite, TypeScript, Pydantic.', language: 'TypeScript', updated_at: '2026-07-15T10:00:00Z', topics: ['metamodel','ontology','enterprise-architecture'], html_url: 'https://github.com/technehub-labs/dea-metamodel', stars: 0, forks: 0 },
   { name: 'dea-metaframework', description: 'The Enterprise Concept Framework — 7 domains × 7 lifecycle stages, derived from a single grounding axiom.', language: 'HTML', updated_at: '2026-07-20T12:00:00Z', topics: ['framework','ecf','matrix'], html_url: 'https://github.com/technehub-labs/dea-metaframework', stars: 0, forks: 0 },
