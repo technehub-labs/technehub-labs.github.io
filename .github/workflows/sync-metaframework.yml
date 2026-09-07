@@ -9,11 +9,24 @@ name: Sync Metaframework
 #   pages/        → dea-metaframework/        (live site JS/CSS/HTML)
 #   metamodel/    → dea-metaframework/        (PlantUML source + rendered SVG)
 #
-# Triggers:
-#   - repository_dispatch: [metaframework-updated]  — fired by dea-metaframework's
-#                                                     notify-portal.yml on push to main
-#   - workflow_dispatch                              — manual run for testing
-#   - schedule (hourly cron)                         — safety net for missed dispatches
+# Triggers (canonical mechanism is hourly cron — no cross-repo secret needed):
+#   - schedule (hourly cron)         — primary sync, picks up any source-side
+#                                     changes within ~1 hour of merge to main
+#   - workflow_dispatch             — manual run for testing / emergency sync
+#   - repository_dispatch            — retained as an OPT-IN fast path for when
+#     [metaframework-updated]          a future dispatcher workflow is configured
+#                                     with the required DISPATCH_TOKEN secret.
+#                                     Currently no dispatcher exists on
+#                                     technehub-labs/dea-metaframework; the
+#                                     hourly cron is the only active trigger.
+#
+# Why hourly cron (not push-to-main dispatch):
+#   Cross-repo `repository_dispatch` from dea-metaframework to this Pages repo
+#   requires a PAT stored as `DISPATCH_TOKEN` on the source repo. Until that
+#   secret is configured, the hourly cron is sufficient: source-side merges
+#   land in the live Pages tree within ~60 minutes, which is acceptable for a
+#   marketing/documentation site. Adding `DISPATCH_TOKEN` later will give
+#   sub-minute latency without any further workflow changes here.
 #
 # Same-origin rule: we copy artefacts into this Pages repo and serve them from
 # the dea-metaframework/ subdirectory. The portal page fetches ./assets/site.js
@@ -25,7 +38,8 @@ on:
     types: [metaframework-updated]
   workflow_dispatch:
   schedule:
-    # Hourly safety net in case repository_dispatch is missed.
+    # Canonical sync — hourly. Picks up all source-side changes within ~1h
+    # without requiring any cross-repo secret.
     - cron: '0 * * * *'
 
 jobs:
