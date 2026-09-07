@@ -2,6 +2,8 @@
 // Repositories Catalog — searchable, filterable grid of all GitHub repos.
 // ═══════════════════════════════════════════════════════════════
 
+import { loadReleases } from './portal-data.js';
+
 const LANG_COLORS = {
   TypeScript: '#3178c6',
   JavaScript: '#f1e05a',
@@ -20,6 +22,17 @@ export class RepositoriesCatalog {
     this.repos = repos;
     this.filter = 'all';
     this.query = '';
+    this.releases = {}; // { repoName -> release }
+  }
+
+  /**
+   * Fetch latest releases for all repos currently in the list and re-render.
+   * Awaited by the caller; non-blocking on failure.
+   */
+  async loadReleases() {
+    const names = this.repos.map((r) => r.name);
+    this.releases = await loadReleases(names);
+    this.render();
   }
 
   render() {
@@ -46,9 +59,19 @@ export class RepositoriesCatalog {
     const langColor = LANG_COLORS[r.language] || 'var(--cyan)';
     const topics = (r.topics || []).slice(0, 4);
     const updated = r.updated_at ? new Date(r.updated_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+    const release = this.releases[r.name];
+    const releaseBadge = release?.tag_name
+      ? `<a class="repo-card-release" href="${this._esc(release.html_url)}" target="_blank" rel="noopener" title="${this._esc(release.name || release.tag_name)}">
+          <span class="repo-card-release-dot" aria-hidden="true"></span>
+          <span class="repo-card-release-tag">${this._esc(release.tag_name)}</span>
+        </a>`
+      : '';
     return `
       <div class="repo-card">
-        <div class="repo-card-name">${this._esc(r.name)}</div>
+        <div class="repo-card-head">
+          <div class="repo-card-name">${this._esc(r.name)}</div>
+          ${releaseBadge}
+        </div>
         <div class="repo-card-desc">${this._esc(r.description || 'No description available.')}</div>
         ${topics.length > 0 ? `<div class="repo-card-topics">${topics.map((t) => `<span class="repo-card-topic">${this._esc(t)}</span>`).join('')}</div>` : ''}
         <div class="repo-card-meta">

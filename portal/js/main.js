@@ -523,7 +523,11 @@ class App {
       case 'assessment-maturity':
         return new AssessmentMaturity(body);
       case 'repositories':
-        return new RepositoriesCatalog(body, this.repos.length ? this.repos : await fetchRepos());
+        const reposCatalog = new RepositoriesCatalog(body, this.repos.length ? this.repos : await fetchRepos());
+        // Asynchronously hydrate latest release badges. Non-blocking — cards
+        // render immediately with no badge, then re-render once releases land.
+        reposCatalog.loadReleases().catch((e) => console.warn('loadReleases failed', e));
+        return reposCatalog;
       default:
         return { render: () => { body.innerHTML = '<div style="padding:var(--sp-5);color:var(--text-3);">Unknown module.</div>'; } };
     }
