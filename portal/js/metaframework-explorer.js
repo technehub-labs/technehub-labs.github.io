@@ -1,20 +1,38 @@
 // ═══════════════════════════════════════════════════════════════
 // Meta Framework Explorer — renders into a provided body element.
-// Interactive 7×7 axiom-derived matrix with zoom, pan, search,
-// layer visibility, and contextual descriptions.
+// Interactive 7×7 axiom-derived matrix with zoom, pan, and a
+// contextual detail panel.
+//
+// Data source: ./data/ecf-matrix.json — fetched same-origin from the
+// portal page. Synced from technehub-labs/dea-metaframework on every
+// release via sync-metaframework.yml (canonical source-of-truth =
+// pages/assets/matrix-data.json). Embedded fallback keeps the matrix
+// axes renderable if the fetch fails (offline, partial deploy).
+//
+// Shape consumed:
+//   {
+//     domains:  [{id, key, name, shortName, color}],     // 7
+//     stages:   [{id, key, name, fullName}],             // 7
+//     scenarios: { foundation: {name, description, cells},
+//                  telecom:    {…}, digital: {…} },
+//     cells:    { "{domain.key}.{stage.key}": { text, glyph, actors[], metamodelEntities[] } }   // 49
+//   }
 // ═══════════════════════════════════════════════════════════════
 
-const DOMAINS = [
-  { id: 1, name: 'Customer & Value' },
-  { id: 2, name: 'Product & Offering' },
-  { id: 3, name: 'Operations & Delivery' },
-  { id: 4, name: 'Technology & Platform' },
-  { id: 5, name: 'People & Organisation' },
-  { id: 6, name: 'Finance & Capital' },
-  { id: 7, name: 'Governance & Risk' },
-];
+const MATRIX_DATA_URL = '../data/ecf-matrix.json';
 
-const STAGES = [
+// Axes-only fallback (no cell content). Matches the canonical v2.3.0+
+// domain set. Used when the JSON cannot be fetched.
+const FALLBACK_DOMAINS = [
+  { id: 1, name: 'Governance & Existence',  shortName: 'Governance' },
+  { id: 2, name: 'Strategy & Direction',    shortName: 'Strategy' },
+  { id: 3, name: 'Agency & Organization',   shortName: 'Agency' },
+  { id: 4, name: 'Party & Relationship',    shortName: 'Party' },
+  { id: 5, name: 'Product & Value',         shortName: 'Product' },
+  { id: 6, name: 'Operations & Enablement', shortName: 'Operations' },
+  { id: 7, name: 'Finance & Accounting',    shortName: 'Finance' },
+];
+const FALLBACK_STAGES = [
   { id: 1, name: 'Conceive' },
   { id: 2, name: 'Design' },
   { id: 3, name: 'Build' },
@@ -24,57 +42,68 @@ const STAGES = [
   { id: 7, name: 'Retire' },
 ];
 
-const CELLS = {
-  '1-1': { glyph: '●', objects: ['Strategic Objective', 'Customer Need'], actors: ['CXO', 'Product Owner'] },
-  '1-2': { glyph: '★', objects: ['Value Proposition', 'Journey Map'], actors: ['UX Lead', 'Business Architect'] },
-  '1-3': { glyph: '●', objects: ['MVP', 'Pilot'], actors: ['Delivery Team'] },
-  '1-4': { glyph: '●', objects: ['Go-to-Market'], actors: ['Marketing', 'Sales'] },
-  '1-5': { glyph: '●', objects: ['Customer Service', 'Feedback Loop'], actors: ['Support', 'CX'] },
-  '1-6': { glyph: '★', objects: ['NPS', 'Churn Analysis'], actors: ['Analyst'] },
-  '1-7': { glyph: '·', objects: ['Sunset Comms'], actors: ['CXO'] },
-  '2-1': { glyph: '●', objects: ['Product Vision'], actors: ['Product Manager'] },
-  '2-2': { glyph: '●', objects: ['Product Spec', 'Roadmap'], actors: ['Product Manager', 'Architect'] },
-  '2-3': { glyph: '★', objects: ['Build Pipeline', 'Release'], actors: ['Engineering'] },
-  '2-4': { glyph: '●', objects: ['Launch'], actors: ['Product', 'Marketing'] },
-  '2-5': { glyph: '●', objects: ['Feature Ops'], actors: ['SRE', 'Product'] },
-  '2-6': { glyph: '●', objects: ['A/B Tests', 'Telemetry'], actors: ['Data', 'Product'] },
-  '2-7': { glyph: '·', objects: ['End-of-Life'], actors: ['Product'] },
-  '3-1': { glyph: '·', objects: ['Ops Model Concept'], actors: ['COO'] },
-  '3-2': { glyph: '●', objects: ['Process Design', 'SLA'], actors: ['Process Owner'] },
-  '3-3': { glyph: '★', objects: ['Automation', 'Runbook'], actors: ['Ops Engineer'] },
-  '3-4': { glyph: '●', objects: ['Service Activation'], actors: ['Ops'] },
-  '3-5': { glyph: '●', objects: ['Incident Mgmt', 'Monitoring'], actors: ['SRE', 'NOC'] },
-  '3-6': { glyph: '★', objects: ['Process Mining', 'Optimisation'], actors: ['Ops Analyst'] },
-  '3-7': { glyph: '·', objects: ['Process Retirement'], actors: ['Ops'] },
-  '4-1': { glyph: '·', objects: ['Tech Radar Entry'], actors: ['Chief Architect'] },
-  '4-2': { glyph: '★', objects: ['Reference Architecture', 'Design Pattern'], actors: ['Solutions Architect'] },
-  '4-3': { glyph: '★', objects: ['IaC', 'Platform Build'], actors: ['Platform Engineer'] },
-  '4-4': { glyph: '●', objects: ['Deployment', 'Provisioning'], actors: ['DevOps'] },
-  '4-5': { glyph: '●', objects: ['Observability', 'SRE'], actors: ['SRE'] },
-  '4-6': { glyph: '●', objects: ['Tech Debt Mgmt', 'Upgrade'], actors: ['Architect'] },
-  '4-7': { glyph: '·', objects: ['Decommission'], actors: ['Platform'] },
-  '5-1': { glyph: '·', objects: ['Org Design Concept'], actors: ['HR', 'COO'] },
-  '5-2': { glyph: '●', objects: ['Role Profiles', 'RACI'], actors: ['HR', 'Manager'] },
-  '5-3': { glyph: '●', objects: ['Training', 'Onboarding'], actors: ['L&D'] },
-  '5-4': { glyph: '●', objects: ['Team Activation'], actors: ['Manager'] },
-  '5-5': { glyph: '●', objects: ['Performance Mgmt'], actors: ['Manager', 'HR'] },
-  '5-6': { glyph: '★', objects: ['Skills Gap Analysis'], actors: ['HR', 'L&D'] },
-  '5-7': { glyph: '·', objects: ['Offboarding'], actors: ['HR'] },
-  '6-1': { glyph: '●', objects: ['Investment Initiative'], actors: ['CFO'] },
-  '6-2': { glyph: '★', objects: ['Business Case', 'Budget Plan'], actors: ['Finance', 'PMO'] },
-  '6-3': { glyph: '●', objects: ['Capital Allocation'], actors: ['Finance'] },
-  '6-4': { glyph: '●', objects: ['Spend Tracking'], actors: ['Finance'] },
-  '6-5': { glyph: '●', objects: ['Cost Optimisation', 'FinOps'], actors: ['Finance', 'Ops'] },
-  '6-6': { glyph: '★', objects: ['ROI Analysis', 'Value Realisation'], actors: ['Finance', 'PMO'] },
-  '6-7': { glyph: '·', objects: ['Asset Disposal'], actors: ['Finance'] },
-  '7-1': { glyph: '●', objects: ['Policy Concept'], actors: ['CISO', 'Legal'] },
-  '7-2': { glyph: '★', objects: ['Standard', 'Control Design'], actors: ['Risk', 'Compliance'] },
-  '7-3': { glyph: '●', objects: ['Control Implementation'], actors: ['Security'] },
-  '7-4': { glyph: '●', objects: ['Audit Prep', 'Certification'], actors: ['Audit'] },
-  '7-5': { glyph: '★', objects: ['Continuous Monitoring', 'GRC'], actors: ['Risk', 'Security'] },
-  '7-6': { glyph: '★', objects: ['Assessment', 'Maturity Review'], actors: ['Audit', 'Architect'] },
-  '7-7': { glyph: '·', objects: ['Policy Retirement'], actors: ['Compliance'] },
-};
+/**
+ * Convert the canonical cell payload
+ *   { text, glyph, actors: ['platform-engineering'], metamodelEntities: ['Platform Service'] }
+ * into the flat shape this renderer's existing markup expects
+ *   { glyph, objects: [metamodelEntities], actors: [actors] }
+ * (the legacy "objects" field used by the older hardcoded matrix).
+ *
+ * Either field can be missing — returns safe defaults.
+ */
+function normalizeCell(c) {
+  const glyph = c?.glyph || '·';
+  const actors = Array.isArray(c?.actors) ? c.actors : [];
+  const objects = Array.isArray(c?.metamodelEntities) ? c.metamodelEntities
+                : Array.isArray(c?.objects)            ? c.objects
+                : [];
+  return { glyph, actors, objects, text: c?.text || '' };
+}
+
+/**
+ * Fetch the canonical ECF matrix JSON. Falls back to axes-only on any
+ * failure (network, parse, schema mismatch). Always resolves.
+ */
+async function loadMatrixData() {
+  try {
+    const resp = await fetch(MATRIX_DATA_URL, { cache: 'no-cache' });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!Array.isArray(data.domains) || data.domains.length !== 7) throw new Error('domains shape');
+    if (!Array.isArray(data.stages)  || data.stages.length  !== 7) throw new Error('stages shape');
+    if (!data.scenarios || typeof data.scenarios !== 'object')     throw new Error('scenarios shape');
+    return data;
+  } catch (e) {
+    console.warn('[metaframework-explorer] ecf-matrix.json unavailable, using axes-only fallback:', e);
+    return {
+      domains: FALLBACK_DOMAINS,
+      stages:  FALLBACK_STAGES,
+      scenarios: {
+        foundation: { name: 'Foundation', description: 'Canonical ECF cells (data unavailable offline).', cells: {} },
+        telecom:    { name: 'Telecom',    description: 'Telecom scenario (data unavailable offline).',    cells: {} },
+        digital:    { name: 'Digital Services', description: 'Digital services scenario (data unavailable offline).', cells: {} },
+      },
+    };
+  }
+}
+
+/**
+ * Build the portal's flat key-indexed CELLS map (`{1}-{1}` → cell) for a
+ * given scenario, normalised from the canonical domain.key/stage.key map.
+ */
+function buildCellsMap(scenario) {
+  const out = {};
+  const cells = scenario?.cells || {};
+  for (const [composite, cell] of Object.entries(cells)) {
+    const [domainKey, stageKey] = composite.split('.');
+    const dIdx = this.domains.findIndex((d) => d.key === domainKey);
+    const sIdx = this.stages.findIndex((s) => s.key === stageKey);
+    if (dIdx < 0 || sIdx < 0) continue;
+    const flatKey = `${dIdx + 1}-${sIdx + 1}`;
+    out[flatKey] = normalizeCell(cell);
+  }
+  return out;
+}
 
 export class MetaFrameworkExplorer {
   constructor(bodyEl) {
@@ -84,9 +113,37 @@ export class MetaFrameworkExplorer {
     this.zoom = 1;
     this.panX = 0; this.panY = 0;
     this.visibleLayers = new Set([1,2,3,4,5,6,7]);
+    this._ready = this._init();
+  }
+
+  async _init() {
+    this._data = await loadMatrixData();
+    this.domains  = this._data.domains;
+    this.stages   = this._data.stages;
+    this.scenarios = this._data.scenarios;
+    // Default scenario is foundation (matches standalone page behaviour).
+    this.activeScenario = 'foundation';
+    this.CELLS = this._cellsForScenario(this.activeScenario);
+    this.SCENARIO_META = Object.fromEntries(
+      Object.entries(this.scenarios).map(([k, s]) => [k, { name: s.name, description: s.description }])
+    );
+  }
+
+  _cellsForScenario(name) {
+    return buildCellsMap.call(this, this.scenarios[name]);
   }
 
   render() {
+    if (this._ready) {
+      // Async — fetch is already running. Await it before drawing so we
+      // never render before the JSON is loaded (or the fallback is in place).
+      return this._ready.then(() => this._render());
+    }
+    // _ready was already resolved (re-entrant call from a re-render).
+    this._render();
+  }
+
+  _render() {
     this.bodyEl.classList.add('popup-body--split');
     this.bodyEl.innerHTML = `
       <div class="mf-canvas" id="mfCanvas">
@@ -107,13 +164,13 @@ export class MetaFrameworkExplorer {
 
   _renderMatrix() {
     let html = `<thead><tr><th class="mf-corner"><span>Domain ↓</span><span>Stage →</span></th>`;
-    STAGES.forEach((s) => { html += `<th class="mf-stage"><span class="mf-stage-num">${s.id}</span><span class="mf-stage-name">${s.name}</span></th>`; });
+    this.stages.forEach((s) => { html += `<th class="mf-stage"><span class="mf-stage-num">${s.id}</span><span class="mf-stage-name">${s.name}</span></th>`; });
     html += `</tr></thead><tbody>`;
-    DOMAINS.forEach((d) => {
-      html += `<tr><th class="mf-domain" data-domain="${d.id}"><span class="mf-domain-num">D${d.id}</span><span class="mf-domain-name">${d.name}</span></th>`;
-      STAGES.forEach((s) => {
+    this.domains.forEach((d) => {
+      html += `<tr><th class="mf-domain" data-domain="${d.id}"><span class="mf-domain-num">D${d.id}</span><span class="mf-domain-name">${d.shortName || d.name}</span></th>`;
+      this.stages.forEach((s) => {
         const key = `${d.id}-${s.id}`;
-        const cell = CELLS[key] || { glyph: '·', objects: [], actors: [] };
+        const cell = this.CELLS[key] || { glyph: '·', objects: [], actors: [] };
         const active = cell.objects.length > 0;
         const risky = cell.glyph === '★';
         html += `<td class="mf-cell ${active ? 'active' : ''} ${risky ? 'risky' : ''}" data-key="${key}" data-domain="${d.id}">
@@ -177,15 +234,15 @@ export class MetaFrameworkExplorer {
     const key = cell.dataset.key;
     this.selected = key;
     const [d, s] = key.split('-').map(Number);
-    const data = CELLS[key] || { glyph: '·', objects: [], actors: [] };
-    const domain = DOMAINS[d-1], stage = STAGES[s-1];
+    const data = this.CELLS[key] || { glyph: '·', objects: [], actors: [], text: '' };
+    const domain = this.domains[d-1], stage = this.stages[s-1];
     this.elContext.innerHTML = `
       <div class="mf-ctx-breadcrumb">D${d} ${domain.name} / S${s} ${stage.name}</div>
       <div class="mf-ctx-header">
         <span class="mf-ctx-glyph">${data.glyph}</span>
         <h3>${domain.name} · ${stage.name}</h3>
       </div>
-      <p class="mf-ctx-desc">This cell represents the intersection of the <strong>${domain.name}</strong> domain and the <strong>${stage.name}</strong> lifecycle stage. ${data.glyph === '★' ? 'This is a high-risk handoff — invest attention here.' : data.glyph === '·' ? 'This cell is currently empty and needs investigation.' : 'This cell has active objects and capabilities.'}</p>
+      ${data.text ? `<p class="mf-ctx-desc">${data.text}</p>` : `<p class="mf-ctx-desc">This cell represents the intersection of the <strong>${domain.name}</strong> domain and the <strong>${stage.name}</strong> lifecycle stage. ${data.glyph === '★' ? 'This is a high-risk handoff — invest attention here.' : data.glyph === '·' ? 'This cell is currently empty and needs investigation.' : 'This cell has active objects and capabilities.'}</p>`}
       <div class="mf-ctx-section">
         <h4>Objects (${data.objects.length})</h4>
         <div class="mf-ctx-chips">${data.objects.map((o) => `<span class="mf-ctx-chip">${o}</span>`).join('')}</div>

@@ -6,8 +6,12 @@ name: Sync Metaframework
 # always reflects the latest release of the framework.
 #
 # Sync scope:
-#   pages/        → dea-metaframework/        (live site JS/CSS/HTML)
-#   metamodel/    → dea-metaframework/        (PlantUML source + rendered SVG)
+#   pages/assets/site.js + site.css + index.html
+#                                     → dea-metaframework/        (standalone viewer)
+#   pages/assets/matrix-data.json      → dea-metaframework/assets/ + portal/data/
+#                                                                   (JSON consumed by both viewers)
+#   metamodel/enterprise-concepts.{puml,svg}
+#                                     → dea-metaframework/        (PlantUML artefacts)
 #
 # Triggers (canonical mechanism is hourly cron — no cross-repo secret needed):
 #   - schedule (hourly cron)         — primary sync, picks up any source-side
@@ -75,6 +79,14 @@ jobs:
           cp dea-metaframework-source/pages/assets/site.js    dea-metaframework/assets/site.js
           cp dea-metaframework-source/pages/assets/site.css   dea-metaframework/assets/site.css
 
+          # Machine-readable matrix data — consumed by site.js AND the
+          # portal's in-portal Meta Framework Explorer. Both viewers fetch
+          # same-origin, never raw.githubusercontent.com.
+          mkdir -p dea-metaframework/assets portal/data
+          cp dea-metaframework-source/pages/assets/matrix-data.json      dea-metaframework/assets/matrix-data.json
+          cp dea-metaframework-source/pages/assets/matrix-data.json      portal/data/ecf-matrix.json
+          cp dea-metaframework-source/pages/assets/matrix-data.schema.json dea-metaframework/assets/matrix-data.schema.json
+
           # Metamodel artefacts — PlantUML source + rendered SVG
           cp dea-metaframework-source/metamodel/enterprise-concepts.puml      dea-metaframework/enterprise-concepts.puml
           cp dea-metaframework-source/metamodel/enterprise-concepts-v3.svg   dea-metaframework/enterprise-concepts-v3.svg
@@ -83,8 +95,26 @@ jobs:
           test -s dea-metaframework/index.html
           test -s dea-metaframework/assets/site.js
           test -s dea-metaframework/assets/site.css
+          test -s dea-metaframework/assets/matrix-data.json
+          test -s portal/data/ecf-matrix.json
           test -s dea-metaframework/enterprise-concepts.puml
           test -s dea-metaframework/enterprise-concepts-v3.svg
+
+          # Validate matrix-data.json — must have 7 domains, 7 stages, 49 cells
+          # per scenario. Mirrors the assertions the runtime loader makes.
+          python3 - <<'PY'
+          import json, sys
+          for label, path in [
+              ('dea-metaframework', 'dea-metaframework/assets/matrix-data.json'),
+              ('portal',           'portal/data/ecf-matrix.json'),
+          ]:
+              with open(path) as h: d = json.load(h)
+              if len(d['domains']) != 7: raise SystemExit(f'FAIL {label}: domains != 7')
+              if len(d['stages'])  != 7: raise SystemExit(f'FAIL {label}: stages != 7')
+              for k, s in d['scenarios'].items():
+                  if len(s['cells']) != 49: raise SystemExit(f'FAIL {label}: scenario {k} has {len(s["cells"])} cells, expected 49')
+              print(f'OK: {path} — 7 domains, 7 stages, 49 cells × {len(d["scenarios"])} scenarios')
+          PY
 
           # Light SVG validation: must be valid XML, must contain at least one <svg> root.
           python3 - <<'PY'
@@ -113,12 +143,12 @@ jobs:
         run: |
           git config user.name "metaframework-sync-bot"
           git config user.email "sync@dea-metaframework.local"
-          if git diff --quiet dea-metaframework/; then
+          if git diff --quiet dea-metaframework/ portal/data/; then
             echo "In sync — no changes."
           else
             echo "Diff summary:"
-            git diff --stat dea-metaframework/ | tail -10
-            git add dea-metaframework/
+            git diff --stat dea-metaframework/ portal/data/ | tail -15
+            git add dea-metaframework/ portal/data/
             COMMIT_MSG="chore: sync from dea-metaframework @ ${{ github.event.client_payload.commit }}"
             if [ -z "$COMMIT_MSG" ]; then COMMIT_MSG="chore: sync from dea-metaframework"; fi
             git commit -m "$COMMIT_MSG"
