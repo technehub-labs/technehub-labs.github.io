@@ -157,7 +157,9 @@ jobs:
 
           # Sanity assertions: every synced label must have at least poster.svg
           # and catalog.json. Empty labels are tolerated (skipped above).
+          # Skip non-directory entries (e.g. capabilities/README.md).
           for label in $(ls capabilities/); do
+            [ -d "capabilities/$label" ] || continue
             test -s "capabilities/$label/poster.svg" || \
               { echo "FAIL: capabilities/$label/poster.svg missing or empty" >&2; exit 1; }
             test -s "capabilities/$label/catalog.json" || \
