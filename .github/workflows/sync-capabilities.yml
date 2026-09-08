@@ -1,0 +1,192 @@
+name: Sync Business Capabilities
+
+# Mirrors the canonical artifacts from technehub-labs/dea-catalog-business-capabilities
+# (CR-DEA-BC-06 publication pipeline output) into this Pages repo's capabilities/
+# subdirectory so the live landing page at https://technehub-labs.github.io/capabilities/
+# always reflects the latest tagged release of the catalog.
+#
+# Sync scope:
+#   out/<version>/{poster,map,catalog,overlay,...}.{svg,png,json,csv,yaml}
+#                                → capabilities/<version>/     (immutable versioned viewer)
+#   out/latest/                  → capabilities/latest/         (mutable latest viewer)
+#                                → portal/data/capabilities.json (consumed by the
+#                                                                  in-portal Explorer)
+#
+# Triggers (canonical mechanism is hourly cron — no cross-repo secret needed):
+#   - schedule (hourly cron)         — primary sync, picks up any source-side
+#                                       changes within ~1 hour of merge to main
+#   - workflow_dispatch             — manual run for testing / emergency sync
+#   - repository_dispatch            — retained as an OPT-IN fast path for when
+#     [capabilities-versioned]         a DISPATCH_TOKEN secret is configured on
+#     [capabilities-updated]          the source repo. Currently no such secret
+#                                       is configured there; the hourly cron is
+#                                       the only active trigger.
+#
+# Why hourly cron (not push-to-main dispatch):
+#   Cross-repo `repository_dispatch` from dea-catalog-business-capabilities to
+#   this Pages repo requires a PAT stored as `DISPATCH_TOKEN` on the source
+#   repo. Until that secret is configured, the hourly cron is sufficient:
+#   source-side merges and tag pushes land in the live Pages tree within
+#   ~60 minutes, which is acceptable for the catalog's current lettered-suffix
+#   release cadence. Adding `DISPATCH_TOKEN` later will give sub-minute latency
+#   without any further workflow changes here.
+#
+# Same-origin rule: we copy artifacts into this Pages repo and serve them from
+# the capabilities/ subdirectory. The portal page fetches ./latest/catalog.json
+# (same-origin), avoiding any raw.githubusercontent.com CDN 404 pitfalls.
+#
+# Pattern mirror: see sync-metaframework.yml and sync-metamodel.yml in this
+# directory. Same checkout + sparse-checkout + artifact-validation +
+# commit-if-changed structure, adapted for the BC repo's published output.
+
+on:
+  repository_dispatch:
+    types: [capabilities-versioned, capabilities-updated]
+  workflow_dispatch:
+  schedule:
+    # Canonical sync — hourly. Picks up all source-side changes within ~1h
+    # without requiring any cross-repo secret.
+    - cron: '0 * * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout technehub-labs.github.io
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Detect source-side target
+        id: target
+        run: |
+          # When triggered by repository_dispatch, the client_payload carries
+          # the version label (e.g. v1-alpha.3 or "latest"). When triggered by
+          # schedule or manual dispatch, sync ALL known version labels plus
+          # latest.
+          EVENT="${{ github.event_name }}"
+          if [ "$EVENT" = "repository_dispatch" ]; then
+            VERSION="${{ github.event.client_payload.version }}"
+            if [ -z "$VERSION" ] || [ "$VERSION" = "latest" ]; then
+              echo "target=latest" >> "$GITHUB_OUTPUT"
+            else
+              echo "target=$VERSION" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "target=all" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve latest published version
+        id: latest
+        if: steps.target.outputs.target == 'all' || steps.target.outputs.target == 'latest'
+        run: |
+          # Pull the latest v* tag from the BC repo. This is what 'latest'
+          # should track when running on schedule.
+          VERSION=$(git ls-remote --tags --sort='-version:refname' \
+            https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
+            'refs/tags/v*' 2>/dev/null | head -1 | sed 's|.*refs/tags/||')
+          if [ -z "$VERSION" ]; then
+            echo "warn: no v* tag in the source repo, falling back to main" >&2
+            VERSION="main"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout dea-catalog-business-capabilities source
+        uses: actions/checkout@v4
+        with:
+          repository: technehub-labs/dea-catalog-business-capabilities
+          ref: ${{ steps.latest.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: bc-source
+
+      - name: Determine sync targets
+        id: targets
+        run: |
+          # Build the list of out/<target>/ directories to copy into the site.
+          set -euo pipefail
+          cd bc-source
+          TARGETS=""
+          if [ -d out/latest ]; then TARGETS="$TARGETS latest"; fi
+          for d in out/v*/; do
+            [ -d "$d" ] || continue
+            label="${d%/}"
+            label="${label#out/}"
+            # Skip the v1-alpha.0 'first release' tag if you want; mirror
+            # everything by default.
+            TARGETS="$TARGETS $label"
+          done
+          # Deduplicate.
+          TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+          echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
+
+      - name: Sync catalog artifacts into site
+        run: |
+          set -euo pipefail
+          mkdir -p capabilities portal/data
+
+          for label in ${{ steps.targets.outputs.targets }}; do
+            [ -d "bc-source/out/$label" ] || { echo "skip: out/$label not present"; continue; }
+            mkdir -p "capabilities/$label"
+            # Copy all published artifacts (SVG, PNG, JSON, CSV, YAML, MANIFEST.md).
+            cp -r "bc-source/out/$label/." "capabilities/$label/"
+            echo "synced: out/$label -> capabilities/$label ($(ls capabilities/$label | wc -l) files)"
+          done
+
+          # Convenience: latest/catalog.json -> portal/data/capabilities.json
+          # (same-origin consumption by the in-portal Explorer; mirrors the
+          # ECF matrix-data.json pattern in sync-metaframework.yml).
+          if [ -d capabilities/latest ]; then
+            cp capabilities/latest/catalog.json portal/data/capabilities.json
+            echo "synced: capabilities/latest/catalog.json -> portal/data/capabilities.json"
+          fi
+
+          # Sanity assertions: every synced label must have at least poster.svg
+          # and catalog.json. Empty labels are tolerated (skipped above).
+          for label in $(ls capabilities/); do
+            test -s "capabilities/$label/poster.svg" || \
+              { echo "FAIL: capabilities/$label/poster.svg missing or empty" >&2; exit 1; }
+            test -s "capabilities/$label/catalog.json" || \
+              { echo "FAIL: capabilities/$label/catalog.json missing or empty" >&2; exit 1; }
+            echo "OK: capabilities/$label — poster.svg + catalog.json present"
+          done
+
+          # Validate catalog.json schema integrity at sync time.
+          python3 - <<'PY'
+          import json, sys, glob
+          paths = sorted(glob.glob('capabilities/*/catalog.json'))
+          if not paths:
+              print('WARN: no catalog.json files synced')
+              sys.exit(0)
+          for p in paths:
+              with open(p) as h:
+                  d = json.load(h)
+              # Minimal invariants — mirrors check_versions.py on the source side.
+              if 'version' not in d:
+                  raise SystemExit(f'FAIL: {p}: no version field')
+              if 'entries' not in d:
+                  raise SystemExit(f'FAIL: {p}: no entries field')
+              if not isinstance(d['entries'], list):
+                  raise SystemExit(f'FAIL: {p}: entries is not a list')
+              print(f"OK: {p} - version={d['version']} entries={len(d['entries'])}")
+          PY
+
+      - name: Commit if changed
+        run: |
+          git config user.name "capabilities-sync-bot"
+          git config user.email "sync@dea-catalog-business-capabilities.local"
+          if git diff --quiet capabilities/ portal/data/; then
+            echo "In sync - no changes."
+          else
+            echo "Diff summary:"
+            git diff --stat capabilities/ portal/data/ | tail -20
+            git add capabilities/ portal/data/
+            COMMIT_MSG="chore: sync from dea-catalog-business-capabilities"
+            if [ -n "${{ github.event.client_payload.commit }}" ]; then
+              COMMIT_MSG="chore: sync from dea-catalog-business-capabilities @ ${{ github.event.client_payload.commit }}"
+            fi
+            git commit -m "$COMMIT_MSG"
+            git push origin main
+          fi
