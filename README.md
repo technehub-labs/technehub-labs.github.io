@@ -10,7 +10,8 @@
 |---|---|---|
 | `/` | Org landing site | hand-authored (`index.html`, `css/`, `js/`, `assets/`) |
 | `/metamodel/` | Classic metamodel navigator (vanilla JS class-grid) + `entity-graph.json` + `metamodel.svg` | **bot-published** from [`dea-metamodel`](https://github.com/technehub-labs/dea-metamodel) via `.github/workflows/sync-metamodel.yml` |
-| `/dea-metaframework/` | Enterprise Concept Framework (7×7 matrix) site | mirrored from [`dea-metaframework`](https://github.com/technehub-labs/dea-metaframework) |
+| `/dea-metaframework/` | Enterprise Concept Framework (7×7 matrix) site | mirrored from [`dea-metaframework`](https://github.com/technehub-labs/dea-metaframework) via `.github/workflows/sync-metaframework.yml` |
+| `/capabilities/` | Business Capabilities catalog artifacts (poster, map, catalog viewer, overlay) | mirrored from [`dea-catalog-business-capabilities`](https://github.com/technehub-labs/dea-catalog-business-capabilities) via `.github/workflows/sync-capabilities.yml` (CR-DEA-BC-06 publication pipeline output) |
 
 ## Consumers
 
