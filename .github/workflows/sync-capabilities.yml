@@ -83,16 +83,28 @@ jobs:
         id: latest
         if: steps.target.outputs.target == 'all' || steps.target.outputs.target == 'latest'
         run: |
-          # Pull the latest v* tag from the BC repo. This is what 'latest'
-          # should track when running on schedule.
-          VERSION=$(git ls-remote --tags --sort='-version:refname' \
+          # Pull the latest v* tag from the BC repo, then resolve to its
+          # commit SHA so actions/checkout can use a stable ref. Tag
+          # annotation objects (e.g. v1-alpha.3^{}) are not valid checkout
+          # refs.
+          TAG=$(git ls-remote --tags --sort='-version:refname' \
             https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
             'refs/tags/v*' 2>/dev/null | head -1 | sed 's|.*refs/tags/||')
-          if [ -z "$VERSION" ]; then
+          if [ -z "$TAG" ]; then
             echo "warn: no v* tag in the source repo, falling back to main" >&2
-            VERSION="main"
+            SHA="main"
+          else
+            # Peel annotation if present (e.g. v1-alpha.3^{} -> commit SHA)
+            SHA=$(git ls-remote https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
+              "refs/tags/${TAG}^{}" 2>/dev/null | awk '{print $1}')
+            if [ -z "$SHA" ]; then
+              # Lightweight tag: use the tag object itself
+              SHA=$(git ls-remote https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
+                "refs/tags/${TAG}" 2>/dev/null | awk '{print $1}')
+            fi
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$SHA" >> "$GITHUB_OUTPUT"
 
       - name: Checkout dea-catalog-business-capabilities source
         uses: actions/checkout@v4
