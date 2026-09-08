@@ -68,6 +68,8 @@ jobs:
 
       - name: Resolve target version(s)
         id: targets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           EVENT="${{ github.event_name }}"
