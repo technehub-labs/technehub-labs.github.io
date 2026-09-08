@@ -1,0 +1,3875 @@
+{
+  "dea:capability-analytics-and-intelligence": {
+    "id": "dea:capability-analytics-and-intelligence",
+    "type": "BusinessCapability",
+    "name": "Analytics and Intelligence",
+    "definition": "The ability to derive decision-grade insight from information the enterprise stewards or acquires.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Decisions are informed by derived intelligence.",
+    "business_object": "Insight",
+    "ecf": {
+      "primary": {
+        "domain": "operations-enablement",
+        "stage": "operate"
+      },
+      "secondary": []
+    },
+    "related_capabilities": [
+      "dea:capability-information-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-006"
+      ],
+      "rationale": "E3; boundary settled by boundary-decision-cand-018 v0.1 (PR #29); evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout, boundary-decision-cand-018, admission-review-supplementary v0.2)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12; N-003/N-009)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), placement decided at the supplementary review gate (PR #31; R-008)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), supplementary admission review v0.2 (PR #31; R-008)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; the object and outcome tests carry the decision (Insight is a produced thing with its own lifecycle; decisions informed is an outcome distinct from information stewarded); vendor-heavy support noted and not load-bearing (boundary decision v0.1).",
+    "ecf_rationale": "R-008: operations-enablement x operate; the span of analytics across domains is a property of the Insight object (R-003 parity), so secondaries stay empty per honest-not-exhaustive.",
+    "boundary": "Derives insight; does not steward information (Information Management). Stewardship ends where derivation begins (boundary decision v0.1).",
+    "non_examples": [
+      "A dashboard (a system artifact)",
+      "A data science team (an organization)"
+    ],
+    "specialization_boundary": "Sector analytics (clinical, actuarial, fraud) are specialization; the ability to derive insight is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "OperationsAndEnablement",
+          "stage": "Operate",
+          "identifier": "ecf:operationsEnablement.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-asset-management": {
+    "id": "dea:capability-asset-management",
+    "type": "BusinessCapability",
+    "name": "Asset Management",
+    "definition": "The ability to steward the enterprise's non-financial, non-workforce assets across their lifecycle.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Assets are known, maintained, utilized, and retired deliberately.",
+    "business_object": "Asset",
+    "ecf": {
+      "primary": {
+        "domain": "strategy-direction",
+        "stage": "build"
+      },
+      "secondary": [
+        {
+          "domain": "strategy-direction",
+          "stage": "operate"
+        },
+        {
+          "domain": "strategy-direction",
+          "stage": "retire"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-facility-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; parent of Facility Management per the sweep (facilities are the asset class large enough to warrant its own first-order capability).",
+    "ecf_rationale": "Primary build in strategy-direction; operated and retired across the asset lifecycle.",
+    "boundary": "Stewards assets; does not manage money (Financial Management), technology as an estate (Technology Management), or facilities specifically (Facility Management).",
+    "non_examples": [
+      "An asset register (an artifact)",
+      "A CMMS (a system)"
+    ],
+    "specialization_boundary": "Asset classes (fleet, plant, spectrum rights) are specialization; the ability to steward assets is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Build",
+          "identifier": "ecf:strategyDirection.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Operate",
+          "identifier": "ecf:strategyDirection.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Retire",
+          "identifier": "ecf:strategyDirection.retire",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-change-management": {
+    "id": "dea:capability-change-management",
+    "type": "BusinessCapability",
+    "name": "Change Management",
+    "definition": "The ability to move the enterprise deliberately from one state to another.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "Change is initiated, sequenced, landed, and its effects verified, rather than merely happening.",
+    "business_object": "Change",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "improve"
+      },
+      "secondary": []
+    },
+    "related_capabilities": [
+      "dea:capability-enterprise-governance"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; stage-anchored at improve; cross-domain applicability resolved at review (R-005) as an object property, not a mapping defect.",
+    "ecf_rationale": "R-005: primary governance-existence x improve (the ability is first exercised when the enterprise deliberately improves itself); secondaries empty per honest-not-exhaustive.",
+    "boundary": "Manages change; does not set direction (Strategy), govern the enterprise (Enterprise Governance), or operate steady-state delivery (Operations).",
+    "non_examples": [
+      "A change request ticket (an artifact)",
+      "A transformation office (an organization)"
+    ],
+    "specialization_boundary": "Change kinds (organizational, technology, regulatory response) are specialization; the ability to change is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Improve",
+          "identifier": "ecf:governanceExistence.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-compliance-management": {
+    "id": "dea:capability-compliance-management",
+    "type": "BusinessCapability",
+    "name": "Compliance Management",
+    "definition": "The ability to know the enterprise's obligations and to conform to them demonstrably.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Obligations are identified, interpreted, met, and the conformance is provable.",
+    "business_object": "Regulation",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "activate"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-risk-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; distinct from Risk (exposure) and Legal (counsel) per the sweep.",
+    "ecf_rationale": "Primary activate in governance-existence (compliance is activated when obligations bind); operated thereafter.",
+    "boundary": "Manages conformance; does not assess exposure (Risk Management) or conduct legal work (Legal Management).",
+    "non_examples": [
+      "A compliance tool (a system)",
+      "An audit (an assurance event)"
+    ],
+    "specialization_boundary": "Obligation sets (telecom license conditions, HIPAA, PSD2) are specialization; the ability to comply is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Activate",
+          "identifier": "ecf:governanceExistence.activate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-customer-management": {
+    "id": "dea:capability-customer-management",
+    "type": "BusinessCapability",
+    "name": "Customer Management",
+    "definition": "The ability to establish, develop, and end relationships with those the enterprise serves.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "A known, managed customer base whose lifecycle is deliberate rather than accidental.",
+    "business_object": "Customer",
+    "ecf": {
+      "primary": {
+        "domain": "party-relationship",
+        "stage": "operate"
+      },
+      "secondary": [
+        {
+          "domain": "party-relationship",
+          "stage": "conceive"
+        },
+        {
+          "domain": "party-relationship",
+          "stage": "improve"
+        },
+        {
+          "domain": "party-relationship",
+          "stage": "retire"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-partner-management",
+      "dea:capability-marketing"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-003",
+        "SRC-004",
+        "SRC-005",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E5; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": [
+        "Telecom Customer Management (SPEC-001)",
+        "Citizen/Member Relationship (SPEC-002, deferred)"
+      ]
+    },
+    "why_capability": "The strongest-converged capability in the corpus (E5): every source class carries it under various names.",
+    "ecf_rationale": "Primary operate in party-relationship (the relationship lives in operation); conceived, improved, and retired deliberately.",
+    "boundary": "Manages the customer relationship; does not create demand (Marketing), manage partners (Partner Management), or manage the workforce (Workforce Management).",
+    "non_examples": [
+      "A CRM system",
+      "A sales call (an activity)",
+      "Customer Service Team (an actor)"
+    ],
+    "specialization_boundary": "Who the customer is (subscriber, citizen, member, patient, policyholder) is specialization; the ability to manage the relationship is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Operate",
+          "identifier": "ecf:partyRelationship.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Conceive",
+          "identifier": "ecf:partyRelationship.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Improve",
+          "identifier": "ecf:partyRelationship.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Retire",
+          "identifier": "ecf:partyRelationship.retire",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-enterprise-governance": {
+    "id": "dea:capability-enterprise-governance",
+    "type": "BusinessCapability",
+    "name": "Enterprise Governance",
+    "definition": "The ability to direct and control the enterprise: decision rights, accountability, oversight, and policy across the whole.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "Decisions are made by the right authority, recorded, and enforced; the enterprise remains answerable to its principals.",
+    "business_object": "Decision",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        },
+        {
+          "domain": "governance-existence",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-strategy",
+      "dea:capability-risk-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Governance of the enterprise-as-a-whole is enterprise-general and implementation-independent; distinct from Risk, Compliance, and Legal by the distinctness sweep.",
+    "ecf_rationale": "Primary conceive in governance-existence (governance is constituted with the enterprise); exercised continuously at operate and improve.",
+    "boundary": "Governs the enterprise; does not manage specific obligation classes (Compliance, Legal), exposure (Risk), or change (Change Management).",
+    "non_examples": [
+      "A board meeting (an event)",
+      "A policy document (an artifact)"
+    ],
+    "specialization_boundary": "Governance instruments (boards, councils, assemblies) vary by sector and ownership form; the ability to govern does not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Conceive",
+          "identifier": "ecf:governanceExistence.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Improve",
+          "identifier": "ecf:governanceExistence.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-facility-management": {
+    "id": "dea:capability-facility-management",
+    "type": "BusinessCapability",
+    "name": "Facility Management",
+    "definition": "The ability to provide and operate the enterprise's physical places.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Places are available, safe, fit for purpose, and cost-deliberate.",
+    "business_object": "Facility",
+    "ecf": {
+      "primary": {
+        "domain": "strategy-direction",
+        "stage": "activate"
+      },
+      "secondary": [
+        {
+          "domain": "strategy-direction",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-asset-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; distinct child-level capability standing at first order per the sweep (facilities warrant their own ability; Asset Management remains the general case).",
+    "ecf_rationale": "Primary activate in strategy-direction (places are activated for use, then operated).",
+    "boundary": "Operates places; does not steward the general asset base (Asset Management) or plan the workforce that staffs them (Workforce Planning).",
+    "non_examples": [
+      "A building (an asset)",
+      "A facilities vendor (a supplier)"
+    ],
+    "specialization_boundary": "Place types (offices, exchanges, depots, clinics) are specialization; the ability to operate places is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Activate",
+          "identifier": "ecf:strategyDirection.activate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Operate",
+          "identifier": "ecf:strategyDirection.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-financial-management": {
+    "id": "dea:capability-financial-management",
+    "type": "BusinessCapability",
+    "name": "Financial Management",
+    "definition": "The ability to plan, record, control, and report the enterprise's money in the operating cycle.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "Money is accounted for, budgets hold, and financial reporting is accurate and timely.",
+    "business_object": "Financial Resource",
+    "ecf": {
+      "primary": {
+        "domain": "finance-accounting",
+        "stage": "operate"
+      },
+      "secondary": [
+        {
+          "domain": "finance-accounting",
+          "stage": "conceive"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-financial-stewardship"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; the operating-cycle counterpart to Financial Stewardship (E5), distinct per the sweep.",
+    "ecf_rationale": "Primary operate in finance-accounting; conceive participation (budgeting posture) recorded as secondary.",
+    "boundary": "Runs the financial cycle; does not set financial constitution (Financial Stewardship) or manage non-financial assets (Asset Management).",
+    "non_examples": [
+      "An ERP finance module (a system)",
+      "A finance department (an organization, CAND-030)"
+    ],
+    "specialization_boundary": "Accounting regimes (IFRS, GAAP, public-sector frameworks) are external obligation sets, not specializations of the ability.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "FinanceAndAccounting",
+          "stage": "Operate",
+          "identifier": "ecf:financeAccounting.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "FinanceAndAccounting",
+          "stage": "Conceive",
+          "identifier": "ecf:financeAccounting.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-financial-stewardship": {
+    "id": "dea:capability-financial-stewardship",
+    "type": "BusinessCapability",
+    "name": "Financial Stewardship",
+    "definition": "The ability to hold the enterprise's financial resources in trust: policy, structure, and long-horizon financial position.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "The enterprise's financial position is deliberate, funded, and answerable over horizons beyond the operating cycle.",
+    "business_object": "Financial Resource",
+    "ecf": {
+      "primary": {
+        "domain": "finance-accounting",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "finance-accounting",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-financial-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004",
+        "SRC-005",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E5; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E5; distinct from Financial Management (the operating cycle) by the sweep: stewardship sets the financial constitution, management runs it.",
+    "ecf_rationale": "Primary conceive in finance-accounting (financial position is constituted deliberately); exercised at operate.",
+    "boundary": "Stewards financial position; does not run the accounting cycle or execute transactions (Financial Management).",
+    "non_examples": [
+      "A ledger (the object of Financial Management)",
+      "A treasury desk (an organization)"
+    ],
+    "specialization_boundary": "Instruments and capital structures vary by sector; the ability to steward financial position does not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "FinanceAndAccounting",
+          "stage": "Conceive",
+          "identifier": "ecf:financeAccounting.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "FinanceAndAccounting",
+          "stage": "Operate",
+          "identifier": "ecf:financeAccounting.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-information-management": {
+    "id": "dea:capability-information-management",
+    "type": "BusinessCapability",
+    "name": "Information Management",
+    "definition": "The ability to govern, structure, and steward the enterprise's information across its lifecycle.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Information is findable, trustworthy, retained correctly, and disposed of deliberately.",
+    "business_object": "Information",
+    "ecf": {
+      "primary": {
+        "domain": "operations-enablement",
+        "stage": "operate"
+      },
+      "secondary": []
+    },
+    "related_capabilities": [
+      "dea:capability-technology-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; span across domains resolved at review (R-003): the span is a property of the business object, not of initiation.",
+    "ecf_rationale": "R-003: primary operations-enablement x operate; secondaries deliberately empty (honest-not-exhaustive).",
+    "boundary": "Manages information; does not manage the technology that carries it (Technology Management) or produce analytics from it (Analytics and Intelligence, deferred).",
+    "non_examples": [
+      "A database (technology)",
+      "A report (an artifact)"
+    ],
+    "specialization_boundary": "Information classes (health records, call detail records, case files) are specialization; the ability to manage information is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "OperationsAndEnablement",
+          "stage": "Operate",
+          "identifier": "ecf:operationsEnablement.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-innovation-management": {
+    "id": "dea:capability-innovation-management",
+    "type": "BusinessCapability",
+    "name": "Innovation Management",
+    "definition": "The ability to originate, develop, and realize new or improved products, services, processes, and models into value.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "Innovations are introduced to the market or brought into use, not merely ideated.",
+    "business_object": "Idea",
+    "ecf": {
+      "primary": {
+        "domain": "product-value",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "product-value",
+          "stage": "design"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-change-management",
+      "dea:capability-offering-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-015",
+        "SRC-016"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4 after the corpus patch (SRC-015 ISO 56002, SRC-016 Oslo Manual 2018); evidence trail in docs/research (evidence-register v0.3, enterprise-generality-matrix v0.2, distinctness-sweep, admission-gate-closeout, admission-review-supplementary)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix v0.1/v0.2 (PRs #11, #28)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay + gate close-out v0.1 (PRs #7, #15)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), supplementary admission review v0.1 (PR #30; R-007)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; repeatable organization-wide idea-to-value ability (ISO 56002); the outcome is identifiable and measured by national statistical agencies (Oslo Manual 2018 names innovation management as a distinct activity class).",
+    "ecf_rationale": "Primary product-value x conceive (the ability is first exercised where the new is conceived); design participation follows; boundary against Change Management drawn by standard text (originates vs institutionalizes).",
+    "boundary": "Originates the new; does not institutionalize enterprise change (Change Management) or manage the offering lifecycle (Offering Management).",
+    "non_examples": [
+      "An ideas portal (a system)",
+      "An R&D lab (an organization)"
+    ],
+    "specialization_boundary": "Innovation kinds (product, process, business model) and sector programs are specialization; the ability to innovate is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Conceive",
+          "identifier": "ecf:productValue.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Design",
+          "identifier": "ecf:productValue.design",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-legal-management": {
+    "id": "dea:capability-legal-management",
+    "type": "BusinessCapability",
+    "name": "Legal Management",
+    "definition": "The ability to conduct the enterprise's legal work: counsel, contracts, disputes, and legal position.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "The enterprise's legal matters are conducted deliberately and its legal position is known.",
+    "business_object": "Legal Matter",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-risk-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; distinct from Compliance (conformance to obligations) per the sweep.",
+    "ecf_rationale": "Primary conceive in governance-existence (legal position is constituted with the enterprise); operated thereafter.",
+    "boundary": "Conducts legal work; does not manage conformance programs (Compliance Management) or exposure (Risk Management).",
+    "non_examples": [
+      "A law firm (a supplier)",
+      "A contract repository (a system)"
+    ],
+    "specialization_boundary": "Jurisdictions and practice areas are external structure, not specializations of the ability.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Conceive",
+          "identifier": "ecf:governanceExistence.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-marketing": {
+    "id": "dea:capability-marketing",
+    "type": "BusinessCapability",
+    "name": "Marketing",
+    "definition": "The ability to understand markets and create demand for the enterprise's offerings.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "Demand exists and is measurable; the enterprise is known to those it intends to serve.",
+    "business_object": "Market/Customer",
+    "ecf": {
+      "primary": {
+        "domain": "party-relationship",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "party-relationship",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-customer-management",
+      "dea:capability-offering-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-004",
+        "SRC-005",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; N-002 settled placement: Marketing stands distinct from Customer Management and Offering Management.",
+    "ecf_rationale": "R-002: primary party-relationship x conceive (marketing conceives demand); secondary operate is honest participation.",
+    "boundary": "Creates demand; does not manage the resulting relationships (Customer Management) or the offerings themselves (Offering Management).",
+    "non_examples": [
+      "An advertising campaign (an activity)",
+      "A brand (an asset)"
+    ],
+    "specialization_boundary": "Channels and instruments (digital, field, retail) are implementation; the ability to create demand is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Conceive",
+          "identifier": "ecf:partyRelationship.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Operate",
+          "identifier": "ecf:partyRelationship.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-offering-management": {
+    "id": "dea:capability-offering-management",
+    "type": "BusinessCapability",
+    "name": "Offering Management",
+    "definition": "The ability to conceive, design, build, evolve, and retire what the enterprise offers.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "A deliberate offering portfolio whose lifecycle is managed end to end.",
+    "business_object": "Offering",
+    "ecf": {
+      "primary": {
+        "domain": "product-value",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "product-value",
+          "stage": "design"
+        },
+        {
+          "domain": "product-value",
+          "stage": "build"
+        },
+        {
+          "domain": "product-value",
+          "stage": "improve"
+        },
+        {
+          "domain": "product-value",
+          "stage": "retire"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-marketing",
+      "dea:capability-operations"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Enterprise-general; distinct from Marketing (demand creation) and Operations (delivery) by the sweep.",
+    "ecf_rationale": "Primary conceive in product-value; participates through the full offering lifecycle (design, build, improve, retire).",
+    "boundary": "Manages the offering; does not create demand for it (Marketing) or operate its delivery (Operations).",
+    "non_examples": [
+      "A product backlog (an artifact)",
+      "A product team (an organization)"
+    ],
+    "specialization_boundary": "What is offered (a tariff plan, a policy, a public service) is specialization; the ability to manage offerings is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Conceive",
+          "identifier": "ecf:productValue.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Design",
+          "identifier": "ecf:productValue.design",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Build",
+          "identifier": "ecf:productValue.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Improve",
+          "identifier": "ecf:productValue.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "ProductAndValue",
+          "stage": "Retire",
+          "identifier": "ecf:productValue.retire",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-operations": {
+    "id": "dea:capability-operations",
+    "type": "BusinessCapability",
+    "name": "Operations",
+    "definition": "The ability to run the enterprise's day-to-day production and delivery of value.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "Offerings are delivered, continuously, at the quality the enterprise commits to.",
+    "business_object": "Operation",
+    "ecf": {
+      "primary": {
+        "domain": "operations-enablement",
+        "stage": "operate"
+      },
+      "secondary": [
+        {
+          "domain": "operations-enablement",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-offering-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; N-008 dissolved Value Delivery as a separate first-order capability and re-rooted Operations as the value-execution capability.",
+    "ecf_rationale": "Primary operate in operations-enablement; improve participation is honest and recorded.",
+    "boundary": "Runs delivery; does not manage the offerings delivered (Offering Management) or change how delivery works (Change Management).",
+    "non_examples": [
+      "A production line (a resource)",
+      "An operations department (an organization)"
+    ],
+    "specialization_boundary": "What is operated (a network, a factory, a caseload) is specialization; the ability to operate is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "OperationsAndEnablement",
+          "stage": "Operate",
+          "identifier": "ecf:operationsEnablement.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "OperationsAndEnablement",
+          "stage": "Improve",
+          "identifier": "ecf:operationsEnablement.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-partner-management": {
+    "id": "dea:capability-partner-management",
+    "type": "BusinessCapability",
+    "name": "Partner Management",
+    "definition": "The ability to establish and maintain relationships with entities the enterprise cooperates with as peers.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "A deliberate portfolio of alliances, channels, and ecosystem relationships.",
+    "business_object": "Partner",
+    "ecf": {
+      "primary": {
+        "domain": "party-relationship",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "strategy-direction",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-customer-management",
+      "dea:capability-supplier-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Enterprise-general (E3); the dual-home ECF tension was resolved at review (R-001): the tension is inherent to partnering and is expressed, not smoothed.",
+    "ecf_rationale": "R-001: first initiated when the enterprise conceives its demand-side relationships (party-relationship x conceive); supply-side operation is legitimate participation.",
+    "boundary": "Manages peer relationships; does not manage suppliers (Supplier Management) or customers (Customer Management).",
+    "non_examples": [
+      "A joint venture entity (an organization)",
+      "A partnership agreement (an artifact)"
+    ],
+    "specialization_boundary": "Partner forms (reseller, alliance, roaming partner) are specialization; the ability to partner is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "PartyAndRelationship",
+          "stage": "Conceive",
+          "identifier": "ecf:partyRelationship.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Operate",
+          "identifier": "ecf:strategyDirection.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-resilience-management": {
+    "id": "dea:capability-resilience-management",
+    "type": "BusinessCapability",
+    "name": "Resilience Management",
+    "definition": "The ability to continue delivering products and services at an acceptable predefined capacity during disruption, and to recover.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Delivery continues at acceptable predefined capacity through disruption; response and recovery are prepared, exercised, and validated.",
+    "business_object": "Continuity",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "design"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-risk-management",
+      "dea:capability-security-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-013",
+        "SRC-014"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4 after the corpus patch (SRC-013 ISO 22301, SRC-014 BCI GPG 7.0); evidence trail in docs/research (evidence-register v0.3, enterprise-generality-matrix v0.2, distinctness-sweep, admission-gate-closeout, admission-review-supplementary)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix v0.1/v0.2 (PRs #11, #28)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay + gate close-out v0.1 (PRs #7, #15)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), supplementary admission review v0.1 (PR #30; R-006)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; the continuity business object and the boundary against Risk and Security are drawn by ISO 22301, not by assertion; BCI GPG 7.0 carries an explicit all-sector applicability claim.",
+    "ecf_rationale": "Primary governance-existence x design (continuity posture is designed into the enterprise); operated continuously through disruption response.",
+    "boundary": "Manages continuity of delivery through disruption; does not treat uncertainty (Risk Management) or apply protective control (Security Management).",
+    "non_examples": [
+      "A business continuity plan (an artifact)",
+      "A crisis management team (an organization)"
+    ],
+    "specialization_boundary": "Sector continuity regimes (financial operational resilience under DORA, clinical service continuity) are specialization; the ability to continue delivery is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Design",
+          "identifier": "ecf:governanceExistence.design",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-risk-management": {
+    "id": "dea:capability-risk-management",
+    "type": "BusinessCapability",
+    "name": "Risk Management",
+    "definition": "The ability to identify, assess, treat, and monitor what could prevent the enterprise from achieving its outcomes.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Exposures are known, owned, treated to appetite, and monitored.",
+    "business_object": "Risk",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        },
+        {
+          "domain": "governance-existence",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-compliance-management",
+      "dea:capability-legal-management",
+      "dea:capability-security-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; parent of the governance triad relationship set (Compliance, Legal, Security relate through it) per the sweep.",
+    "ecf_rationale": "Primary conceive in governance-existence (risk posture is constituted with direction); operated and improved continuously.",
+    "boundary": "Manages exposure; does not manage obligation conformance (Compliance), legal matters (Legal), or protective control (Security).",
+    "non_examples": [
+      "A risk register (an artifact)",
+      "A risk function (an organization)"
+    ],
+    "specialization_boundary": "Risk classes (credit, operational, safety, cyber) are specialization; the ability to manage risk is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Conceive",
+          "identifier": "ecf:governanceExistence.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Improve",
+          "identifier": "ecf:governanceExistence.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-security-management": {
+    "id": "dea:capability-security-management",
+    "type": "BusinessCapability",
+    "name": "Security Management",
+    "definition": "The ability to protect the enterprise's people, assets, and information from harm.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Protective posture is deliberate, proportionate, and demonstrably operating.",
+    "business_object": "Asset/Information",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "design"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-risk-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; object spans Asset and Information; distinct from Risk (exposure assessment) per the sweep.",
+    "ecf_rationale": "Primary design in governance-existence (protective posture is designed, then operated).",
+    "boundary": "Protects; does not own the risk appetite it protects to (Risk Management) or the assets themselves (Asset Management).",
+    "non_examples": [
+      "A firewall (technology)",
+      "A security operations center (an organization)"
+    ],
+    "specialization_boundary": "Security domains (physical, cyber, personnel) are specialization; the ability to protect is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Design",
+          "identifier": "ecf:governanceExistence.design",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Operate",
+          "identifier": "ecf:governanceExistence.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-sourcing-and-procurement": {
+    "id": "dea:capability-sourcing-and-procurement",
+    "type": "BusinessCapability",
+    "name": "Sourcing and Procurement",
+    "definition": "The ability to acquire goods and services: sourcing choices, purchasing, and receipt.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "The enterprise obtains what it needs, at deliberate terms, with a clean acquisition record.",
+    "business_object": "Purchase Order",
+    "ecf": {
+      "primary": {
+        "domain": "strategy-direction",
+        "stage": "build"
+      },
+      "secondary": [
+        {
+          "domain": "strategy-direction",
+          "stage": "operate"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-supplier-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; distinct from Supplier Management (the relationship) per the sweep; object is the Purchase Order.",
+    "ecf_rationale": "Primary build in strategy-direction (acquisition builds the supply position); operated thereafter.",
+    "boundary": "Executes acquisition; does not manage supplier relationships (Supplier Management) or the acquired assets (Asset Management).",
+    "non_examples": [
+      "A procurement suite (a system)",
+      "Invoice Processing (a process, CAND-031)"
+    ],
+    "specialization_boundary": "Acquisition regimes (public tendering, framework agreements) are obligation sets, not specializations of the ability.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Build",
+          "identifier": "ecf:strategyDirection.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Operate",
+          "identifier": "ecf:strategyDirection.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-strategic-planning": {
+    "id": "dea:capability-strategic-planning",
+    "type": "BusinessCapability",
+    "name": "Strategic Planning",
+    "definition": "The ability to translate enterprise direction into an ordered set of intents, horizons, and resource postures.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "A maintained plan that operationalizes strategy into choices the enterprise can govern and fund.",
+    "business_object": "Plan",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "conceive"
+      },
+      "secondary": []
+    },
+    "related_capabilities": [
+      "dea:capability-strategy"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Distinct from Strategy (the sweep demonstrated partition: Strategy sets direction, Strategic Planning sequences its pursuit); recorded in every strategy-bearing corpus source.",
+    "ecf_rationale": "Planning begins at conceive in governance-existence, immediately downstream of Strategy.",
+    "boundary": "Plans the pursuit of direction; does not set direction (Strategy) or manage the resulting change portfolio (Change Management).",
+    "non_examples": [
+      "An annual budget cycle (Financial Management)",
+      "A project plan (a process artifact, not this ability)"
+    ],
+    "specialization_boundary": "Planning cadences and frameworks (rolling, scenario, Hoshin) are implementation choices, not specializations of the ability.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Conceive",
+          "identifier": "ecf:governanceExistence.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-strategy": {
+    "id": "dea:capability-strategy",
+    "type": "BusinessCapability",
+    "name": "Strategy",
+    "definition": "The ability to set the enterprise's direction: where it will compete, what it will become, and what it will not do.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "strategic",
+    "outcome": "An explicit, current statement of enterprise direction that constrains and guides every other capability.",
+    "business_object": "Enterprise",
+    "ecf": {
+      "primary": {
+        "domain": "governance-existence",
+        "stage": "conceive"
+      },
+      "secondary": [
+        {
+          "domain": "governance-existence",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-strategic-planning",
+      "dea:capability-enterprise-governance"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-001",
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Direction-setting is exercised by every enterprise regardless of industry or implementation, is identifiable by its outcome, and passes the anti-invention test: every corpus source carries it.",
+    "ecf_rationale": "Earliest initiation is conceive in governance-existence: strategy exists from the moment the enterprise is conceived; it is exercised again at improve.",
+    "boundary": "Sets direction; does not plan its pursuit (Strategic Planning), govern its execution (Enterprise Governance), or deliver value (Operations).",
+    "non_examples": [
+      "A strategic plan document (an artifact of Strategic Planning)",
+      "A board decision (an act of Enterprise Governance)"
+    ],
+    "specialization_boundary": "What is being strategized (a product line, a nation, a network) is specialization; the ability to strategize is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Conceive",
+          "identifier": "ecf:governanceExistence.conceive",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "GovernanceAndExistence",
+          "stage": "Improve",
+          "identifier": "ecf:governanceExistence.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-supplier-management": {
+    "id": "dea:capability-supplier-management",
+    "type": "BusinessCapability",
+    "name": "Supplier Management",
+    "definition": "The ability to establish, maintain, and end relationships with those who supply the enterprise.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "operational",
+    "outcome": "A managed supply base whose performance, risk, and lifecycle are deliberate.",
+    "business_object": "Supplier",
+    "ecf": {
+      "primary": {
+        "domain": "strategy-direction",
+        "stage": "build"
+      },
+      "secondary": [
+        {
+          "domain": "strategy-direction",
+          "stage": "operate"
+        },
+        {
+          "domain": "strategy-direction",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-partner-management",
+      "dea:capability-sourcing-and-procurement"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "Enterprise-general across all corpus classes; distinct from Sourcing and Procurement (the act of acquiring) by the sweep.",
+    "ecf_rationale": "Primary build in strategy-direction (the supply base is built before it is operated); operated and improved thereafter.",
+    "boundary": "Manages the supplier relationship; does not execute acquisition (Sourcing and Procurement) or manage alliances of equals (Partner Management).",
+    "non_examples": [
+      "A purchase order (the object of Sourcing and Procurement)",
+      "A vendor portal (a system)"
+    ],
+    "specialization_boundary": "What is supplied (spectrum, labor, cloud capacity) is specialization; the ability to manage suppliers is not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Build",
+          "identifier": "ecf:strategyDirection.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Operate",
+          "identifier": "ecf:strategyDirection.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "StrategyAndDirection",
+          "stage": "Improve",
+          "identifier": "ecf:strategyDirection.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-technology-management": {
+    "id": "dea:capability-technology-management",
+    "type": "BusinessCapability",
+    "name": "Technology Management",
+    "definition": "The ability to direct, invest in, and steward the enterprise's technology estate.",
+    "version": "1.0.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "Technology choices are deliberate, funded, lifecycle-managed, and answerable to strategy.",
+    "business_object": "Technology",
+    "ecf": {
+      "held_unmapped": true,
+      "note": "Held unmapped per admission review R-004: no ECF domain carries technology (an L5 concern in OpenDEAM layering). Revisit if the metaframework gains a technology-bearing domain."
+    },
+    "related_capabilities": [
+      "dea:capability-information-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-005"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E4; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E4; N-006 resolved at review (R-004): a business capability whose object is Technology, not a cross-cutting concern. ECF legitimately absent: no ECF domain carries technology (an L5 layer concern).",
+    "ecf_rationale": "R-004: held unmapped with recorded reason; the section 38 legitimately-absent clause applies.",
+    "boundary": "Stewards the technology estate; does not manage the information it carries (Information Management) or operate delivery (Operations).",
+    "non_examples": [
+      "An IT department (an organization)",
+      "A specific platform (a system)"
+    ],
+    "specialization_boundary": "Technology domains (network, cloud, OT) are specialization of the estate, not of the ability.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "held-unmapped",
+      "rationaleRef": "N-006",
+      "canonicalReferences": [],
+      "extensions": [
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "Capability legitimately carries no ECF Coordinate; the catalog-specific held-unmapped state is documented in METHODOLOGY.md and REVIEW-LOG (N-006).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting"
+          }
+        }
+      ]
+    }
+  },
+  "dea:capability-workforce-management": {
+    "id": "dea:capability-workforce-management",
+    "type": "BusinessCapability",
+    "name": "Workforce Management",
+    "definition": "The ability to acquire, develop, deploy, and release the enterprise's workforce of human and artificial agents.",
+    "version": "1.1.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "The enterprise has the agents it needs, human and artificial, developing, with deliberate entry and exit.",
+    "business_object": "Workforce",
+    "ecf": {
+      "primary": {
+        "domain": "agency-organization",
+        "stage": "build"
+      },
+      "secondary": [
+        {
+          "domain": "agency-organization",
+          "stage": "operate"
+        },
+        {
+          "domain": "agency-organization",
+          "stage": "improve"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-workforce-planning"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004",
+        "SRC-005",
+        "SRC-006"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E5; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E5; N-001 settled the name (Workforce Management; \"People Management\" carried as alias).",
+    "ecf_rationale": "Primary build in agency-organization (the workforce is built, then operated and improved); conceive and retire are legitimately empty at first order.",
+    "boundary": "Manages the workforce; does not plan its shape (Workforce Planning) or govern the enterprise (Enterprise Governance).",
+    "non_examples": [
+      "An HRIS (a system)",
+      "An HR department (an organization)"
+    ],
+    "specialization_boundary": "Workforce forms (employees, contractors, volunteers, uniformed service, AI agents, autonomous software agents, robotic systems, hybrid agent teams) are specialization; the ability to manage a workforce is not.",
+    "aliases": [
+      "People Management",
+      "People / Workforce Management"
+    ],
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "AgencyAndOrganization",
+          "stage": "Build",
+          "identifier": "ecf:agencyOrganization.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "AgencyAndOrganization",
+          "stage": "Operate",
+          "identifier": "ecf:agencyOrganization.operate",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "AgencyAndOrganization",
+          "stage": "Improve",
+          "identifier": "ecf:agencyOrganization.improve",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  },
+  "dea:capability-workforce-planning": {
+    "id": "dea:capability-workforce-planning",
+    "type": "BusinessCapability",
+    "name": "Workforce Planning",
+    "definition": "The ability to determine what workforce, human and artificial, the enterprise will need and when.",
+    "version": "1.1.0",
+    "metamodel_pin": "1.0.0",
+    "lifecycle_status": "active",
+    "capability_layer": "support",
+    "outcome": "A maintained view of future demand and supply across the human and artificial workforce, feeding Workforce Management.",
+    "business_object": "Workforce Plan",
+    "ecf": {
+      "primary": {
+        "domain": "agency-organization",
+        "stage": "design"
+      },
+      "secondary": [
+        {
+          "domain": "agency-organization",
+          "stage": "build"
+        }
+      ]
+    },
+    "related_capabilities": [
+      "dea:capability-workforce-management"
+    ],
+    "evidence": {
+      "sources": [
+        "SRC-002",
+        "SRC-004"
+      ],
+      "rationale": "Enterprise-generality demonstrated at E3; evidence trail in docs/research (evidence-register, enterprise-generality-matrix, distinctness-sweep, admission-gate-closeout)."
+    },
+    "provenance": {
+      "ladder_passage": [
+        {
+          "stage": "candidate",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), candidate universe v0.1 (PR #6)"
+        },
+        {
+          "stage": "observed",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), evidence register (PRs #5, #7)"
+        },
+        {
+          "stage": "corroborated",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), enterprise-generality matrix (PR #11)"
+        },
+        {
+          "stage": "normalized",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), normalization register + distinctness sweep (PRs #8, #12)"
+        },
+        {
+          "stage": "ecf-mapped",
+          "date": "2026-08-31",
+          "actor": "Coder (for eaojnr), preliminary ECF overlay (PR #7)"
+        },
+        {
+          "stage": "reviewed",
+          "date": "2026-09-01",
+          "actor": "Coder (for eaojnr), admission review v0.1 (PR #24)"
+        },
+        {
+          "stage": "canonical",
+          "date": "2026-09-01",
+          "actor": "eaojnr, admission PR (this change)"
+        }
+      ]
+    },
+    "specialization": {
+      "allowed": true,
+      "industry_examples": []
+    },
+    "why_capability": "E3; distinct from Workforce Management (execution) per the sweep; planning object is the Workforce Plan.",
+    "ecf_rationale": "Primary design in agency-organization (workforce shape is designed before it is built).",
+    "boundary": "Plans the workforce; does not acquire, develop, or release agents (Workforce Management).",
+    "non_examples": [
+      "A hiring requisition (an artifact of execution)",
+      "A skills database (a system)"
+    ],
+    "specialization_boundary": "Planning horizons, models, and the mix of human and artificial agents vary by sector; the ability to plan a workforce does not.",
+    "ecfConformance": {
+      "framework": "EnterpriseConceptFramework",
+      "contractVersion": "1.0.0",
+      "profile": "dea:ecf@1.0.0",
+      "status": "conformant-with-extension",
+      "affiliation": "mapped",
+      "canonicalReferences": [
+        {
+          "kind": "coordinate",
+          "domain": "AgencyAndOrganization",
+          "stage": "Design",
+          "identifier": "ecf:agencyOrganization.design",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "primary"
+        },
+        {
+          "kind": "coordinate",
+          "domain": "AgencyAndOrganization",
+          "stage": "Build",
+          "identifier": "ecf:agencyOrganization.build",
+          "schema": "https://github.com/technehub-labs/dea-metaframework/schemas/ecf-coordinate.schema.json",
+          "role": "secondary"
+        }
+      ],
+      "extensions": [
+        {
+          "name": "kebab-case-domain-vocabulary",
+          "kind": "display-vocabulary",
+          "description": "Catalog-side kebab-case labels for the seven ECF Domains and seven ECF Stages (see mapping). Display-only; resolves to canonical PascalCase enums for the gate.",
+          "doesNotRedefine": true,
+          "mapping": {
+            "governance-existence": "GovernanceAndExistence",
+            "strategy-direction": "StrategyAndDirection",
+            "agency-organization": "AgencyAndOrganization",
+            "party-relationship": "PartyAndRelationship",
+            "product-value": "ProductAndValue",
+            "operations-enablement": "OperationsAndEnablement",
+            "finance-accounting": "FinanceAndAccounting",
+            "_stage_conceive": "Conceive",
+            "_stage_design": "Design",
+            "_stage_build": "Build",
+            "_stage_activate": "Activate",
+            "_stage_operate": "Operate",
+            "_stage_improve": "Improve",
+            "_stage_retire": "Retire"
+          }
+        },
+        {
+          "name": "multiple-contextual-coordinates",
+          "kind": "catalog-specific-relation",
+          "description": "A capability may have one primary and zero-or-more secondary canonical coordinates without identity duplication (CG-003 §5).",
+          "doesNotRedefine": true
+        },
+        {
+          "name": "held-unmapped",
+          "kind": "classification-state",
+          "description": "State for capabilities with no ECF affiliation by design (N-006); does not appear on this entry because primary is set.",
+          "doesNotRedefine": true
+        }
+      ]
+    }
+  }
+}

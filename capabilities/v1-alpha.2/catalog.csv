@@ -1,0 +1,26 @@
+candidate_id,capability,capability_layer,primary_ecf,secondary_ecf,related_capabilities,entry_id,lifecycle_status
+CAND-001,Strategy,strategic,governance-existence / conceive,governance-existence / improve,dea:capability-strategic-planning; dea:capability-enterprise-governance,dea:capability-strategy,active
+CAND-002,Strategic Planning,strategic,governance-existence / conceive,,dea:capability-strategy,dea:capability-strategic-planning,active
+CAND-003,Enterprise Governance,strategic,governance-existence / conceive,governance-existence / operate; governance-existence / improve,dea:capability-strategy; dea:capability-risk-management,dea:capability-enterprise-governance,active
+CAND-005,Customer Management,operational,party-relationship / operate,party-relationship / conceive; party-relationship / improve; party-relationship / retire,dea:capability-partner-management; dea:capability-marketing,dea:capability-customer-management,active
+CAND-007,Supplier Management,operational,strategy-direction / build,strategy-direction / operate; strategy-direction / improve,dea:capability-partner-management; dea:capability-sourcing-and-procurement,dea:capability-supplier-management,active
+CAND-008,Partner Management,operational,party-relationship / conceive,strategy-direction / operate,dea:capability-customer-management; dea:capability-supplier-management,dea:capability-partner-management,active
+CAND-009,Offering Management,operational,product-value / conceive,product-value / design; product-value / build; product-value / improve; product-value / retire,dea:capability-marketing; dea:capability-operations,dea:capability-offering-management,active
+CAND-010,Marketing,operational,party-relationship / conceive,party-relationship / operate,dea:capability-customer-management; dea:capability-offering-management,dea:capability-marketing,active
+CAND-012,Operations,operational,operations-enablement / operate,operations-enablement / improve,dea:capability-offering-management,dea:capability-operations,active
+CAND-013,Financial Stewardship,strategic,finance-accounting / conceive,finance-accounting / operate,dea:capability-financial-management,dea:capability-financial-stewardship,active
+CAND-014,Financial Management,operational,finance-accounting / operate,finance-accounting / conceive,dea:capability-financial-stewardship,dea:capability-financial-management,active
+CAND-016,Workforce Planning,support,agency-organization / design,agency-organization / build,dea:capability-workforce-management,dea:capability-workforce-planning,active
+CAND-017,Information Management,support,operations-enablement / operate,,dea:capability-technology-management,dea:capability-information-management,active
+CAND-018,Analytics and Intelligence,support,operations-enablement / operate,,dea:capability-information-management,dea:capability-analytics-and-intelligence,active
+CAND-019,Technology Management,support,strategy-direction / build,strategy-direction / operate; strategy-direction / improve,dea:capability-information-management,dea:capability-technology-management,active
+CAND-020,Risk Management,support,governance-existence / conceive,governance-existence / operate; governance-existence / improve,dea:capability-compliance-management; dea:capability-legal-management; dea:capability-security-management,dea:capability-risk-management,active
+CAND-021,Compliance Management,support,governance-existence / activate,governance-existence / operate,dea:capability-risk-management,dea:capability-compliance-management,active
+CAND-022,Legal Management,support,governance-existence / conceive,governance-existence / operate,dea:capability-risk-management,dea:capability-legal-management,active
+CAND-023,Resilience Management,support,governance-existence / design,governance-existence / operate,dea:capability-risk-management; dea:capability-security-management,dea:capability-resilience-management,active
+CAND-024,Security Management,support,governance-existence / design,governance-existence / operate,dea:capability-risk-management,dea:capability-security-management,active
+CAND-025,Sourcing and Procurement,operational,strategy-direction / build,strategy-direction / operate,dea:capability-supplier-management,dea:capability-sourcing-and-procurement,active
+CAND-026,Asset Management,support,strategy-direction / build,strategy-direction / operate; strategy-direction / retire,dea:capability-facility-management,dea:capability-asset-management,active
+CAND-027,Facility Management,support,strategy-direction / activate,strategy-direction / operate,dea:capability-asset-management,dea:capability-facility-management,active
+CAND-028,Change Management,strategic,governance-existence / improve,,dea:capability-enterprise-governance,dea:capability-change-management,active
+CAND-029,Innovation Management,strategic,product-value / conceive,product-value / design,dea:capability-change-management; dea:capability-offering-management,dea:capability-innovation-management,active

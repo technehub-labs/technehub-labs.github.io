@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1754" viewBox="0 0 1240 1754">
+<defs><style>text{font-family:-apple-system,Helvetica,Arial,sans-serif}</style></defs>
+<rect width="1240" height="1754" fill="#ffffff"/>
+<rect x="0" y="0" width="1240" height="130" fill="#0f172a"/>
+<text x="50" y="56" font-size="28" font-weight="700" fill="#ffffff">Business Capability Catalog: v1-alpha.1</text>
+<text x="50" y="86" font-size="15" fill="#cbd5e1">25 canonical first-order capabilities: tabular reference</text>
+<text x="50" y="110" font-size="11" fill="#94a3b8">dea:catalog/business-capabilities@v1-alpha.1  ·  dea:ecf@1.0.0  ·  CR-DEA-BC-05</text>
+<rect x="50" y="160" width="850" height="32" fill="#1e293b"/>
+<text x="58" y="181" font-size="12" font-weight="700" fill="#ffffff">ID</text>
+<text x="128" y="181" font-size="12" font-weight="700" fill="#ffffff">Capability</text>
+<text x="348" y="181" font-size="12" font-weight="700" fill="#ffffff">Layer</text>
+<text x="448" y="181" font-size="12" font-weight="700" fill="#ffffff">Primary ECF</text>
+<text x="678" y="181" font-size="12" font-weight="700" fill="#ffffff">Secondary</text>
+<text x="908" y="181" font-size="12" font-weight="700" fill="#ffffff">Related</text>
+<rect x="50" y="192" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="216" font-size="11" font-weight="700" fill="#0f766e">CAND-001</text>
+<text x="128" y="216" font-size="12" font-weight="600" fill="#1f2933">Strategy</text>
+<text x="348" y="216" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="216" font-size="10" fill="#374151">governance-existence / conceive</text>
+<text x="678" y="216" font-size="10" fill="#374151">governance-existence / improve</text>
+<text x="908" y="216" font-size="9" fill="#9ca3af">dea:capability-strategic-planning, dea:capability-enterprise-governance</text>
+<rect x="50" y="230" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="254" font-size="11" font-weight="700" fill="#0f766e">CAND-002</text>
+<text x="128" y="254" font-size="12" font-weight="600" fill="#1f2933">Strategic Planning</text>
+<text x="348" y="254" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="254" font-size="10" fill="#374151">governance-existence / conceive</text>
+<text x="678" y="254" font-size="10" fill="#374151">—</text>
+<text x="908" y="254" font-size="9" fill="#9ca3af">dea:capability-strategy</text>
+<rect x="50" y="268" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="292" font-size="11" font-weight="700" fill="#0f766e">CAND-003</text>
+<text x="128" y="292" font-size="12" font-weight="600" fill="#1f2933">Enterprise Governance</text>
+<text x="348" y="292" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="292" font-size="10" fill="#374151">governance-existence / conceive</text>
+<text x="678" y="292" font-size="10" fill="#374151">governance-existence / operate, governance-existence / improve</text>
+<text x="908" y="292" font-size="9" fill="#9ca3af">dea:capability-strategy, dea:capability-risk-management</text>
+<rect x="50" y="306" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="330" font-size="11" font-weight="700" fill="#0f766e">CAND-005</text>
+<text x="128" y="330" font-size="12" font-weight="600" fill="#1f2933">Customer Management</text>
+<text x="348" y="330" font-size="11" fill="#374151">operational</text>
+<text x="448" y="330" font-size="10" fill="#374151">party-relationship / operate</text>
+<text x="678" y="330" font-size="10" fill="#374151">party-relationship / conceive, party-relationship / improve, party-relationship / retire</text>
+<text x="908" y="330" font-size="9" fill="#9ca3af">dea:capability-partner-management, dea:capability-marketing</text>
+<rect x="50" y="344" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="368" font-size="11" font-weight="700" fill="#0f766e">CAND-007</text>
+<text x="128" y="368" font-size="12" font-weight="600" fill="#1f2933">Supplier Management</text>
+<text x="348" y="368" font-size="11" fill="#374151">operational</text>
+<text x="448" y="368" font-size="10" fill="#374151">strategy-direction / build</text>
+<text x="678" y="368" font-size="10" fill="#374151">strategy-direction / operate, strategy-direction / improve</text>
+<text x="908" y="368" font-size="9" fill="#9ca3af">dea:capability-partner-management, dea:capability-sourcing-and-procurement</text>
+<rect x="50" y="382" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="406" font-size="11" font-weight="700" fill="#0f766e">CAND-008</text>
+<text x="128" y="406" font-size="12" font-weight="600" fill="#1f2933">Partner Management</text>
+<text x="348" y="406" font-size="11" fill="#374151">operational</text>
+<text x="448" y="406" font-size="10" fill="#374151">party-relationship / conceive</text>
+<text x="678" y="406" font-size="10" fill="#374151">strategy-direction / operate</text>
+<text x="908" y="406" font-size="9" fill="#9ca3af">dea:capability-customer-management, dea:capability-supplier-management</text>
+<rect x="50" y="420" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="444" font-size="11" font-weight="700" fill="#0f766e">CAND-009</text>
+<text x="128" y="444" font-size="12" font-weight="600" fill="#1f2933">Offering Management</text>
+<text x="348" y="444" font-size="11" fill="#374151">operational</text>
+<text x="448" y="444" font-size="10" fill="#374151">product-value / conceive</text>
+<text x="678" y="444" font-size="10" fill="#374151">product-value / design, product-value / build, product-value / improve, product-value / retire</text>
+<text x="908" y="444" font-size="9" fill="#9ca3af">dea:capability-marketing, dea:capability-operations</text>
+<rect x="50" y="458" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="482" font-size="11" font-weight="700" fill="#0f766e">CAND-010</text>
+<text x="128" y="482" font-size="12" font-weight="600" fill="#1f2933">Marketing</text>
+<text x="348" y="482" font-size="11" fill="#374151">operational</text>
+<text x="448" y="482" font-size="10" fill="#374151">party-relationship / conceive</text>
+<text x="678" y="482" font-size="10" fill="#374151">party-relationship / operate</text>
+<text x="908" y="482" font-size="9" fill="#9ca3af">dea:capability-customer-management, dea:capability-offering-management</text>
+<rect x="50" y="496" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="520" font-size="11" font-weight="700" fill="#0f766e">CAND-012</text>
+<text x="128" y="520" font-size="12" font-weight="600" fill="#1f2933">Operations</text>
+<text x="348" y="520" font-size="11" fill="#374151">operational</text>
+<text x="448" y="520" font-size="10" fill="#374151">operations-enablement / operate</text>
+<text x="678" y="520" font-size="10" fill="#374151">operations-enablement / improve</text>
+<text x="908" y="520" font-size="9" fill="#9ca3af">dea:capability-offering-management</text>
+<rect x="50" y="534" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="558" font-size="11" font-weight="700" fill="#0f766e">CAND-013</text>
+<text x="128" y="558" font-size="12" font-weight="600" fill="#1f2933">Financial Stewardship</text>
+<text x="348" y="558" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="558" font-size="10" fill="#374151">finance-accounting / conceive</text>
+<text x="678" y="558" font-size="10" fill="#374151">finance-accounting / operate</text>
+<text x="908" y="558" font-size="9" fill="#9ca3af">dea:capability-financial-management</text>
+<rect x="50" y="572" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="596" font-size="11" font-weight="700" fill="#0f766e">CAND-014</text>
+<text x="128" y="596" font-size="12" font-weight="600" fill="#1f2933">Financial Management</text>
+<text x="348" y="596" font-size="11" fill="#374151">operational</text>
+<text x="448" y="596" font-size="10" fill="#374151">finance-accounting / operate</text>
+<text x="678" y="596" font-size="10" fill="#374151">finance-accounting / conceive</text>
+<text x="908" y="596" font-size="9" fill="#9ca3af">dea:capability-financial-stewardship</text>
+<rect x="50" y="610" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="634" font-size="11" font-weight="700" fill="#0f766e">CAND-016</text>
+<text x="128" y="634" font-size="12" font-weight="600" fill="#1f2933">Workforce Planning</text>
+<text x="348" y="634" font-size="11" fill="#374151">support</text>
+<text x="448" y="634" font-size="10" fill="#374151">agency-organization / design</text>
+<text x="678" y="634" font-size="10" fill="#374151">agency-organization / build</text>
+<text x="908" y="634" font-size="9" fill="#9ca3af">dea:capability-workforce-management</text>
+<rect x="50" y="648" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="672" font-size="11" font-weight="700" fill="#0f766e">CAND-017</text>
+<text x="128" y="672" font-size="12" font-weight="600" fill="#1f2933">Information Management</text>
+<text x="348" y="672" font-size="11" fill="#374151">support</text>
+<text x="448" y="672" font-size="10" fill="#374151">operations-enablement / operate</text>
+<text x="678" y="672" font-size="10" fill="#374151">—</text>
+<text x="908" y="672" font-size="9" fill="#9ca3af">dea:capability-technology-management</text>
+<rect x="50" y="686" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="710" font-size="11" font-weight="700" fill="#0f766e">CAND-018</text>
+<text x="128" y="710" font-size="12" font-weight="600" fill="#1f2933">Analytics and Intelligence</text>
+<text x="348" y="710" font-size="11" fill="#374151">support</text>
+<text x="448" y="710" font-size="10" fill="#374151">operations-enablement / operate</text>
+<text x="678" y="710" font-size="10" fill="#374151">—</text>
+<text x="908" y="710" font-size="9" fill="#9ca3af">dea:capability-information-management</text>
+<rect x="50" y="724" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="748" font-size="11" font-weight="700" fill="#0f766e">CAND-019</text>
+<text x="128" y="748" font-size="12" font-weight="600" fill="#1f2933">Technology Management</text>
+<text x="348" y="748" font-size="11" fill="#374151">support</text>
+<text x="448" y="748" font-size="10" fill="#374151">held-unmapped</text>
+<text x="678" y="748" font-size="10" fill="#374151">—</text>
+<text x="908" y="748" font-size="9" fill="#9ca3af">dea:capability-information-management</text>
+<rect x="50" y="762" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="786" font-size="11" font-weight="700" fill="#0f766e">CAND-020</text>
+<text x="128" y="786" font-size="12" font-weight="600" fill="#1f2933">Risk Management</text>
+<text x="348" y="786" font-size="11" fill="#374151">support</text>
+<text x="448" y="786" font-size="10" fill="#374151">governance-existence / conceive</text>
+<text x="678" y="786" font-size="10" fill="#374151">governance-existence / operate, governance-existence / improve</text>
+<text x="908" y="786" font-size="9" fill="#9ca3af">dea:capability-compliance-management, dea:capability-legal-management</text>
+<rect x="50" y="800" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="824" font-size="11" font-weight="700" fill="#0f766e">CAND-021</text>
+<text x="128" y="824" font-size="12" font-weight="600" fill="#1f2933">Compliance Management</text>
+<text x="348" y="824" font-size="11" fill="#374151">support</text>
+<text x="448" y="824" font-size="10" fill="#374151">governance-existence / activate</text>
+<text x="678" y="824" font-size="10" fill="#374151">governance-existence / operate</text>
+<text x="908" y="824" font-size="9" fill="#9ca3af">dea:capability-risk-management</text>
+<rect x="50" y="838" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="862" font-size="11" font-weight="700" fill="#0f766e">CAND-022</text>
+<text x="128" y="862" font-size="12" font-weight="600" fill="#1f2933">Legal Management</text>
+<text x="348" y="862" font-size="11" fill="#374151">support</text>
+<text x="448" y="862" font-size="10" fill="#374151">governance-existence / conceive</text>
+<text x="678" y="862" font-size="10" fill="#374151">governance-existence / operate</text>
+<text x="908" y="862" font-size="9" fill="#9ca3af">dea:capability-risk-management</text>
+<rect x="50" y="876" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="900" font-size="11" font-weight="700" fill="#0f766e">CAND-023</text>
+<text x="128" y="900" font-size="12" font-weight="600" fill="#1f2933">Resilience Management</text>
+<text x="348" y="900" font-size="11" fill="#374151">support</text>
+<text x="448" y="900" font-size="10" fill="#374151">governance-existence / design</text>
+<text x="678" y="900" font-size="10" fill="#374151">governance-existence / operate</text>
+<text x="908" y="900" font-size="9" fill="#9ca3af">dea:capability-risk-management, dea:capability-security-management</text>
+<rect x="50" y="914" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="938" font-size="11" font-weight="700" fill="#0f766e">CAND-024</text>
+<text x="128" y="938" font-size="12" font-weight="600" fill="#1f2933">Security Management</text>
+<text x="348" y="938" font-size="11" fill="#374151">support</text>
+<text x="448" y="938" font-size="10" fill="#374151">governance-existence / design</text>
+<text x="678" y="938" font-size="10" fill="#374151">governance-existence / operate</text>
+<text x="908" y="938" font-size="9" fill="#9ca3af">dea:capability-risk-management</text>
+<rect x="50" y="952" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="976" font-size="11" font-weight="700" fill="#0f766e">CAND-025</text>
+<text x="128" y="976" font-size="12" font-weight="600" fill="#1f2933">Sourcing and Procurement</text>
+<text x="348" y="976" font-size="11" fill="#374151">operational</text>
+<text x="448" y="976" font-size="10" fill="#374151">strategy-direction / build</text>
+<text x="678" y="976" font-size="10" fill="#374151">strategy-direction / operate</text>
+<text x="908" y="976" font-size="9" fill="#9ca3af">dea:capability-supplier-management</text>
+<rect x="50" y="990" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="1014" font-size="11" font-weight="700" fill="#0f766e">CAND-026</text>
+<text x="128" y="1014" font-size="12" font-weight="600" fill="#1f2933">Asset Management</text>
+<text x="348" y="1014" font-size="11" fill="#374151">support</text>
+<text x="448" y="1014" font-size="10" fill="#374151">strategy-direction / build</text>
+<text x="678" y="1014" font-size="10" fill="#374151">strategy-direction / operate, strategy-direction / retire</text>
+<text x="908" y="1014" font-size="9" fill="#9ca3af">dea:capability-facility-management</text>
+<rect x="50" y="1028" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="1052" font-size="11" font-weight="700" fill="#0f766e">CAND-027</text>
+<text x="128" y="1052" font-size="12" font-weight="600" fill="#1f2933">Facility Management</text>
+<text x="348" y="1052" font-size="11" fill="#374151">support</text>
+<text x="448" y="1052" font-size="10" fill="#374151">strategy-direction / activate</text>
+<text x="678" y="1052" font-size="10" fill="#374151">strategy-direction / operate</text>
+<text x="908" y="1052" font-size="9" fill="#9ca3af">dea:capability-asset-management</text>
+<rect x="50" y="1066" width="850" height="38" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="58" y="1090" font-size="11" font-weight="700" fill="#0f766e">CAND-028</text>
+<text x="128" y="1090" font-size="12" font-weight="600" fill="#1f2933">Change Management</text>
+<text x="348" y="1090" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="1090" font-size="10" fill="#374151">governance-existence / improve</text>
+<text x="678" y="1090" font-size="10" fill="#374151">—</text>
+<text x="908" y="1090" font-size="9" fill="#9ca3af">dea:capability-enterprise-governance</text>
+<rect x="50" y="1104" width="850" height="38" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="58" y="1128" font-size="11" font-weight="700" fill="#0f766e">CAND-029</text>
+<text x="128" y="1128" font-size="12" font-weight="600" fill="#1f2933">Innovation Management</text>
+<text x="348" y="1128" font-size="11" fill="#374151">strategic</text>
+<text x="448" y="1128" font-size="10" fill="#374151">product-value / conceive</text>
+<text x="678" y="1128" font-size="10" fill="#374151">product-value / design</text>
+<text x="908" y="1128" font-size="9" fill="#9ca3af">dea:capability-change-management, dea:capability-offering-management</text>
+<text x="50" y="1704" font-size="10" fill="#94a3b8">Empty ECF cells are legitimate results, not gaps. Held-unmapped: CAND-019 Technology Management.</text>
+<text x="1190" y="1722" font-size="9" fill="#94a3b8" text-anchor="end">Source: technehub-labs/dea-catalog-business-capabilities@v1-alpha.1</text>
+</svg>

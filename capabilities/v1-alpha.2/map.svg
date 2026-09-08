@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="800" viewBox="0 0 1400 800">
+<defs><style>text{font-family:-apple-system,Helvetica,Arial,sans-serif}</style></defs>
+<rect width="1400" height="800" fill="#ffffff"/>
+<rect x="0" y="0" width="1400" height="60" fill="#1e293b"/>
+<text x="30" y="36" font-size="20" font-weight="700" fill="#ffffff">Capability Map: ECF Coverage v1-alpha.2</text>
+<text x="1370" y="36" font-size="14" font-weight="600" fill="#fef3c7" text-anchor="end">26 caps / 14 cells / 1 held-unmapped</text>
+<text x="311.42857142857144" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">CONCEIVE</text>
+<text x="474.28571428571433" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">DESIGN</text>
+<text x="637.1428571428572" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">BUILD</text>
+<text x="800" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">ACTIVATE</text>
+<text x="962.8571428571429" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">OPERATE</text>
+<text x="1125.7142857142856" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">IMPROVE</text>
+<text x="1288.5714285714284" y="74" font-size="13" font-weight="600" fill="#1f2933" text-anchor="middle">RETIRE</text>
+<text x="40" y="132.14285714285714" font-size="12" font-weight="600" fill="#1f2933">Governance &amp; Existence</text>
+<rect x="232" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="311.42857142857144" y="96.62857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-001</text>
+<text x="311.42857142857144" y="113.8857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-002</text>
+<text x="311.42857142857144" y="131.14285714285717" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-003</text>
+<text x="311.42857142857144" y="148.40000000000003" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-020</text>
+<text x="311.42857142857144" y="165.6571428571429" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-022</text>
+<rect x="394.8571428571429" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="474.28571428571433" y="96.62857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-023</text>
+<text x="474.28571428571433" y="113.8857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-024</text>
+<rect x="557.7142857142858" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="800" y="96.62857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-021</text>
+<rect x="883.4285714285714" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1046.2857142857142" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="1125.7142857142856" y="96.62857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-028</text>
+<rect x="1209.142857142857" y="82" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="226.42857142857142" font-size="12" font-weight="600" fill="#1f2933">Party &amp; Relationship</text>
+<rect x="232" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="311.42857142857144" y="190.9142857142857" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-008</text>
+<text x="311.42857142857144" y="208.17142857142858" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-010</text>
+<rect x="394.8571428571429" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="557.7142857142858" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="883.4285714285714" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="962.8571428571429" y="190.9142857142857" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-005</text>
+<rect x="1046.2857142857142" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="176.28571428571428" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="320.71428571428567" font-size="12" font-weight="600" fill="#1f2933">Strategy &amp; Direction</text>
+<rect x="232" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="394.8571428571429" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="557.7142857142858" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="637.1428571428572" y="285.2" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-007</text>
+<text x="637.1428571428572" y="302.45714285714286" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-019</text>
+<text x="637.1428571428572" y="319.7142857142857" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-025</text>
+<text x="637.1428571428572" y="336.9714285714286" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-026</text>
+<rect x="720.5714285714286" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="800" y="285.2" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-027</text>
+<rect x="883.4285714285714" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1046.2857142857142" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="270.57142857142856" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="415" font-size="12" font-weight="600" fill="#1f2933">Product &amp; Value</text>
+<rect x="232" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="311.42857142857144" y="379.4857142857143" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-009</text>
+<text x="311.42857142857144" y="396.7428571428572" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-029</text>
+<rect x="394.8571428571429" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="557.7142857142858" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="883.4285714285714" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1046.2857142857142" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="364.8571428571429" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="509.28571428571433" font-size="12" font-weight="600" fill="#1f2933">Operations &amp; Enablement</text>
+<rect x="232" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="394.8571428571429" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="557.7142857142858" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="883.4285714285714" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="962.8571428571429" y="473.7714285714286" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-012</text>
+<text x="962.8571428571429" y="491.02857142857147" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-017</text>
+<text x="962.8571428571429" y="508.28571428571433" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-018</text>
+<rect x="1046.2857142857142" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="459.14285714285717" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="603.5714285714286" font-size="12" font-weight="600" fill="#1f2933">Finance &amp; Accounting</text>
+<rect x="232" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="311.42857142857144" y="568.0571428571428" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-013</text>
+<rect x="394.8571428571429" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="557.7142857142858" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="883.4285714285714" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="962.8571428571429" y="568.0571428571428" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-014</text>
+<rect x="1046.2857142857142" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="553.4285714285714" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="40" y="697.8571428571429" font-size="12" font-weight="600" fill="#1f2933">Agency &amp; Organization</text>
+<rect x="232" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="394.8571428571429" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="474.28571428571433" y="662.3428571428572" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">CAND-016</text>
+<rect x="557.7142857142858" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="720.5714285714286" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="883.4285714285714" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1046.2857142857142" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<rect x="1209.142857142857" y="647.7142857142858" width="158.85714285714286" height="90.28571428571429" rx="4" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="30" y="784" font-size="10" fill="#94a3b8">dea:catalog/business-capabilities@v1-alpha.2  ·  dea:ecf@1.0.0  ·  CR-DEA-BC-05</text>
+<text x="1370" y="784" font-size="10" fill="#94a3b8" text-anchor="end">Held unmapped: CAND-019 Technology Management</text>
+</svg>
