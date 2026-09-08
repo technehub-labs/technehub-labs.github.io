@@ -1,20 +1,25 @@
 name: Sync Business Capabilities
 
-# Mirrors the canonical artifacts from technehub-labs/dea-catalog-business-capabilities
-# (CR-DEA-BC-06 publication pipeline output) into this Pages repo's capabilities/
-# subdirectory so the live landing page at https://technehub-labs.github.io/capabilities/
-# always reflects the latest tagged release of the catalog.
+# Mirrors the canonical published artifacts from
+# technehub-labs/dea-catalog-business-capabilities (CR-DEA-BC-06 publication
+# pipeline) into this Pages repo's capabilities/ subdirectory so the live
+# landing page at https://technehub-labs.github.io/capabilities/ always
+# reflects the latest tagged release of the catalog.
 #
 # Sync scope:
-#   out/<version>/{poster,map,catalog,overlay,...}.{svg,png,json,csv,yaml}
-#                                → capabilities/<version>/     (immutable versioned viewer)
-#   out/latest/                  → capabilities/latest/         (mutable latest viewer)
-#                                → portal/data/capabilities.json (consumed by the
-#                                                                  in-portal Explorer)
+#   release asset <version>.zip
+#     → capabilities/<version>/     (immutable versioned viewer)
+#     → capabilities/latest/         (mutable mirror of latest tag)
+#     → portal/data/capabilities.json (in-portal Explorer consumption)
+#
+# Source of truth: GitHub Releases on the BC repo (not the source-repo
+# working tree). Each versioned tag publishes a <version>.zip asset via
+# publish-versioned.yml. This workflow fetches the release asset, so the
+# Pages state mirrors exactly what was published, not any transient main.
 #
 # Triggers (canonical mechanism is hourly cron — no cross-repo secret needed):
-#   - schedule (hourly cron)         — primary sync, picks up any source-side
-#                                       changes within ~1 hour of merge to main
+#   - schedule (hourly cron)         — primary sync, picks up new releases
+#                                       within ~1 hour of publish
 #   - workflow_dispatch             — manual run for testing / emergency sync
 #   - repository_dispatch            — retained as an OPT-IN fast path for when
 #     [capabilities-versioned]         a DISPATCH_TOKEN secret is configured on
@@ -23,28 +28,29 @@ name: Sync Business Capabilities
 #                                       the only active trigger.
 #
 # Why hourly cron (not push-to-main dispatch):
-#   Cross-repo `repository_dispatch` from dea-catalog-business-capabilities to
-#   this Pages repo requires a PAT stored as `DISPATCH_TOKEN` on the source
-#   repo. Until that secret is configured, the hourly cron is sufficient:
-#   source-side merges and tag pushes land in the live Pages tree within
-#   ~60 minutes, which is acceptable for the catalog's current lettered-suffix
-#   release cadence. Adding `DISPATCH_TOKEN` later will give sub-minute latency
-#   without any further workflow changes here.
+#   Cross-repo `repository_dispatch` from dea-catalog-business-capabilities
+#   to this Pages repo requires a PAT stored as `DISPATCH_TOKEN` on the
+#   source repo. Until that secret is configured, the hourly cron is
+#   sufficient: source-side releases land in the live Pages tree within
+#   ~60 minutes, which is acceptable for the BC release cadence (lettered
+#   suffix versions, ~once/day at peak). Adding `DISPATCH_TOKEN` later will
+#   give sub-minute latency without any further workflow changes here.
 #
-# Same-origin rule: we copy artifacts into this Pages repo and serve them from
-# the capabilities/ subdirectory. The portal page fetches ./latest/catalog.json
-# (same-origin), avoiding any raw.githubusercontent.com CDN 404 pitfalls.
+# Same-origin rule: we copy artifacts into this Pages repo and serve them
+# from the capabilities/ subdirectory. The portal page fetches
+# ./latest/catalog.json (same-origin), avoiding raw.githubusercontent.com
+# CDN 404 pitfalls.
 #
 # Pattern mirror: see sync-metaframework.yml and sync-metamodel.yml in this
-# directory. Same checkout + sparse-checkout + artifact-validation +
-# commit-if-changed structure, adapted for the BC repo's published output.
+# directory. Same checkout + validation + commit-if-changed structure,
+# adapted for the BC repo's release-zip artifact source.
 
 on:
   repository_dispatch:
     types: [capabilities-versioned, capabilities-updated]
   workflow_dispatch:
   schedule:
-    # Canonical sync — hourly. Picks up all source-side changes within ~1h
+    # Canonical sync — hourly. Picks up all source-side releases within ~1h
     # without requiring any cross-repo secret.
     - cron: '0 * * * *'
 
@@ -60,104 +66,88 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Detect source-side target
-        id: target
+      - name: Resolve target version(s)
+        id: targets
         run: |
-          # When triggered by repository_dispatch, the client_payload carries
-          # the version label (e.g. v1-alpha.3 or "latest"). When triggered by
-          # schedule or manual dispatch, sync ALL known version labels plus
-          # latest.
+          set -euo pipefail
           EVENT="${{ github.event_name }}"
           if [ "$EVENT" = "repository_dispatch" ]; then
             VERSION="${{ github.event.client_payload.version }}"
             if [ -z "$VERSION" ] || [ "$VERSION" = "latest" ]; then
-              echo "target=latest" >> "$GITHUB_OUTPUT"
+              # latest means "the newest tag" in release-space
+              LATEST=$(gh release list --repo technehub-labs/dea-catalog-business-capabilities --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null)
+              if [ -z "$LATEST" ]; then
+                echo "warn: no releases in the BC repo; nothing to sync" >&2
+                echo "targets=" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              echo "targets=$LATEST" >> "$GITHUB_OUTPUT"
+              echo "latest_label=$LATEST" >> "$GITHUB_OUTPUT"
             else
-              echo "target=$VERSION" >> "$GITHUB_OUTPUT"
+              echo "targets=$VERSION" >> "$GITHUB_OUTPUT"
+              echo "latest_label=$VERSION" >> "$GITHUB_OUTPUT"
             fi
           else
-            echo "target=all" >> "$GITHUB_OUTPUT"
+            # cron / manual: sync ALL known releases + latest
+            ALL=$(gh release list --repo technehub-labs/dea-catalog-business-capabilities --limit 20 --json tagName --jq '.[].tagName' 2>/dev/null | tr '\n' ' ')
+            echo "targets=$ALL" >> "$GITHUB_OUTPUT"
+            LATEST=$(echo $ALL | tr ' ' '\n' | sort -V | tail -1)
+            echo "latest_label=$LATEST" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Resolve latest published version
-        id: latest
-        if: steps.target.outputs.target == 'all' || steps.target.outputs.target == 'latest'
-        run: |
-          # Pull the latest v* tag from the BC repo, then resolve to its
-          # commit SHA so actions/checkout can use a stable ref. Tag
-          # annotation objects (e.g. v1-alpha.3^{}) are not valid checkout
-          # refs.
-          TAG=$(git ls-remote --tags --sort='-version:refname' \
-            https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
-            'refs/tags/v*' 2>/dev/null | head -1 | sed 's|.*refs/tags/||')
-          if [ -z "$TAG" ]; then
-            echo "warn: no v* tag in the source repo, falling back to main" >&2
-            SHA="main"
-          else
-            # Peel annotation if present (e.g. v1-alpha.3^{} -> commit SHA)
-            SHA=$(git ls-remote https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
-              "refs/tags/${TAG}^{}" 2>/dev/null | awk '{print $1}')
-            if [ -z "$SHA" ]; then
-              # Lightweight tag: use the tag object itself
-              SHA=$(git ls-remote https://github.com/technehub-labs/dea-catalog-business-capabilities.git \
-                "refs/tags/${TAG}" 2>/dev/null | awk '{print $1}')
-            fi
-          fi
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "version=$SHA" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout dea-catalog-business-capabilities source
-        uses: actions/checkout@v4
-        with:
-          repository: technehub-labs/dea-catalog-business-capabilities
-          ref: ${{ steps.latest.outputs.version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: bc-source
-
-      - name: Determine sync targets
-        id: targets
-        run: |
-          # Build the list of out/<target>/ directories to copy into the site.
-          set -euo pipefail
-          cd bc-source
-          TARGETS=""
-          if [ -d out/latest ]; then TARGETS="$TARGETS latest"; fi
-          for d in out/v*/; do
-            [ -d "$d" ] || continue
-            label="${d%/}"
-            label="${label#out/}"
-            # Skip the v1-alpha.0 'first release' tag if you want; mirror
-            # everything by default.
-            TARGETS="$TARGETS $label"
-          done
-          # Deduplicate.
-          TARGETS=$(echo $TARGETS | tr ' ' '\n' | sort -u | tr '\n' ' ')
-          echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
-
-      - name: Sync catalog artifacts into site
+      - name: Download release artifacts and unpack
+        if: steps.targets.outputs.targets != ''
         run: |
           set -euo pipefail
           mkdir -p capabilities portal/data
 
           for label in ${{ steps.targets.outputs.targets }}; do
-            [ -d "bc-source/out/$label" ] || { echo "skip: out/$label not present"; continue; }
+            # Skip if already synced at this exact content.
+            if [ -d "capabilities/$label" ] && [ -s "capabilities/$label/catalog.json" ]; then
+              echo "skip: capabilities/$label already present"
+              continue
+            fi
+
+            # Fetch the release zip for this tag.
+            ASSET_URL="https://github.com/technehub-labs/dea-catalog-business-capabilities/releases/download/$label/$label.zip"
+            TMPDIR=$(mktemp -d)
+            trap "rm -rf $TMPDIR" EXIT
+
+            if ! curl -fsSL "$ASSET_URL" -o "$TMPDIR/artifacts.zip"; then
+              echo "warn: release asset $label.zip not found at $ASSET_URL" >&2
+              continue
+            fi
+
             mkdir -p "capabilities/$label"
-            # Copy all published artifacts (SVG, PNG, JSON, CSV, YAML, MANIFEST.md).
-            cp -r "bc-source/out/$label/." "capabilities/$label/"
-            echo "synced: out/$label -> capabilities/$label ($(ls capabilities/$label | wc -l) files)"
+            unzip -q -o "$TMPDIR/artifacts.zip" -d "capabilities/$label/"
+            echo "synced: $label -> capabilities/$label ($(ls capabilities/$label | wc -l) files)"
+            rm -rf "$TMPDIR"
+            trap - EXIT
           done
 
-          # Convenience: latest/catalog.json -> portal/data/capabilities.json
-          # (same-origin consumption by the in-portal Explorer; mirrors the
-          # ECF matrix-data.json pattern in sync-metaframework.yml).
-          if [ -d capabilities/latest ]; then
-            cp capabilities/latest/catalog.json portal/data/capabilities.json
-            echo "synced: capabilities/latest/catalog.json -> portal/data/capabilities.json"
+          # Mirror latest/ to the newest tag's content (for in-portal
+          # consumption via portal/data/capabilities.json).
+          LATEST_LABEL="${{ steps.targets.outputs.latest_label }}"
+          if [ -n "$LATEST_LABEL" ] && [ -d "capabilities/$LATEST_LABEL" ]; then
+            # Only re-copy if not already a symlink-equivalent mirror
+            if ! cmp -s "capabilities/$LATEST_LABEL/catalog.json" "capabilities/latest/catalog.json" 2>/dev/null; then
+              rm -rf capabilities/latest
+              mkdir -p capabilities/latest
+              cp -r "capabilities/$LATEST_LABEL/." capabilities/latest/
+              cp capabilities/latest/catalog.json portal/data/capabilities.json
+              echo "synced: capabilities/$LATEST_LABEL -> capabilities/latest + portal/data/capabilities.json"
+            else
+              echo "skip: capabilities/latest already matches $LATEST_LABEL"
+            fi
           fi
 
-          # Sanity assertions: every synced label must have at least poster.svg
-          # and catalog.json. Empty labels are tolerated (skipped above).
-          # Skip non-directory entries (e.g. capabilities/README.md).
+      - name: Validate synced artifacts
+        if: steps.targets.outputs.targets != ''
+        run: |
+          set -euo pipefail
+          # Sanity assertions: every synced label must have at least
+          # poster.svg and catalog.json. Skip non-directory entries
+          # (e.g. capabilities/README.md).
           for label in $(ls capabilities/); do
             [ -d "capabilities/$label" ] || continue
             test -s "capabilities/$label/poster.svg" || \
@@ -188,6 +178,7 @@ jobs:
           PY
 
       - name: Commit if changed
+        if: steps.targets.outputs.targets != ''
         run: |
           git config user.name "capabilities-sync-bot"
           git config user.email "sync@dea-catalog-business-capabilities.local"
@@ -197,9 +188,9 @@ jobs:
             echo "Diff summary:"
             git diff --stat capabilities/ portal/data/ | tail -20
             git add capabilities/ portal/data/
-            COMMIT_MSG="chore: sync from dea-catalog-business-capabilities"
+            COMMIT_MSG="chore: sync capabilities from dea-catalog-business-capabilities"
             if [ -n "${{ github.event.client_payload.commit }}" ]; then
-              COMMIT_MSG="chore: sync from dea-catalog-business-capabilities @ ${{ github.event.client_payload.commit }}"
+              COMMIT_MSG="chore: sync capabilities from dea-catalog-business-capabilities @ ${{ github.event.client_payload.commit }}"
             fi
             git commit -m "$COMMIT_MSG"
             git push origin main
