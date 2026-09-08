@@ -191,12 +191,16 @@ jobs:
         run: |
           git config user.name "capabilities-sync-bot"
           git config user.email "sync@dea-catalog-business-capabilities.local"
-          if git diff --quiet capabilities/ portal/data/; then
+
+          # `git diff --quiet` only compares tracked files against HEAD; it
+          # ignores untracked files (which the artifacts are on first sync).
+          # Use `git status --porcelain` so we catch new files too.
+          if [ -z "$(git status --porcelain capabilities/ portal/data/)" ]; then
             echo "In sync - no changes."
           else
             echo "Diff summary:"
-            git diff --stat capabilities/ portal/data/ | tail -20
             git add capabilities/ portal/data/
+            git status --porcelain | head -20
             COMMIT_MSG="chore: sync capabilities from dea-catalog-business-capabilities"
             if [ -n "${{ github.event.client_payload.commit }}" ]; then
               COMMIT_MSG="chore: sync capabilities from dea-catalog-business-capabilities @ ${{ github.event.client_payload.commit }}"
