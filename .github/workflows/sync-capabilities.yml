@@ -169,14 +169,21 @@ jobs:
           for p in paths:
               with open(p) as h:
                   d = json.load(h)
-              # Minimal invariants — mirrors check_versions.py on the source side.
-              if 'version' not in d:
-                  raise SystemExit(f'FAIL: {p}: no version field')
-              if 'entries' not in d:
-                  raise SystemExit(f'FAIL: {p}: no entries field')
-              if not isinstance(d['entries'], list):
-                  raise SystemExit(f'FAIL: {p}: entries is not a list')
-              print(f"OK: {p} - version={d['version']} entries={len(d['entries'])}")
+              # catalog.json is a dict keyed by capability id (the output of
+              # publish.js's loadEntities). Invariants: non-empty dict of
+              # entry records, each with a name and a version.
+              if not isinstance(d, dict):
+                  raise SystemExit(f'FAIL: {p}: catalog.json is not a dict')
+              if len(d) == 0:
+                  raise SystemExit(f'FAIL: {p}: empty catalog.json')
+              for key, entry in list(d.items())[:5]:
+                  if not isinstance(entry, dict):
+                      raise SystemExit(f'FAIL: {p}: entry {key} is not a dict')
+                  if 'name' not in entry:
+                      raise SystemExit(f'FAIL: {p}: entry {key} missing name field')
+                  if 'version' not in entry:
+                      raise SystemExit(f'FAIL: {p}: entry {key} missing version field')
+              print(f"OK: {p} - {len(d)} entries")
           PY
 
       - name: Commit if changed
