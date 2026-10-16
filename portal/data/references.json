@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "title": "OpenDEA Reference Registry",
+  "subtitle": "IANA media types (RFC 6838), IANA URI schemes (RFC 3986 / RFC 7595), and the ECF 7x7 coordinate enumeration",
+  "url": "https://lists.technehub.com/",
+  "source_repo": "https://github.com/technehub-labs/dea-catalog-references",
+  "hosting": "GitHub Pages + custom domain CNAME (lists.technehub.com)",
+  "snapshot_date": "2026-10-16",
+  "tile_class": "card-reference",
+  "tile_priority": 1,
+  "tile_position": "knowledge-universe",
+  "content": {
+    "type": "registry-mirror",
+    "summary": "OpenDEA reference registry. Mirrors of authoritative external registries (IANA media types, IANA URI schemes) plus the Enterprise Concept Framework 7x7 matrix. Served at lists.technehub.com.",
+    "counts": {
+      "iana_media_types": 2305,
+      "iana_uri_schemes": 451,
+      "ecf_cells": 49
+    },
+    "endpoints": {
+      "landing": "https://lists.technehub.com/",
+      "healthcheck": "https://lists.technehub.com/healthz",
+      "media_types_index": "https://lists.technehub.com/media-types/",
+      "uri_schemes_index": "https://lists.technehub.com/uri-schemes/",
+      "ecf_index": "https://lists.technehub.com/ecf/",
+      "media_types_json": "https://lists.technehub.com/data/media-types/iana-media-types.json",
+      "uri_schemes_json": "https://lists.technehub.com/data/uri-schemes/iana-uri-schemes.json",
+      "ecf_coordinates_json": "https://lists.technehub.com/data/ecf-coordinates/coordinates.json",
+      "sha256sums": "https://lists.technehub.com/data/SHA256SUMS"
+    }
+  },
+  "card_render_hint": {
+    "icon": "registry",
+    "color_hint": "l0",
+    "shape": "hex",
+    "label": "Reference Registry"
+  }
+}
