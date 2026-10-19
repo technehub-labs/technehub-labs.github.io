@@ -13,7 +13,7 @@
     "type": "registry-mirror",
     "summary": "OpenDEA reference registry. Mirrors of authoritative external registries (IANA media types, IANA URI schemes) plus the Enterprise Concept Framework 7x7 matrix. Served at lists.technehub.com.",
     "counts": {
-      "iana_media_types": 2305,
+      "iana_media_types": 2366,
       "iana_uri_schemes": 451,
       "ecf_cells": 49
     },
@@ -26,7 +26,10 @@
       "media_types_json": "https://lists.technehub.com/data/media-types/iana-media-types.json",
       "uri_schemes_json": "https://lists.technehub.com/data/uri-schemes/iana-uri-schemes.json",
       "ecf_coordinates_json": "https://lists.technehub.com/data/ecf-coordinates/coordinates.json",
-      "sha256sums": "https://lists.technehub.com/data/SHA256SUMS"
+      "sha256sums": "https://lists.technehub.com/data/SHA256SUMS",
+      "media_types_per_record": "https://lists.technehub.com/media-types/{type}/{subtype}",
+      "media_types_by_type": "https://lists.technehub.com/media-types/by-type/{type}",
+      "uri_schemes_per_record": "https://lists.technehub.com/uri-schemes/{scheme}"
     }
   },
   "card_render_hint": {
