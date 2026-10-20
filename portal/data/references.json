@@ -11,7 +11,7 @@
   "tile_position": "knowledge-universe",
   "content": {
     "type": "registry-mirror",
-    "summary": "OpenDEA reference registry. Mirrors of authoritative external registries (IANA media types, IANA URI schemes) plus the Enterprise Concept Framework 7x7 matrix. Served at lists.technehub.com.",
+    "summary": "OpenDEA reference registry. Mirrors of authoritative external registries (IANA media types, IANA URI schemes) plus the Enterprise Concept Framework 7x7 matrix. Served at lists.technehub.com. Per-record datasets carry a CC0 1.0 grant (IANA + IETF Joint Statement, 2021-11-10); registrant contacts are redacted to opaque tokens under a documented Legitimate-Interest Assessment.",
     "counts": {
       "iana_media_types": 2305,
       "iana_uri_schemes": 451,
@@ -26,7 +26,9 @@
       "media_types_json": "https://lists.technehub.com/data/media-types/iana-media-types.json",
       "uri_schemes_json": "https://lists.technehub.com/data/uri-schemes/iana-uri-schemes.json",
       "ecf_coordinates_json": "https://lists.technehub.com/data/ecf-coordinates/coordinates.json",
-      "sha256sums": "https://lists.technehub.com/data/SHA256SUMS"
+      "sha256sums": "https://lists.technehub.com/data/SHA256SUMS",
+      "licensing_page": "https://lists.technehub.com/licensing.html",
+      "lia_doc": "https://lists.technehub.com/docs/LICENSING-AND-LIA.md"
     }
   },
   "card_render_hint": {
