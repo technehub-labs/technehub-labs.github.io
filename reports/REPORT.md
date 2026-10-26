@@ -700,11 +700,11 @@ ECF says *what any enterprise is* — 7 domains × 7 stages, derived from a sing
 |------------|-------------|---------------|
 | Governance & Existence | `dea-catalog-principles`, `dea-catalog-standards` | Architecture principles (API-first, Zero Trust) and technical standards (REST, OAuth2) — the guardrails. |
 | Supply & Resources | `dea-catalog-reference-models`, `dea-catalog-solution-hub` | Platform systems, IaC accelerators (CDP, API Gateway, Event Streaming, Identity). |
-| People & Organization | `dea-catalog-digital-business-service-factory` | HR business service — workforce capability maps and SLA governance. |
-| Customer & Demand | `dea-catalog-digital-business-service-factory` | Customer business service — acquisition, onboarding, care, retention. |
-| Product & Offering | `dea-catalog-digital-business-service-factory`, `dea-catalog-solution-hub` | Product business service + solution archetypes and delivery templates. |
+| People & Organization | `dea-catalog-business-services` | HR business service — workforce capability maps and SLA governance. |
+| Customer & Demand | `dea-catalog-business-services` | Customer business service — acquisition, onboarding, care, retention. |
+| Product & Offering | `dea-catalog-business-services`, `dea-catalog-solution-hub` | Product business service + solution archetypes and delivery templates. |
 | Operations & Delivery | `dea-catalog-patterns`, `dea-catalog-solution-hub` | Architecture patterns (CQRS, Saga, Strangler Fig) + workflow accelerators. |
-| Finance & Value | `dea-catalog-digital-business-service-factory`, `dea-catalog-metrics` | Finance business service + KPIs and measurement frameworks. |
+| Finance & Value | `dea-catalog-business-services`, `dea-catalog-metrics` | Finance business service + KPIs and measurement frameworks. |
 
 ### 20.4 Stage → DERA Phase Mapping
 
@@ -733,7 +733,7 @@ ECF's finer granularity (7 vs 4) is the deeper lens; DERA is the coarser deliver
 
 ECF belongs as the conceptual foundation of `dea-catalog-taxonomy`. The 7 domains and 7 stages are the top-level classification hierarchy that every other catalog hangs from. Today the taxonomy repo is empty — ECF would seed it.
 
-ECF's derived artifacts (entity catalog, capability map, traceability matrix) are exactly what `dea-catalog-digital-business-service-factory` and `dea-catalog-reference-architecture` produce. ECF provides the conceptual schema; those repos provide the populated instances.
+ECF's derived artifacts (entity catalog, capability map, traceability matrix) are exactly what `dea-catalog-business-services` and `dea-catalog-reference-architecture` produce. ECF provides the conceptual schema; those repos provide the populated instances.
 
 ### 20.7 Gaps ECF Reveals in the DEA Ecosystem
 
