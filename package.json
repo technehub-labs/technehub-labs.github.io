@@ -1,12 +1,16 @@
 {
-  "name": "project",
+  "name": "technehub-labs-github-io",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "TechNeHub Labs org site: the Enterprise Knowledge Universe portal, classic metamodel navigator, ECF viewer, and CI-synced catalog artifacts. Static — no build step.",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "python3 -m http.server 8000"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/technehub-labs/technehub-labs.github.io.git"
+  },
+  "author": "Emmanuel A. Otchere",
+  "license": "Apache-2.0"
 }

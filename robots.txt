@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://technehub-labs.github.io/sitemap.xml
