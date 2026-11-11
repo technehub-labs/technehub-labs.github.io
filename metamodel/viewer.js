@@ -73,6 +73,23 @@
         LAYER_COLORS[l.id] = l.color;
       });
     }
+
+    // Live badges: the hard-coded header/diagram counts drifted on every
+    // sync — write them from the graph actually loaded.
+    const entityCount = Array.isArray(graph.entities) ? graph.entities.length : 0;
+    const relCount = Array.isArray(graph.relationships) ? graph.relationships.length : 0;
+    const layerCount = Array.isArray(graph.layers) ? graph.layers.length : 0;
+    document.querySelectorAll('.badge').forEach(b => {
+      if (/entities$/.test(b.textContent)) b.textContent = `${entityCount} entities`;
+      else if (/relationships$/.test(b.textContent)) b.textContent = `${relCount} relationships`;
+      else if (/OpenDEAM v/.test(b.textContent)) b.textContent = `OpenDEAM v${graph.metamodel_version || 'unknown'}`;
+      else if (/layers \+ measurement dimension$/.test(b.textContent)) b.textContent = `${layerCount} layers + measurement dimension`;
+    });
+    const diagramMeta = document.querySelector('.diagram-meta');
+    if (diagramMeta && /entities ·/.test(diagramMeta.textContent)) {
+      diagramMeta.textContent =
+        `${entityCount} entities · ${relCount} relationships · ${layerCount} layers · click any class to inspect`;
+    }
   } catch (err) {
     grid.innerHTML = `<p style="color:#ef4444;padding:24px;font-family:monospace;font-size:0.8rem;line-height:1.6">
       <strong>Failed to load entity graph.</strong><br><br>

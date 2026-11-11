@@ -12,6 +12,7 @@ import { LayerArchitecture } from './layer-architecture.js';
 import { AssessmentMaturity } from './assessment-maturity.js';
 import { RepositoriesCatalog } from './repositories-catalog.js';
 import { PORTAL_CARDS, fetchRepos, githubFetchState } from './portal-data.js';
+import { loadSiteFacts } from './site-facts.js';
 
 const ICONS = {
   grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
@@ -216,6 +217,37 @@ class App {
     });
 
     this._loadRepos();
+    this._applySiteFacts();
+  }
+
+  /**
+   * Replace every hard-coded metamodel/repo count with values computed
+   * from the synced graph and the live GitHub fetch. Non-blocking: the
+   * page boots with current strings and corrects itself once facts land.
+   */
+  async _applySiteFacts() {
+    const facts = await loadSiteFacts();
+    if (facts) {
+      const mmTooltip = CARD_TOOLTIP_DATA.metamodel;
+      mmTooltip.summary =
+        `${facts.entities} entity types connected via ${facts.relationships} explicit ` +
+        `directional relationships across ${facts.layers} architectural layers.`;
+      const graphSize = mmTooltip.specs.find((s) => s.label === 'Graph Size');
+      if (graphSize) graphSize.val = `${facts.entities} Entities • ${facts.relationships} Edges`;
+
+      FOOTER_HINTS.metamodel =
+        `${facts.layers} layers · ${facts.entities} entities · ${facts.relationships} relationships (OpenDEAM v${facts.version})`;
+
+      const card = this.cards.find((c) => c.id === 'metamodel');
+      if (card) {
+        card.blurb =
+          `${facts.entities}-entity relationship model across ${facts.layers} architectural layers — the semantic relationship graph.`;
+        const blurbEl = document.querySelector('.portal-card--metamodel .portal-card-blurb');
+        if (blurbEl) blurbEl.textContent = card.blurb;
+        document.querySelector('.portal-card--metamodel')
+          ?.setAttribute('aria-label', `${card.label}: ${card.blurb}`);
+      }
+    }
   }
 
   _buildCards() {
@@ -569,6 +601,11 @@ class App {
     // Fallback data still fills the catalog, but the HUD must not claim
     // "online" when the live API was unreachable.
     this.hud.setGithubStatus(!githubFetchState.failed && this.repos.length > 0 ? 'online' : 'offline');
+    // Repositories tooltip: real org repo count replaces "14 Active".
+    const reposSpec = CARD_TOOLTIP_DATA.repositories.specs.find((s) => s.label === 'Repos');
+    if (reposSpec && this.repos.length > 0) {
+      reposSpec.val = `${this.repos.length} Active Ecosystem Repos`;
+    }
     // add repos to search index
     this.searchIndex = [
       ...this.cards.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, kind: 'portal', icon: 'grid' })),
