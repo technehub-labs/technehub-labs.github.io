@@ -19,7 +19,7 @@
 //   }
 // ═══════════════════════════════════════════════════════════════
 
-const MATRIX_DATA_URL = '../data/ecf-matrix.json';
+const MATRIX_DATA_URL = 'data/ecf-matrix.json';
 
 // Axes-only fallback (no cell content). Matches the canonical v2.3.0+
 // domain set. Used when the JSON cannot be fetched.

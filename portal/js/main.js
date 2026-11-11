@@ -11,7 +11,9 @@ import { MetaFrameworkExplorer } from './metaframework-explorer.js';
 import { LayerArchitecture } from './layer-architecture.js';
 import { AssessmentMaturity } from './assessment-maturity.js';
 import { RepositoriesCatalog } from './repositories-catalog.js';
-import { PORTAL_CARDS, fetchRepos, githubFetchState } from './portal-data.js';
+import { CapabilitiesExplorer } from './capabilities-explorer.js';
+import { ReferencesExplorer } from './references-explorer.js';
+import { PORTAL_CARDS, fetchRepos, fetchCapabilities, fetchReferences, githubFetchState } from './portal-data.js';
 import { loadSiteFacts } from './site-facts.js';
 
 const ICONS = {
@@ -20,6 +22,8 @@ const ICONS = {
   layers: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
   shield: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   archive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4"/></svg>',
+  cube: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+  globe: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
 };
 
 const PILL_LABELS = {
@@ -28,6 +32,8 @@ const PILL_LABELS = {
   'layer-architecture': 'Architecture',
   'assessment-maturity': 'Assessment',
   repositories: 'Catalogs',
+  capabilities: 'Capabilities',
+  references: 'Registry',
 };
 
 const FOOTER_HINTS = {
@@ -36,6 +42,8 @@ const FOOTER_HINTS = {
   'layer-architecture': 'Expand each layer to browse its entities and canonical repos',
   'assessment-maturity': 'Assessment instruments and five-level maturity progression',
   repositories: 'Live data from GitHub — searchable and filterable by language',
+  capabilities: 'Governed capability definitions with ECF coordinates, outcomes, and boundaries',
+  references: 'Authoritative external registries mirrored at lists.technehub.com',
 };
 
 const MILESTONE_GOALS = {
@@ -173,6 +181,30 @@ const CARD_TOOLTIP_DATA = {
       { label: 'Sync Status', val: 'Live GitHub Telemetry' },
       { label: 'Primary Org', val: 'technehub-labs' }
     ]
+  },
+  capabilities: {
+    repo: 'dea-catalog-business-capabilities',
+    category: 'CAPABILITY CATALOG',
+    title: 'Governed Capability Definitions',
+    summary: 'Business capability records with outcomes, ECF coordinates, boundaries, and provenance — synced from the capabilities catalog.',
+    specs: [
+      { label: 'Content', val: 'Definitions • ECF • Boundaries' },
+      { label: 'Coordinates', val: 'ECF Domain × Stage' },
+      { label: 'Sync Status', val: 'Release-asset Mirroring' },
+      { label: 'Primary Repo', val: 'dea-catalog-business-capabilities' }
+    ]
+  },
+  references: {
+    repo: 'dea-catalog-references',
+    category: 'REGISTRY MIRROR',
+    title: 'OpenDEA Reference Registry',
+    summary: 'Mirrors of authoritative external registries — IANA media types, IANA URI schemes, and the ECF coordinate enumeration.',
+    specs: [
+      { label: 'Media Types', val: 'IANA (RFC 6838)' },
+      { label: 'URI Schemes', val: 'IANA (RFC 3986/7595)' },
+      { label: 'Hosting', val: 'lists.technehub.com' },
+      { label: 'License', val: 'CC0 1.0 (per-record)' }
+    ]
   }
 };
 
@@ -185,8 +217,7 @@ class App {
 
   async init() {
     this._updateCopyrightYear();
-    this._buildCards();
-    this._wireCards();
+    this._buildCards();       // builds AND wires the static cards
     this._initMarathonTimeline();
 
     this.hud = new HUD(document.getElementById('hud'), {
@@ -218,6 +249,48 @@ class App {
 
     this._loadRepos();
     this._applySiteFacts();
+    this._loadDynamicCards();
+  }
+
+  /**
+   * Cards backed by synced datasets (portal/data/) appear at runtime —
+   * the References tile renders from its card_render_hint contract and
+   * the Capabilities tile from the synced catalog. A failed fetch just
+   * means the card doesn't appear; nothing else is affected.
+   */
+  async _loadDynamicCards() {
+    const [caps, refs] = await Promise.all([fetchCapabilities(), fetchReferences()]);
+
+    if (caps) {
+      this._appendCard({
+        id: 'capabilities',
+        label: 'Capabilities',
+        icon: 'cube',
+        blurb: `${caps.count} governed capability definitions — ECF coordinates, outcomes, boundaries, and provenance.`,
+        module: 'capabilities',
+        position: 'bottom',
+      });
+      this.capabilityData = caps;
+    }
+    if (refs) {
+      const hint = refs.card_render_hint;
+      const counts = refs.content.counts || {};
+      const countBits = [
+        counts.iana_media_types != null ? `${counts.iana_media_types.toLocaleString()} media types` : null,
+        counts.iana_uri_schemes != null ? `${counts.iana_uri_schemes} URI schemes` : null,
+        counts.ecf_cells != null ? `${counts.ecf_cells} ECF cells` : null,
+      ].filter(Boolean).join(' · ');
+      this._appendCard({
+        id: 'references',
+        label: hint.label || 'Reference Registry',
+        icon: ICONS[hint.icon] ? hint.icon : 'globe',
+        blurb: countBits ? `Authoritative registry mirrors — ${countBits}.` : (refs.content.summary || '').slice(0, 120),
+        module: 'references',
+        position: 'bottom',
+      });
+      this.referencesData = refs;
+    }
+    if (caps || refs) this._rebuildSearchIndex();
   }
 
   /**
@@ -252,25 +325,43 @@ class App {
 
   _buildCards() {
     const cluster = document.getElementById('cards-cluster') || document.getElementById('cards-layer');
+    this.cards.forEach((card) => cluster.appendChild(this._buildCardEl(card)));
+    this._wireCards();
+  }
 
-    this.cards.forEach((card) => {
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.className = `portal-card portal-card--${card.id}`;
-      el.setAttribute('aria-label', `${card.label}: ${card.blurb}`);
-      el.dataset.cardId = card.id;
-      el.innerHTML = `
-        <div class="portal-card-card-glow"></div>
-        <div class="portal-card-inner">
-          <div class="portal-card-icon" tabindex="0" role="button" aria-label="${card.label} technical summary" data-card-id="${card.id}">
-            ${ICONS[card.icon] || ICONS.grid}
-          </div>
-          <div class="portal-card-label">${card.label}</div>
-          <div class="portal-card-blurb">${card.blurb}</div>
+  _buildCardEl(card) {
+    const el = document.createElement('button');
+    el.type = 'button';
+    el.className = `portal-card portal-card--${card.id}`;
+    el.setAttribute('aria-label', `${card.label}: ${card.blurb}`);
+    el.dataset.cardId = card.id;
+    el.innerHTML = `
+      <div class="portal-card-card-glow"></div>
+      <div class="portal-card-inner">
+        <div class="portal-card-icon" tabindex="0" role="button" aria-label="${card.label} technical summary" data-card-id="${card.id}">
+          ${ICONS[card.icon] || ICONS.grid}
         </div>
-      `;
-      cluster.appendChild(el);
+        <div class="portal-card-label">${card.label}</div>
+        <div class="portal-card-blurb">${card.blurb}</div>
+      </div>
+    `;
+    return el;
+  }
+
+  /**
+   * Append a runtime-discovered card (synced dataset) to the cluster and
+   * wire it exactly like the static cards.
+   */
+  _appendCard(card) {
+    this.cards.push(card);
+    const cluster = document.getElementById('cards-cluster') || document.getElementById('cards-layer');
+    const el = this._buildCardEl(card);
+    cluster.appendChild(el);
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.portal-card-icon')) return;
+      this._openCardById(el.dataset.cardId);
     });
+    this._wireCardIconTooltips(el.querySelector('.portal-card-icon'));
   }
 
   _initMarathonTimeline() {
@@ -398,7 +489,7 @@ class App {
     this._wireCardIconTooltips();
   }
 
-  _wireCardIconTooltips() {
+  _wireCardIconTooltips(scopeIcon) {
     let tooltip = document.getElementById('card-icon-tooltip');
     if (!tooltip) {
       tooltip = document.createElement('div');
@@ -458,7 +549,10 @@ class App {
       tooltip.classList.remove('visible');
     };
 
-    document.querySelectorAll('.portal-card-icon').forEach((iconEl) => {
+    // Bind either the one appended icon (dynamic cards) or all of them
+    // (initial build). The per-icon listeners are attached exactly once.
+    const icons = scopeIcon ? [scopeIcon] : [...document.querySelectorAll('.portal-card-icon')];
+    icons.forEach((iconEl) => {
       const cardId = iconEl.dataset.cardId;
 
       iconEl.addEventListener('mouseenter', () => showTooltip(iconEl, cardId));
@@ -574,15 +668,34 @@ class App {
         // render immediately with no badge, then re-render once releases land.
         reposCatalog.loadReleases().catch((e) => console.warn('loadReleases failed', e));
         return reposCatalog;
+      case 'capabilities':
+        if (!this.capabilityData) return this._moduleUnavailable(body, 'Capabilities dataset');
+        return new CapabilitiesExplorer(body, this.capabilityData);
+      case 'references':
+        if (!this.referencesData) return this._moduleUnavailable(body, 'Reference registry data');
+        return new ReferencesExplorer(body, this.referencesData);
       default:
         return { render: () => { body.innerHTML = '<div style="padding:var(--sp-5);color:var(--text-3);">Unknown module.</div>'; } };
     }
   }
 
+  _moduleUnavailable(body, what) {
+    return { render: () => { body.innerHTML = `<div style="padding:var(--sp-5);color:var(--text-3);">${what} did not load — the card should not have been reachable.</div>`; } };
+  }
+
   _buildSearchIndex() {
-    this.searchIndex = this.cards.map((c) => ({
-      id: c.id, label: c.label, blurb: c.blurb, kind: 'portal', icon: 'grid',
-    }));
+    this._rebuildSearchIndex();
+  }
+
+  _rebuildSearchIndex() {
+    this.searchIndex = [
+      ...this.cards.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, kind: 'portal', icon: c.icon || 'grid' })),
+      ...this.repos.map((r) => ({
+        id: 'repo-' + r.name, label: r.name, blurb: r.description,
+        kind: 'repo', icon: 'archive', href: r.html_url, name: r.name, topics: r.topics,
+      })),
+    ];
+    this.cmdk?.updateAssets(this.searchIndex);
   }
 
   _wireKeyboard() {
@@ -606,15 +719,7 @@ class App {
     if (reposSpec && this.repos.length > 0) {
       reposSpec.val = `${this.repos.length} Active Ecosystem Repos`;
     }
-    // add repos to search index
-    this.searchIndex = [
-      ...this.cards.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, kind: 'portal', icon: 'grid' })),
-      ...this.repos.map((r) => ({
-        id: 'repo-' + r.name, label: r.name, blurb: r.description,
-        kind: 'repo', icon: 'archive', href: r.html_url, name: r.name, topics: r.topics,
-      })),
-    ];
-    this.cmdk.updateAssets(this.searchIndex);
+    this._rebuildSearchIndex();
   }
 
   _updateCopyrightYear() {

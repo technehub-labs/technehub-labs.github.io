@@ -156,3 +156,38 @@ export async function fetchRepos() {
     return FALLBACK_REPOS;
   }
 }
+
+/**
+ * Synced portal datasets (portal/data/) — both delivered by CI workflows
+ * from their source repos. The card tiles for these are appended at
+ * runtime; if a fetch fails the card simply never appears (the rest of
+ * the portal is unaffected).
+ */
+
+export async function fetchCapabilities() {
+  try {
+    const resp = await fetch('data/capabilities.json', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error(`capabilities.json HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data || typeof data !== 'object') throw new Error('unexpected shape');
+    const entries = Object.values(data).filter((v) => v && v.id && v.name);
+    if (entries.length === 0) throw new Error('no capability entries');
+    return { count: entries.length, entries };
+  } catch (e) {
+    console.warn('capabilities dataset unavailable — card not shown', e);
+    return null;
+  }
+}
+
+export async function fetchReferences() {
+  try {
+    const resp = await fetch('data/references.json', { cache: 'no-cache' });
+    if (!resp.ok) throw new Error(`references.json HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data?.content || !data?.card_render_hint) throw new Error('unexpected shape');
+    return data;
+  } catch (e) {
+    console.warn('references dataset unavailable — card not shown', e);
+    return null;
+  }
+}
