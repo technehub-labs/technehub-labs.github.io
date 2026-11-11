@@ -126,12 +126,20 @@ export const FALLBACK_REPOS = [
   { name: 'dea-scripts', description: 'Python automation: CSV ↔ SQLite ↔ YAML conversion, RDFLib validation, viewpoint generation.', language: 'Python', updated_at: '2026-07-11T10:00:00Z', topics: ['python','automation'], html_url: 'https://github.com/technehub-labs/dea-scripts', stars: 0, forks: 0 },
 ];
 
+/**
+ * Set when the last `fetchRepos()` call failed and returned the
+ * hard-coded FALLBACK_REPOS. Consumers (HUD) use this to show an
+ * honest "offline (cached)" status instead of a false "online".
+ */
+export const githubFetchState = { failed: false };
+
 export async function fetchRepos() {
   try {
     const resp = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos?per_page=100&sort=updated`);
     if (!resp.ok) throw new Error('GitHub API error');
     const repos = await resp.json();
     if (!Array.isArray(repos) || repos.length === 0) throw new Error('No repos');
+    githubFetchState.failed = false;
     return repos.map((r) => ({
       name: r.name,
       description: r.description || '',
@@ -144,6 +152,7 @@ export async function fetchRepos() {
     }));
   } catch (e) {
     console.warn('GitHub API unavailable, using fallback repos', e);
+    githubFetchState.failed = true;
     return FALLBACK_REPOS;
   }
 }

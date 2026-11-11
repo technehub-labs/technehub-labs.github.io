@@ -11,7 +11,7 @@ import { MetaFrameworkExplorer } from './metaframework-explorer.js';
 import { LayerArchitecture } from './layer-architecture.js';
 import { AssessmentMaturity } from './assessment-maturity.js';
 import { RepositoriesCatalog } from './repositories-catalog.js';
-import { PORTAL_CARDS, fetchRepos } from './portal-data.js';
+import { PORTAL_CARDS, fetchRepos, githubFetchState } from './portal-data.js';
 
 const ICONS = {
   grid: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>',
@@ -195,7 +195,15 @@ class App {
 
     this._buildSearchIndex();
     this.cmdk = new CommandPalette(document.getElementById('cmdk'), this.searchIndex, {
-      onSelect: (item) => this._openCardById(item.id),
+      onSelect: (item) => {
+        // Repo results carry their GitHub URL — open it in a new tab.
+        // Portal cards open their pop-up as before.
+        if (item.kind === 'repo' && item.href) {
+          window.open(item.href, '_blank', 'noopener');
+          return;
+        }
+        this._openCardById(item.id);
+      },
     });
 
     this._wireKeyboard();
@@ -269,6 +277,12 @@ class App {
       } else {
         rocketMarker.classList.remove('is-current-year');
       }
+    }
+
+    // Live progress badge — replaces the hard-coded markup so the
+    // percentage can never drift from the computed progress again.
+    if (badge) {
+      badge.textContent = `${currentYear} • ${percentage}% COMPLETE`;
     }
 
     this._wireMilestonePopups();
@@ -552,7 +566,9 @@ class App {
     this.hud.setGithubStatus('connecting');
     this.repos = await fetchRepos();
     this.hud.setRepoCount(this.repos.length);
-    this.hud.setGithubStatus(this.repos.length > 0 ? 'online' : 'offline');
+    // Fallback data still fills the catalog, but the HUD must not claim
+    // "online" when the live API was unreachable.
+    this.hud.setGithubStatus(!githubFetchState.failed && this.repos.length > 0 ? 'online' : 'offline');
     // add repos to search index
     this.searchIndex = [
       ...this.cards.map((c) => ({ id: c.id, label: c.label, blurb: c.blurb, kind: 'portal', icon: 'grid' })),

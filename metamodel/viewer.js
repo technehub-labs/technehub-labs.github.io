@@ -307,7 +307,15 @@
       repoLink.classList.add('disabled');
     }
     const viewerLink = document.getElementById('detailViewerLink');
-    viewerLink.href = entity.viewer_url;
+    // viewer_url is null in graphs that don't publish per-entity viewer
+    // pages — disable the link instead of emitting an /undefined href.
+    if (entity.viewer_url) {
+      viewerLink.href = entity.viewer_url;
+      viewerLink.classList.remove('disabled');
+    } else {
+      viewerLink.removeAttribute('href');
+      viewerLink.classList.add('disabled');
+    }
 
     // Relationships for this entity
     const relDiv = document.getElementById('detailRelationships');

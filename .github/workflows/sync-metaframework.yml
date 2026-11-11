@@ -143,12 +143,16 @@ jobs:
         run: |
           git config user.name "metaframework-sync-bot"
           git config user.email "sync@dea-metaframework.local"
-          if git diff --quiet dea-metaframework/ portal/data/; then
+          # Stage first so NEW (untracked) artefacts are detected —
+          # plain `git diff --quiet` ignores untracked files and would
+          # silently skip a first-time artefact. Same fix as
+          # sync-metamodel.yml (commit 8307444).
+          git add dea-metaframework/ portal/data/
+          if git diff --cached --quiet; then
             echo "In sync — no changes."
           else
             echo "Diff summary:"
-            git diff --stat dea-metaframework/ portal/data/ | tail -15
-            git add dea-metaframework/ portal/data/
+            git diff --cached --stat | tail -15
             COMMIT_MSG="chore: sync from dea-metaframework @ ${{ github.event.client_payload.commit }}"
             if [ -z "$COMMIT_MSG" ]; then COMMIT_MSG="chore: sync from dea-metaframework"; fi
             git commit -m "$COMMIT_MSG"

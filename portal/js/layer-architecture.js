@@ -14,14 +14,16 @@ export class LayerArchitecture {
     await this._loadData();
     const layers = this.entityMap?.layers || [];
     const entities = this.entityMap?.entities || [];
-    const stats = this.entityMap?.stats || {};
+    // Counts are computed from the graph itself — the upstream JSON
+    // carries no stats block, and hard-coded numbers drift on every sync.
+    const relationshipCount = this.entityMap?.relationships?.length || 0;
 
     let html = `
       <div class="la-stats" style="margin-bottom:var(--sp-5);display:flex;gap:var(--sp-4);font-family:var(--font-mono);font-size:0.72rem;color:var(--text-3);">
-        <span>${stats.total_layers || layers.length} Layers</span>
-        <span>${stats.total_entities || entities.length} Entities</span>
-        <span>${stats.total_relationships || 0} Relationships</span>
-        <span style="color:var(--cyan)">v${this.entityMap?.metamodel_version || '3.0.0'}</span>
+        <span>${layers.length} Layers</span>
+        <span>${entities.length} Entities</span>
+        <span>${relationshipCount} Relationships</span>
+        <span style="color:var(--cyan)">v${this.entityMap?.metamodel_version || 'unknown'}</span>
       </div>
     `;
 
@@ -78,7 +80,7 @@ export class LayerArchitecture {
       const resp = await fetch('../metamodel/entity-graph.json');
       this.entityMap = await resp.json();
     } catch (e) {
-      this.entityMap = { layers: [], entities: [], relationships: [], stats: {} };
+      this.entityMap = { layers: [], entities: [], relationships: [] };
     }
   }
 }
