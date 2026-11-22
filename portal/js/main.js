@@ -119,7 +119,7 @@ const MILESTONE_GOALS = {
   },
   2030: {
     year: '2030',
-    phase: 'Marathon 2030: Fully Digital Enterprise',
+    phase: 'Reinvent 2030: Fully Digital Enterprise',
     status: 'Target Horizon',
     statusClass: 'horizon',
     repo: 'dea-metaframework',
@@ -421,6 +421,7 @@ class App {
   }
 
   _initMarathonTimeline() {
+    const widget = document.getElementById('marathon-timeline');
     const start = new Date('2025-01-01T00:00:00Z').getTime();
     const end = new Date('2030-12-31T23:59:59Z').getTime();
     const now = new Date().getTime();
@@ -433,9 +434,10 @@ class App {
     const progressBar = document.getElementById('timeline-progress-bar');
     const rocketMarker = document.getElementById('timeline-rocket');
     const badge = document.getElementById('timeline-progress-badge');
+    const track = widget?.querySelector('.timeline-track');
 
     let isCurrentYearMatch = false;
-    document.querySelectorAll('.timeline-tick').forEach((tick) => {
+    widget?.querySelectorAll('.timeline-tick').forEach((tick) => {
       const yr = parseInt(tick.dataset.year, 10);
       if (yr < currentYear) {
         tick.classList.add('past');
@@ -449,8 +451,40 @@ class App {
       }
     });
 
-    if (rocketMarker) {
-      rocketMarker.style.left = `${percentage}%`;
+    // Rocket + progress bar: interpolate between the MEASURED year-tick
+    // centers. The ticks are evenly spaced POINTS on the track (5 gaps
+    // across 6 years), so mapping the raw overall percentage onto the
+    // track width lands mid-gap (31.5% ≈ halfway between the 2026 and
+    // 2027 ticks). Instead: position = tick(currentYear) + within-year
+    // fraction × gap to next tick — the marker then tracks the real
+    // date inside the year, ending each year exactly on its tick.
+    if (rocketMarker && track) {
+      const trackRect = track.getBoundingClientRect();
+      const centers = new Map();
+      widget.querySelectorAll('.timeline-tick').forEach((tick) => {
+        const dot = tick.querySelector('.tick-dot') || tick;
+        const dotRect = dot.getBoundingClientRect();
+        centers.set(parseInt(tick.dataset.year, 10), dotRect.left + dotRect.width / 2 - trackRect.left);
+      });
+
+      const yearStart = new Date(currentYear, 0, 1).getTime();
+      const yearEnd = new Date(currentYear + 1, 0, 1).getTime();
+      const yearFrac = Math.min(Math.max((now - yearStart) / (yearEnd - yearStart), 0), 1);
+
+      const x0 = centers.get(currentYear);
+      const x1 = centers.get(currentYear + 1);
+      let posFraction;
+      if (x0 != null && x1 != null) {
+        posFraction = (x0 + yearFrac * (x1 - x0)) / trackRect.width;
+      } else {
+        // Current year has no adjacent tick pair (pre-2025 / post-2030)
+        // — fall back to the overall fraction, clamped to the track.
+        posFraction = progress;
+      }
+      posFraction = Math.min(Math.max(posFraction, 0), 1);
+
+      rocketMarker.style.left = `${(posFraction * 100).toFixed(2)}%`;
+      if (progressBar) progressBar.style.width = `${(posFraction * 100).toFixed(2)}%`;
       if (isCurrentYearMatch) {
         rocketMarker.classList.add('is-current-year');
       } else {
@@ -460,6 +494,8 @@ class App {
 
     // Live progress badge — replaces the hard-coded markup so the
     // percentage can never drift from the computed progress again.
+    // (Overall 2025→2030 completion — a different scale than the
+    // positional mapping above, which is why they intentionally differ.)
     if (badge) {
       badge.textContent = `${currentYear} • ${percentage}% COMPLETE`;
     }
