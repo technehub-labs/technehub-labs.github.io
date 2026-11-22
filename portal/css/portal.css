@@ -605,21 +605,32 @@ img, svg { display: block; max-width: 100%; }
 
 .cards-cluster {
   display: grid;
-  grid-template-columns: repeat(3, minmax(180px, 250px));
+  grid-template-columns: repeat(4, minmax(172px, 245px));
   gap: 12px;
   justify-content: end;
   align-content: end;
-  max-width: 800px;
+  max-width: 1020px;
   max-height: 100%;
   padding-right: 2px;
 }
 
-/* Bottom-heavy 3-on-bottom, 2-on-top masonry layout */
-.portal-card--metaframework { grid-column: 2; grid-row: 1; }
-.portal-card--metamodel { grid-column: 3; grid-row: 1; }
-.portal-card--layer-architecture { grid-column: 1; grid-row: 2; }
-.portal-card--assessment-maturity { grid-column: 2; grid-row: 2; }
-.portal-card--repositories { grid-column: 3; grid-row: 2; }
+/* Right-aligned staircase, 1-2-3-4 rows (widening downward):
+   row 1 — the top-level structural construct
+   row 2 — the two foundational models
+   row 3 — the derived instruments
+   row 4 — the access points (catalogs, registry, workbenches)
+   Each row's last card hugs the right edge; dynamic dataset cards
+   land in their row via the same explicit placements. */
+.portal-card--layer-architecture { grid-column: 4; grid-row: 1; }
+.portal-card--metamodel          { grid-column: 3; grid-row: 2; }
+.portal-card--metaframework      { grid-column: 4; grid-row: 2; }
+.portal-card--capabilities       { grid-column: 2; grid-row: 3; }
+.portal-card--assessment-maturity{ grid-column: 3; grid-row: 3; }
+.portal-card--coverage           { grid-column: 4; grid-row: 3; }
+.portal-card--repositories       { grid-column: 1; grid-row: 4; }
+.portal-card--references         { grid-column: 2; grid-row: 4; }
+.portal-card--viewer             { grid-column: 3; grid-row: 4; }
+.portal-card--navigator          { grid-column: 4; grid-row: 4; }
 
 /* ── Individual portal cards ───────────────────────────────────── */
 .portal-card {
@@ -1352,7 +1363,9 @@ img, svg { display: block; max-width: 100%; }
     gap: 8px;
     max-width: 610px;
   }
-  .portal-card { max-width: 195px; }
+  /* Tablet drops the staircase for the auto-flow justified scheme —
+     cards read in row order. */
+  .portal-card { max-width: 195px; grid-column: auto !important; grid-row: auto !important; }
   .portal-card-inner { padding: 8px 10px; gap: 2px; }
   .portal-card-label { font-size: 0.8rem; }
   .portal-card-blurb { -webkit-line-clamp: 1; font-size: 0.66rem; }
@@ -1567,3 +1580,26 @@ a.ref-count-card:hover { border-color: rgba(95,212,232,0.4); }
   padding: 4px 10px; transition: background 0.15s;
 }
 .ref-link:hover { background: rgba(95,212,232,0.14); }
+
+/* ═══════════════════════════════════════════════════════════════
+   Programme Coverage explorer
+   ═══════════════════════════════════════════════════════════════ */
+.cov-wrap { max-width: 780px; }
+.cov-headline { display: flex; gap: var(--sp-5); flex-wrap: wrap; margin-bottom: var(--sp-5); }
+.cov-headline-item { display: flex; flex-direction: column; gap: 2px; }
+.cov-big { font-family: var(--font-mono); font-size: 1.5rem; color: var(--text-1); line-height: 1.1; }
+.cov-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); }
+.cov-status-row { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-2); }
+.cov-status-name { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-2); min-width: 120px; }
+.cov-bar { flex: 1; height: 8px; background: var(--graphite); border-radius: 999px; overflow: hidden; }
+.cov-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), #7dd3fc); border-radius: 999px; }
+.cov-status-count { font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-3); min-width: 70px; text-align: right; }
+.cov-layer-row { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.cov-layer-row:last-child { border-bottom: none; }
+.cov-layer-badge {
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 600;
+  color: var(--c); border: 1px solid var(--c); border-radius: 4px; padding: 1px 6px; min-width: 30px; text-align: center;
+}
+.cov-layer-name { font-size: 0.78rem; color: var(--text-1); flex: 1; }
+.cov-layer-counts { font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-3); white-space: nowrap; }
+.cov-backlog { display: flex; flex-wrap: wrap; gap: var(--sp-2); }

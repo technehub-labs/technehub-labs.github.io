@@ -20,6 +20,9 @@ export function loadSiteFacts() {
         relationships: Array.isArray(g.relationships) ? g.relationships.length : 0,
         layers: Array.isArray(g.layers) ? g.layers.length : 0,
         version: g.metamodel_version || 'unknown',
+        cataloged: Array.isArray(g.entities)
+          ? g.entities.filter((e) => e.catalog_repo).length
+          : 0,
       }))
       .catch((e) => {
         console.warn('site facts unavailable — keeping current strings', e);

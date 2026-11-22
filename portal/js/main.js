@@ -13,6 +13,7 @@ import { AssessmentMaturity } from './assessment-maturity.js';
 import { RepositoriesCatalog } from './repositories-catalog.js';
 import { CapabilitiesExplorer } from './capabilities-explorer.js';
 import { ReferencesExplorer } from './references-explorer.js';
+import { CoverageExplorer } from './coverage-explorer.js';
 import { PORTAL_CARDS, fetchRepos, fetchCapabilities, fetchReferences, githubFetchState } from './portal-data.js';
 import { loadSiteFacts } from './site-facts.js';
 
@@ -24,6 +25,9 @@ const ICONS = {
   archive: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4"/></svg>',
   cube: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
   globe: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  pulse: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  orbit: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9" stroke-dasharray="4 3"/><circle cx="19.5" cy="7.5" r="1.6" fill="currentColor" stroke="none"/></svg>',
+  compass: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
 };
 
 const PILL_LABELS = {
@@ -34,6 +38,9 @@ const PILL_LABELS = {
   repositories: 'Catalogs',
   capabilities: 'Capabilities',
   references: 'Registry',
+  coverage: 'Coverage',
+  viewer: 'Workbench',
+  navigator: 'Reference',
 };
 
 const FOOTER_HINTS = {
@@ -44,6 +51,9 @@ const FOOTER_HINTS = {
   repositories: 'Live data from GitHub — searchable and filterable by language',
   capabilities: 'Governed capability definitions with ECF coordinates, outcomes, and boundaries',
   references: 'Authoritative external registries mirrored at lists.technehub.com',
+  coverage: 'Computed from the synced metamodel graph — no hand-maintained numbers',
+  viewer: 'Opens the deployed React workbench in a new tab',
+  navigator: 'Opens the classic /metamodel/ quick reference in a new tab',
 };
 
 const MILESTONE_GOALS = {
@@ -205,6 +215,42 @@ const CARD_TOOLTIP_DATA = {
       { label: 'Hosting', val: 'lists.technehub.com' },
       { label: 'License', val: 'CC0 1.0 (per-record)' }
     ]
+  },
+  coverage: {
+    repo: 'dea-metamodel',
+    category: 'PROGRAMME HEALTH',
+    title: 'Catalog Coverage & Allocation',
+    summary: 'Status distribution, per-layer breakdown, and catalog-coverage gaps — computed from the synced metamodel graph.',
+    specs: [
+      { label: 'Content', val: 'Status • Layers • Backlog' },
+      { label: 'Source', val: 'entity-graph.json (synced)' },
+      { label: 'Gaps Shown', val: 'Uncataloged entities' },
+      { label: 'Primary Repo', val: 'dea-metamodel' }
+    ]
+  },
+  viewer: {
+    repo: 'dea-web-viewer',
+    category: 'EXPLORATION WORKBENCH',
+    title: 'DEA Web Viewer',
+    summary: 'React workbench for deep metamodel exploration — interactive canvas, impact tracing, viewpoints, coverage dashboard, and scoped exports.',
+    specs: [
+      { label: 'Modes', val: 'SVG • Canvas • Matrix • Trace' },
+      { label: 'Deep Links', val: '?view=&entity=&viewpoint=' },
+      { label: 'Exports', val: 'JSON • PUML (scoped)' },
+      { label: 'Opens', val: 'New tab — deployed site' }
+    ]
+  },
+  navigator: {
+    repo: 'technehub-labs.github.io',
+    category: 'QUICK REFERENCE',
+    title: 'Classic Metamodel Navigator',
+    summary: 'The original class-grid navigator — every entity with relationship chips and ?entity= deep links, plus the canonical diagram.',
+    specs: [
+      { label: 'Layout', val: 'Entity grid + SVG overlay' },
+      { label: 'Deep Links', val: '/metamodel/?entity=<ALIAS>' },
+      { label: 'Weight', val: 'Vanilla JS — instant load' },
+      { label: 'Opens', val: 'New tab — same origin' }
+    ]
   }
 };
 
@@ -268,7 +314,7 @@ class App {
         icon: 'cube',
         blurb: `${caps.count} governed capability definitions — ECF coordinates, outcomes, boundaries, and provenance.`,
         module: 'capabilities',
-        position: 'bottom',
+        row: 3,
       });
       this.capabilityData = caps;
     }
@@ -286,7 +332,7 @@ class App {
         icon: ICONS[hint.icon] ? hint.icon : 'globe',
         blurb: countBits ? `Authoritative registry mirrors — ${countBits}.` : (refs.content.summary || '').slice(0, 120),
         module: 'references',
-        position: 'bottom',
+        row: 4,
       });
       this.referencesData = refs;
     }
@@ -320,6 +366,15 @@ class App {
         document.querySelector('.portal-card--metamodel')
           ?.setAttribute('aria-label', `${card.label}: ${card.blurb}`);
       }
+      const covCard = this.cards.find((c) => c.id === 'coverage');
+      if (covCard) {
+        covCard.blurb =
+          `${facts.cataloged} of ${facts.entities} entities have canonical catalogs — status distribution and allocation gaps, computed live.`;
+        const covEl = document.querySelector('.portal-card--coverage .portal-card-blurb');
+        if (covEl) covEl.textContent = covCard.blurb;
+        document.querySelector('.portal-card--coverage')
+          ?.setAttribute('aria-label', `${covCard.label}: ${covCard.blurb}`);
+      }
     }
   }
 
@@ -349,14 +404,15 @@ class App {
   }
 
   /**
-   * Append a runtime-discovered card (synced dataset) to the cluster and
-   * wire it exactly like the static cards.
+   * Append a runtime-discovered card (synced dataset) to its staircase
+   * row and wire it exactly like the static cards.
    */
   _appendCard(card) {
     this.cards.push(card);
     const cluster = document.getElementById('cards-cluster') || document.getElementById('cards-layer');
     const el = this._buildCardEl(card);
-    cluster.appendChild(el);
+    const rowEl = cluster.querySelector(`.cards-row[data-row="${card.row}"]`) || cluster;
+    rowEl.appendChild(el);
     el.addEventListener('click', (e) => {
       if (e.target.closest('.portal-card-icon')) return;
       this._openCardById(el.dataset.cardId);
@@ -594,6 +650,12 @@ class App {
   _openCardById(id) {
     const card = this.cards.find((c) => c.id === id);
     if (!card) return;
+    // Link cards (viewer, navigator) point at deployed surfaces instead
+    // of opening a popup module.
+    if (card.href) {
+      window.open(card.href, '_blank', 'noopener');
+      return;
+    }
     this._openPopup(card);
   }
 
@@ -674,6 +736,8 @@ class App {
       case 'references':
         if (!this.referencesData) return this._moduleUnavailable(body, 'Reference registry data');
         return new ReferencesExplorer(body, this.referencesData);
+      case 'coverage':
+        return new CoverageExplorer(body);
       default:
         return { render: () => { body.innerHTML = '<div style="padding:var(--sp-5);color:var(--text-3);">Unknown module.</div>'; } };
     }

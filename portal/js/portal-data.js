@@ -1,31 +1,41 @@
 // ═══════════════════════════════════════════════════════════════
-// Portal data — 5 portal cards with sub-content definitions.
+// Portal data — portal cards with sub-content definitions.
+//
+// Desktop layout is a right-aligned staircase (1-2-3-4 rows, top row
+// first). `row` places a card on its staircase level:
+//   row 1 — the top-level structural construct
+//   row 2 — the two foundational models
+//   row 3 — the derived instruments
+//   row 4 — the access points (catalogs, registry, workbenches)
+// Cards with `href` (no module) open that URL in a new tab. Cards fed
+// by synced datasets (capabilities, references) are appended at runtime
+// by main.js and carry the same `row` field.
 // ═══════════════════════════════════════════════════════════════
 
 export const PORTAL_CARDS = [
+  {
+    id: 'layer-architecture',
+    label: 'Layer Architecture',
+    icon: 'layers',
+    blurb: 'The architectural breakdown — from Ecosystem & Value Network to Technology & Execution.',
+    module: 'layer-architecture',
+    row: 1,
+  },
+  {
+    id: 'metamodel',
+    label: 'Metamodel',
+    icon: 'graph',
+    blurb: 'The entity relationship model across architectural layers — the semantic relationship graph.',
+    module: 'metamodel',
+    row: 2,
+  },
   {
     id: 'metaframework',
     label: 'Meta Framework',
     icon: 'grid',
     blurb: 'The 7×7 axiom-derived matrix — every enterprise described by what it does and how its work evolves.',
     module: 'metaframework',
-    position: 'right',
-  },
-  {
-    id: 'metamodel',
-    label: 'Metamodel',
-    icon: 'graph',
-    blurb: '23-entity relationship model across six architectural layers — the semantic relationship graph.',
-    module: 'metamodel',
-    position: 'right',
-  },
-  {
-    id: 'layer-architecture',
-    label: 'Layer Architecture',
-    icon: 'layers',
-    blurb: 'The six-layer architectural breakdown — from Ecosystem & Value Network to Measurement.',
-    module: 'layer-architecture',
-    position: 'right',
+    row: 2,
   },
   {
     id: 'assessment-maturity',
@@ -33,7 +43,15 @@ export const PORTAL_CARDS = [
     icon: 'shield',
     blurb: 'Assessment instruments and five-level maturity models — from Ad Hoc to Optimising.',
     module: 'assessment-maturity',
-    position: 'bottom',
+    row: 3,
+  },
+  {
+    id: 'coverage',
+    label: 'Programme Coverage',
+    icon: 'pulse',
+    blurb: 'Catalog coverage, status distribution, and allocation gaps — computed from the synced metamodel graph.',
+    module: 'coverage',
+    row: 3,
   },
   {
     id: 'repositories',
@@ -41,7 +59,23 @@ export const PORTAL_CARDS = [
     icon: 'archive',
     blurb: 'All versioned catalogs, repos, and tooling across the DEA ecosystem — searchable and filterable.',
     module: 'repositories',
-    position: 'bottom',
+    row: 4,
+  },
+  {
+    id: 'viewer',
+    label: 'DEA Web Viewer',
+    icon: 'orbit',
+    blurb: 'The deep-exploration workbench — interactive canvas, traceability, viewpoints, and scoped exports.',
+    href: 'https://technehub-labs.github.io/dea-web-viewer/',
+    row: 4,
+  },
+  {
+    id: 'navigator',
+    label: 'Metamodel Navigator',
+    icon: 'compass',
+    blurb: 'The classic quick-reference grid — every entity with ?entity= deep links and the canonical diagram.',
+    href: '/metamodel/',
+    row: 4,
   },
 ];
 
