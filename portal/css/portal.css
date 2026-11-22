@@ -1346,13 +1346,17 @@ img, svg { display: block; max-width: 100%; }
 
 /* ── Responsive ────────────────────────────────────────────────── */
 
-/* Laptop / Medium height */
+/* Laptop / Medium height — compact 4-column staircase. Must keep FOUR
+   explicit columns: the per-card staircase placements use grid-column
+   up to 4, and a 3-column template here turns column 4 into a
+   min-content implicit track that squishes the right-edge cards
+   (Layer Architecture, Meta Framework, Programme Coverage, Navigator). */
 @media (max-height: 780px) and (min-width: 769px) {
   #cards-layer { top: 68px; bottom: 108px; }
-  .portal-card { width: 100%; max-width: 220px; }
+  .portal-card { width: 100%; max-width: 200px; }
   .portal-card-inner { padding: 8px 12px; gap: 3px; }
   .portal-card-blurb { -webkit-line-clamp: 1; font-size: 0.68rem; }
-  .cards-cluster { gap: 8px; max-width: 580px; grid-template-columns: repeat(3, minmax(140px, 220px)); }
+  .cards-cluster { gap: 8px; max-width: 830px; grid-template-columns: repeat(4, minmax(150px, 200px)); }
 }
 
 /* Tablet screens */
